@@ -45,4 +45,49 @@ describe("QueryController", function () {
         expect(ret).not.to.be.equal(null);
         // should check that the value is meaningful
     });
+
+    // simple query
+    it("Should be able to query, although the answer will be empty", function () {
+        let query: QueryRequest = {GET: ["courses_dept"],
+                                    WHERE: {
+                                          GT: {
+                                                "courses_avg": 90
+                                              }
+                                          },
+                                    ORDER: "courses_avg",
+                                    AS: "TABLE"
+                                  };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).not.to.be.equal(null);
+        // TODO: should check that the value is meaningful
+    });
+
+    // complex query
+    it("Should be able to query, although the answer will be empty", function () {
+        let query: QueryRequest = {
+                                    GET: ["courses_dept", "courses_id"],
+                                    WHERE: {
+                                        OR: {
+                                            AND: {
+                                                GT: {
+                                                    "courses_avg": 70
+                                                },
+                                                IS: {"courses_dept": "adhe"}
+                                            },
+                                            EQ: {"courses_avg": 90}
+                                        }
+                                    },
+                                    ORDER: "courses_avg",
+                                    AS: "TABLE"
+                                  };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).not.to.be.equal(null);
+        // TODO: should check that the value is meaningful
+    });
 });
