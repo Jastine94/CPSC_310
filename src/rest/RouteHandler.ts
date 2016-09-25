@@ -30,7 +30,7 @@ export default class RouteHandler {
     }
 
     public static  putDataset(req: restify.Request, res: restify.Response, next: restify.Next) {
-        Log.trace('RouteHandler::postDataset(..) - params: ' + JSON.stringify(req.params));
+        Log.trace('RouteHandler::putDataset(..) - params: ' + JSON.stringify(req.params));
         try {
             var id: string = req.params.id;
 
@@ -38,21 +38,21 @@ export default class RouteHandler {
             // adapted from: https://github.com/restify/node-restify/issues/880#issuecomment-133485821
             let buffer: any = [];
             req.on('data', function onRequestData(chunk: any) {
-                Log.trace('RouteHandler::postDataset(..) on data; chunk length: ' + chunk.length);
+                Log.trace('RouteHandler::putDataset(..) on data; chunk length: ' + chunk.length);
                 buffer.push(chunk);
             });
 
             req.once('end', function () {
                 let concated = Buffer.concat(buffer);
                 req.body = concated.toString('base64');
-                Log.trace('RouteHandler::postDataset(..) on end; total length: ' + req.body.length);
+                Log.trace('RouteHandler::putDataset(..) on end; total length: ' + req.body.length);
 
                 let controller = RouteHandler.datasetController;
                 controller.process(id, req.body).then(function (result) {
-                    Log.trace('RouteHandler::postDataset(..) - processed');
+                    Log.trace('RouteHandler::putDataset(..) - processed');
                     res.json(200, {success: result});
                 }).catch(function (err: Error) {
-                    Log.trace('RouteHandler::postDataset(..) - ERROR: ' + err.message);
+                    Log.trace('RouteHandler::putDataset(..) - ERROR: ' + err.message);
                     res.json(400, {err: err.message});
                 });
             });
