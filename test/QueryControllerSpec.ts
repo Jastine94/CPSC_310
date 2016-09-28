@@ -46,6 +46,41 @@ describe("QueryController", function () {
         // should check that the value is meaningful
     });
 
+    it("ORDER should be in the GET, else not a valid query", function () {
+        let query: QueryRequest = {GET: ["courses_dept"], WHERE: {"courses_avg": 90}, ORDER: 'food', AS: 'table'};
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        // bad request
+        expect(ret).to.be.equal(false);
+    });
+
+    it("Should be able to get", function() {
+        let query: QueryRequest = { GET: ["courses_dept", "courses_id"],
+                                    WHERE: {"courses_avg": 90},
+                                    ORDER: null, AS: 'table'};
+
+        let dataset: Datasets = {
+                    "courses" :
+                    "{\"result\": [{ " +
+                    		"id\": 40969," +
+                    		"Professor\": \"graves, marcia;zeiler, kathryn\"," +
+                    		"Avg\": 90," +
+                    		"Subject\": \"biol\"" +
+                    	"}, {\" " +
+                    		"id\": 40970," +
+                    		"Professor\": \"zeiler, kathryn\"," +
+                    		"Avg\": 90," +
+                    		"Subject\": \"cpsc\"}]" +
+                    "};"};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.be.equal({ render: 'TABLE', result: 'hi'});
+    })
+
     // simple query
     it("Should be able to query, although the answer will be empty", function () {
         let query: QueryRequest = {GET: ["courses_dept"],
