@@ -29,8 +29,23 @@ export default class DatasetController {
      */
     public getDataset(id: string): any {
         // TODO: this should check if the dataset is on disk in ./data if it is not already in memory.
+        try
+        {
+            var fs = require(id);
+            // TODO: change to ./data folder
+            if (!fs.existsSync('./dataMock' + id))
+            {
+              // TODO: load dataset from disk and then load
+            }
 
-        return this.datasets[id];
+            return this.datasets[id];
+            // do stuff
+        }
+        catch (err)
+        {
+          Log.error('DatasetController::getDataset() - ERROR: ' + err);
+          return null;
+        }
     }
 
     public getDatasets(): Datasets {

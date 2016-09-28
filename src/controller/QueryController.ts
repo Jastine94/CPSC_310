@@ -12,6 +12,7 @@ export interface QueryRequest {
     AS: string;
 }
 
+// TODO: change result type in query response
 export interface QueryResponse {
 }
 
@@ -40,6 +41,7 @@ export default class QueryController {
                 if (q == 'GET')
                 {
                     response = this.queryGet(query.GET);
+                    Log.trace(JSON.stringify(response));
                 }
                 else if (q == 'WHERE')
                 {
@@ -48,12 +50,42 @@ export default class QueryController {
                 }
                 else if (q == 'ORDER')
                 {
-                    response = this.queryWhere(query.ORDER, response);
+                    // check whether ORDER is in GET
+
+                    // check if GET is of type string
+                    let found : boolean = false;
+                    if (typeof query.GET === 'string' ||
+                        query.GET instanceof String)
+                    {
+                        if (query.ORDER == query.GET)
+                        {
+                            found = true;
+                            response = this.queryOrder(query.ORDER, response);
+                        }
+                    }
+                    else
+                    {
+                        // GET is of type string[]
+                        for (var i = 0; i < query.GET.length; ++i)
+                        {
+                            if (query.ORDER == query.GET[i])
+                            {
+                                found = true;
+                                response = this.queryOrder(query.ORDER, response);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        return false;
+                    }
                     Log.trace(JSON.stringify(response));
                 }
                 else if (q == 'AS')
                 {
-                    response = this.queryWhere(query.AS, response);
+                    response = this.queryAs(query.AS, response);
                     Log.trace(JSON.stringify(response));
                 }
             }
@@ -74,7 +106,22 @@ export default class QueryController {
     private queryGet(key: string | string[]): QueryResponse
     {
         Log.trace('QueryController::queryGet( ' + JSON.stringify(key) + ' )');
-        return {status: 'queryGet', ts: new Date().getTime()};
+        var dataSetKey : string;
+        var response : QueryResponse = {result: "insert answer here"};
+        this.getValue(key.toString());
+        if (typeof key === 'string' || key instanceof String)
+        {
+            dataSetKey = this.getKey(key);
+        }
+        else
+        {
+            for (var i = 0; i < key.length; ++i)
+            {
+                dataSetKey = this.getKey(key[i]);
+            }
+        }
+
+        return response;
     }// queryGet
 
     /**
@@ -87,6 +134,14 @@ export default class QueryController {
     private queryWhere(key: {}, data: QueryResponse): QueryResponse
     {
         Log.trace('QueryController::queryWhere( ' + JSON.stringify(key) + ' )');
+
+        for (var where in key)
+        {
+            if (!key.hasOwnProperty(where)) continue;
+
+            //Log.trace(where);
+        }
+
         return {status: 'queryWhere', ts: new Date().getTime()};
     }// queryWhere
 
@@ -112,7 +167,74 @@ export default class QueryController {
      */
     private queryAs(key: string, data: QueryResponse): QueryResponse
     {
-        Log.trace('QueryController::queryAs( ' + JSON.stringify(key) + ' )');
-        return {status: 'queryAs', ts: new Date().getTime()};
+        Log.trace('QueryController::queryAs( ' + JSON.stringify(key)  + ' )');
+        return {render: key, data};
     }// queryAs
+
+    /**
+     * Get the corresponsing key in the dataset
+     *
+     * @param key
+     * @returns string
+     */
+    private getKey(key: string | string[]): string
+    {
+        var tempKey : string;
+        // map key to satisfy dataset key
+        if ("courses_dept" == key)
+        {
+            tempKey = "Subject";
+        }
+        if ("courses_id" == key)
+        {
+            tempKey = "id";
+        }
+        else if ("courses_avg" == key)
+        {
+            tempKey = "Avg";
+        }
+        else if ("courses_instructor" == key)
+        {
+            tempKey = "Professor";
+        }
+        else if ("courses_title" == key)
+        {
+            tempKey = "Title";
+        }
+        else if ("courses_pass" == key)
+        {
+            tempKey = "Pass";
+        }
+        else if ("courses_fail" == key)
+        {
+            tempKey = "Fail";
+        }
+        else if ("courses_audit" == key)
+        {
+            tempKey = "Audit";
+        }
+        else
+        {
+            tempKey = key.toString();
+        }
+
+        return tempKey;
+    } //getKey
+
+    /**
+     * Get the corresponsing values based on the key in the dataset
+     *
+     * @param key
+     * @returns string []
+     */
+    private getValue(key: string): string[]
+    {
+        var result : string[];
+        for (var file in this.datasets)
+        {
+            // TODO: parse inside result
+        }
+
+        return result
+    }
 }
