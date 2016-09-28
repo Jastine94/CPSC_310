@@ -230,8 +230,43 @@ export default class QueryController {
     private getValue(key: string): string[]
     {
         var result : string[];
+
         for (var file in this.datasets)
         {
+            // file is this.datasets.id
+            var dataList = this.datasets[file];
+
+            var items = JSON.parse(JSON.stringify(dataList));
+
+            var values = items["result"];
+            Log.trace(items);
+            // TODO: Frances's look at this!!!
+            //var values = parseJSON(items);
+
+            Log.trace("!!!!!values" + values);
+
+            // key should be result
+            for (var key in items)
+            {
+                if (!items.hasOwnProperty(key)) continue;
+                var valueList = items[key];
+
+                for (var value in valueList)
+                {
+                    //Log.trace("!!!!" + value);
+                }
+                //if ("result")
+
+                /*
+                if(JSON.stringify(key) == "result")
+                {
+                    // needs more specific method to manipulate date to your needs
+                    Log.trace("There is a result");
+                }
+                */
+
+            }
+
             // TODO: parse inside result
         }
 
