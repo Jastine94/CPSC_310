@@ -41,6 +41,7 @@ describe("DatasetController", function () {
         Log.test("starting 310sampe.zip test")
         fs.readFile("test\/310sampe.zip", function(err, data) {
             if (err) throw err;
+            Log.trace('sample data is: '+data);
             let controller = new DatasetController();
             return controller.process('courses', data);
         });
@@ -66,6 +67,24 @@ describe("DatasetController", function () {
         Log.test('The data sets should be from the previous file: ' + retrieved_datasets);
     });
 
+    // it('testing file with deletion', function (){
+    //      Todo: remove later
+    //     let data = fs.readFileSync("test\/second_data.zip");
+    //     let controller = new DatasetController();
+    //     return controller.process('courses',data);
+    //
+    //     // Promise.all([processing]).then(value => {
+    //     //     let retrieved_datasets = controller.getDatasets();
+    //     //     Log.test("The retrieved datasets are: " + retrieved_datasets["courses"]);
+    //     //     controller.deleteDataset(retrieved_datasets, 'courses');
+    //     // }, reason =>{
+    //     //     console.log("Failed to work: " + reason);
+    //     // });
+    //     // let retrieved_datasets = controller.getDatasets();
+    //     //     Log.test("The retrieved datasets are: " + retrieved_datasets["courses"]);
+    //     //     controller.deleteDataset(retrieved_datasets, 'courses');
+    //     // });
+    // });
 
 
 });

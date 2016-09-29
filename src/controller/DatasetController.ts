@@ -86,6 +86,24 @@ export default class DatasetController {
         else return this.datasets;
     } //getDatasets
 
+    /**
+     * Returns true if the dataset is deleted from the Datasets
+     */
+    public deleteDataset(dataset: Datasets, id:string): boolean {
+        Log.trace("DatasetController::deleteDataset() started");
+        var data_json: string = __dirname+"\/..\/..\/data\/"+id+'.json';
+        Log.trace('Json file to be deleted from the data folder id: ' + data_json);
+        if (this.datasets === dataset){
+            this.datasets = {};
+            Log.trace("deleted datasets have the following length: " + Object.keys(this.datasets).length);
+            // should validate that it is empty
+            fs.unlinkSync(data_json);
+            return true;
+        }
+        else return false;
+    } //deleteDataset
+
+
 
     /**
      * Process the dataset; save it to disk when complete.
@@ -168,4 +186,5 @@ export default class DatasetController {
             }
         });
     } //save
+
 }
