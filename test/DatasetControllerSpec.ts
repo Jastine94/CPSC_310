@@ -19,23 +19,23 @@ describe("DatasetController", function () {
     afterEach(function () {
     });
 
-    it("Should be able to receive a Dataset", function () {
-        Log.test('Creating dataset');
-        let content = {key: 'value'};
-        let zip = new JSZip();
-        zip.file('content.obj', JSON.stringify(content));
-        const opts = {
-            compression: 'deflate', compressionOptions: {level: 2}, type: 'base64'
-        };
-        return zip.generateAsync(opts).then(function (data) {
-            Log.test('Dataset created');
-            let controller = new DatasetController();
-            return controller.process('setA', data);
-        }).then(function (result) {
-            Log.test('Dataset processed; result: ' + result);
-            expect(result).to.equal(true);
-        });
-    });
+    // it("Should be able to receive a Dataset", function () {
+    //     Log.test('Creating dataset');
+    //     let content = {key: 'value'};
+    //     let zip = new JSZip();
+    //     zip.file('content.obj', JSON.stringify(content));
+    //     const opts = {
+    //         compression: 'deflate', compressionOptions: {level: 2}, type: 'base64'
+    //     };
+    //     return zip.generateAsync(opts).then(function (data) {
+    //         Log.test('Dataset created');
+    //         let controller = new DatasetController();
+    //         return controller.process('setA', data);
+    //     }).then(function (result) {
+    //         Log.test('Dataset processed; result: ' + result);
+    //         expect(result).to.equal(true);
+    //     });
+    // });
 
     it("Should be able to save 310sampe.zip content into disk ", function () {
         Log.test("starting 310sampe.zip test")
@@ -46,13 +46,26 @@ describe("DatasetController", function () {
         });
     });
 
-    it("Should be able to save second_data.zip content into disk and replace the current information ", function () {
-        Log.test("starting second_data.zip test")
-        fs.readFile("test\/second_data.zip", function(err, data) {
-            if (err) throw err;
+    it("Should be able to save second_data.zip onto disk and retrieve it with getDatasets()", function(){
+       Log.test("Start to unzip second_data.zip and load onto disk");
+        fs.readFile("test\/second_data.zip", function(err,data){
+            if (err){throw err;}
             let controller = new DatasetController();
-            return controller.process('courses', data);
+            return controller.process('courses',data).then(function (result){
+                let retrieved_datasets = controller.getDatasets();
+                Log.test("The retrieved datasets are: " + retrieved_datasets["courses"]);
+                // should contain four objects and inside those objects should be four different jsons
+            });
         });
     });
+
+    it("Should be able to retrieve all data from disk", function(){
+        Log.test("Data Controller with no data created");
+        let controller = new DatasetController();
+        let retrieved_datasets = controller.getDatasets();
+        Log.test('The data sets should be from the previous file: ' + retrieved_datasets);
+    });
+
+
 
 });

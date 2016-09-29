@@ -33,34 +33,34 @@ export default class DatasetController {
     public getDataset(id: string): any {
         // TODO: this should check if the dataset is on disk in ./data if it is not already in memory.
 
-        // if (this.datasets[id] != null){ // might want to check if its undefined as well???
-        //     return this.datasets[id];
+        // if (this.datasets[id] !=== null){
+            // if the dataset[id] specified is not null and can return something, return that dataset,
+            // if not, then search through the json files within the data folder to see if it contains it
+            // and if the case where it does not contain that dataset inside the data folder, then return null
         // }
-        // else {
-        //     return null;
-        try
-        {
+
+        try{
             var fs = require(id);
             // TODO: change to ./data folder
-            if (!fs.existsSync('./dataMock' + id))
-            {
+            if (!fs.existsSync('./dataMock' + id)){
               // TODO: load dataset from disk and then load
             }
-
             return this.datasets[id];
             // do stuff
         }
-        catch (err)
-        {
+        catch (err){
           Log.error('DatasetController::getDataset() - ERROR: ' + err);
           return null;
         }
     } //getDataset
 
+    /**
+     * Returns all dataset files inside the ./data folder from disk if this.datasets is empty
+     */
+    // TODO: if datasets is empty, load all dataset files in ./data from disk
     public getDatasets(): Datasets {
-        // TODO: if datasets is empty, load all dataset files in ./data from disk
+        Log.trace('DatasetController :: getDatasets is being called');
 
-        Log.trace('DatesetController :: getDatasets is being called');
         if (Object.keys(this.datasets).length === 0 && this.datasets.constructor === Object){
             var data_dir: string = __dirname+"\/..\/..\/data\/";
             fs.readdir( data_dir, function( err, files ) {
@@ -70,19 +70,20 @@ export default class DatasetController {
                 }
                 Log.trace('time to read files');
                 files.forEach( function( file, index ) {
-                    fs.readFile(data_dir+file, (err: any, data: any) => {
-                        Log.trace("Data is: " + data);
-                        if (err){
-                            throw err;
-                        }
-                        else{
-                            this.datasets = data;
-                        }
-                    });
+                    // fs.readFile(data_dir+file, (err: any, data: any) => {
+                    //     Log.trace("Data is: " + data);
+                    //         if (err){
+                    //         throw err;
+                    //     }
+                    //     this.datasets = data;
+                    // });
+                    this.datasets = fs.readFileSync(data_dir+file);
+                    // first one is async and second one is sync
                 });
             });
+            return this.datasets;
         }
-        return this.datasets;
+        else return this.datasets;
     } //getDatasets
 
 
