@@ -109,9 +109,14 @@ export default class QueryController {
         var response : QueryResponse = {result: "insert answer here"};
         var retValue : {};
 
+        retValue = this.getValue(key);
+
+        // TODO: remove
+
+        /*
         if (typeof key === 'string' || key instanceof String)
         {
-            retValue = this.getValue(key.toString());
+
         }
         else
         {
@@ -120,6 +125,7 @@ export default class QueryController {
                  retValue = this.getValue(key[i].toString());
             }
         }
+        */
 
         response = {result: retValue};
 
@@ -231,7 +237,7 @@ export default class QueryController {
      * @param key
      * @returns string []
      */
-    private getValue(key: string): any[]
+    private getValue(key: string | string[]): any[]
     {
         var results : any[] = [];
 
@@ -254,25 +260,37 @@ export default class QueryController {
                     for (var values in valuesList)
                     {
                         var value = valuesList[values];
-
-                        for (var instance in value)
+                        let obj : any = {};
+                        let gotData : boolean = false;
+                        for (var i = 0; i < key.length; ++i)
                         {
-                            var temp = this.getKey(String(key));
-                            if (temp === String(instance))
+                            var temp = this.getKey(key[i].toString());
+                            for (var instance in value)
                             {
-                                var obj: any = {};
-                                obj[key] = value[instance];
-                                results.push(obj);
-                                Log.trace("HIIIIIIIIIII");
+                                if (temp === String(instance))
+                                {
+                                    if (Object.keys(obj).length === 0)
+                                    {
+                                        obj[key[i]] = value[instance];
+                                        gotData = true;
+                                    }
+                                    else
+                                    {
+                                        let tempObj : {} = {[key[i]] : value[instance]};
+                                        Object.assign(obj, tempObj);
+                                        gotData = true;
+                                    }
+                                }
                             }
+                        }
+                        if (gotData)
+                        {
+                            results.push(obj);
                         }
                     }
                 }
             }
-
-            // TODO: parse inside result
         }
-
         return results;
     }// getValue
 }
