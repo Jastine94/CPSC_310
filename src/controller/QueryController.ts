@@ -108,18 +108,21 @@ export default class QueryController {
         Log.trace('QueryController::queryGet( ' + JSON.stringify(key) + ' )');
         var dataSetKey : string;
         var response : QueryResponse = {result: "insert answer here"};
-        this.getValue(key.toString());
+        var retValue : {};
+
         if (typeof key === 'string' || key instanceof String)
         {
-            dataSetKey = this.getKey(key);
+            retValue = this.getValue(key.toString());
         }
         else
         {
             for (var i = 0; i < key.length; ++i)
             {
-                dataSetKey = this.getKey(key[i]);
+                 retValue = this.getValue(key[i].toString());
             }
         }
+
+        response = {result: retValue};
 
         return response;
     }// queryGet
@@ -185,7 +188,7 @@ export default class QueryController {
         {
             tempKey = "Subject";
         }
-        if ("courses_id" == key)
+        else if ("courses_id" == key)
         {
             tempKey = "id";
         }
@@ -227,27 +230,22 @@ export default class QueryController {
      * @param key
      * @returns string []
      */
-    private getValue(key: string): string[]
+    private getValue(key: string): any[]
     {
-        var result : string[];
+        var results : any[] = [];
 
         for (var file in this.datasets)
         {
-            // file is this.datasets.id
+            // file is this.datasets.id; dataList is the data object
             var dataList = this.datasets[file];
             var items = JSON.parse(JSON.stringify(dataList));
 
-            // TODO: Frances's look at this!!!
-
-
-
-            // key should be result
-            for (var key in items)
+            // inside the array of object
+            for (var keys in items)
             {
-                if (!items.hasOwnProperty(key)) continue;
-                //var valueList = items[key];
+                if (!items.hasOwnProperty(keys)) continue;
 
-                if (key == "result")
+                if (keys == "result")
                 {
                     var valuesList = items["result"];
 
@@ -257,16 +255,21 @@ export default class QueryController {
 
                         for (var instance in value)
                         {
-                            Log.trace(instance);
+                            var temp = this.getKey(String(key));
+                            if (temp === String(instance))
+                            {
+                                let obj = {[key]: value[instance]};
+                                results.push(obj);
+                                Log.trace("HIIIIIIIIIII");
+                            }
                         }
                     }
-                    Log.trace("HIIIIIIIIIII");
                 }
             }
 
             // TODO: parse inside result
         }
 
-        return result
-    }
+        return results;
+    }// getValue
 }

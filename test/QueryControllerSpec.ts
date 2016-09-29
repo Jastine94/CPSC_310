@@ -57,7 +57,7 @@ describe("QueryController", function () {
     });
 
     it("Should be able to get", function() {
-        let query: QueryRequest = { GET: ["courses_dept", "courses_id"],
+        let query: QueryRequest = { GET: ["courses_dept"],
                                     WHERE: {"courses_avg": 90},
                                     ORDER: null, AS: 'table'};
 
