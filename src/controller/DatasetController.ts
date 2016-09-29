@@ -55,20 +55,36 @@ export default class DatasetController {
           Log.error('DatasetController::getDataset() - ERROR: ' + err);
           return null;
         }
-    }
+    } //getDataset
 
     public getDatasets(): Datasets {
         // TODO: if datasets is empty, load all dataset files in ./data from disk
-        if (this.datasets == null){
-            // for each loop ???
-            require("fs").fs.readFile();
-            /*need a for loop to iterate all the files inside the data directory and put it into the dataset
-            * should not need  the require("fs").fs.readFile for the fs to work -- should be already imported*/
+
+        Log.trace('DatesetController :: getDatasets is being called');
+        if (Object.keys(this.datasets).length === 0 && this.datasets.constructor === Object){
+            var data_dir: string = __dirname+"\/..\/..\/data\/";
+            fs.readdir( data_dir, function( err, files ) {
+                if( err ) {
+                    Log.trace( "Directory could not be loaded: " + err );
+                    process.exit( 1 );
+                }
+                Log.trace('time to read files');
+                files.forEach( function( file, index ) {
+                    fs.readFile(data_dir+file, (err: any, data: any) => {
+                        Log.trace("Data is: " + data);
+                        if (err){
+                            throw err;
+                        }
+                        else{
+                            this.datasets = data;
+                        }
+                    });
+                });
+            });
         }
-        else {
-            return this.datasets;
-        }
-    }
+        return this.datasets;
+    } //getDatasets
+
 
     /**
      * Process the dataset; save it to disk when complete.
@@ -126,7 +142,7 @@ export default class DatasetController {
                 reject(err);
             }
         });
-    }
+    } //process
 
     /**
      * Writes the processed dataset to disk as 'id.json'. The function should overwrite
@@ -136,6 +152,7 @@ export default class DatasetController {
      * @param processedDataset
      */
     private save(id: string, processedDataset: any) {
+        // TODO: actually write to disk in the ./data directory
         // add it to the memory model
         this.datasets[id] = processedDataset;
 
@@ -149,7 +166,5 @@ export default class DatasetController {
                 fs.writeFileSync(data_location+id+".json", data);
             }
         });
-
-        // TODO: actually write to disk in the ./data directory
-    }
+    } //save
 }
