@@ -63,23 +63,19 @@ describe("QueryController", function () {
 
         let dataset: Datasets = {
                     "courses" :
-                    "{\"result\": [{ " +
-                    		"id\": 40969," +
-                    		"Professor\": \"graves, marcia;zeiler, kathryn\"," +
-                    		"Avg\": 90," +
-                    		"Subject\": \"biol\"" +
-                    	"}, {\" " +
-                    		"id\": 40970," +
-                    		"Professor\": \"zeiler, kathryn\"," +
-                    		"Avg\": 90," +
-                    		"Subject\": \"cpsc\"}]" +
-                    "};"};
+                    {"result": [{
+                    		"id": 40969,
+                    		"Professor": "graves, marcia;zeiler, kathryn",
+                    		"Avg": 90,
+                    		"Subject": "biol"
+                    	}]}};
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.be.equal({ render: 'TABLE', result: 'hi'});
     })
+
 
     // simple query
     it("Should be able to query, although the answer will be empty", function () {

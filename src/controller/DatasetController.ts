@@ -139,7 +139,7 @@ export default class DatasetController {
         // add it to the memory model
         this.datasets[id] = processedDataset;
 
-        var data_location: string = __dirname+"\\..\\..\\data\\";
+        var data_location: string = __dirname+"\/..\/..\/data\/";
         var data = JSON.stringify(processedDataset);
         fs.access(data_location, fs.F_OK, function(err) {
             if (!err) {

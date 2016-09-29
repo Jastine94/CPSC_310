@@ -39,7 +39,7 @@ describe("DatasetController", function () {
 
     it("Should be able to save 310sampe.zip content into disk ", function () {
         Log.test("starting 310sampe.zip test")
-        fs.readFile("test\\310sampe.zip", function(err, data) {
+        fs.readFile("test\/310sampe.zip", function(err, data) {
             if (err) throw err;
             let controller = new DatasetController();
             return controller.process('courses', data);
@@ -48,7 +48,7 @@ describe("DatasetController", function () {
 
     it("Should be able to save second_data.zip content into disk and replace the current information ", function () {
         Log.test("starting second_data.zip test")
-        fs.readFile("test\\second_data.zip", function(err, data) {
+        fs.readFile("test\/second_data.zip", function(err, data) {
             if (err) throw err;
             let controller = new DatasetController();
             return controller.process('courses', data);
