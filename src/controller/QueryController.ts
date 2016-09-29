@@ -35,7 +35,7 @@ export default class QueryController {
 
         if (this.isValid(query))
         {
-            let response : QueryResponse= {};
+            let response : QueryResponse = {};
             for (var q in query)
             {
                 if (q == 'GET')
@@ -45,22 +45,21 @@ export default class QueryController {
                 }
                 else if (q == 'WHERE')
                 {
-                    response = this.queryWhere(query.WHERE, response);
+                    //response = this.queryWhere(query.WHERE, response);
                     Log.trace(JSON.stringify(response));
                 }
                 else if (q == 'ORDER')
                 {
-                    // check whether ORDER is in GET
-
+                    // TODO check whether ORDER is in GET
                     // check if GET is of type string
-                    let found : boolean = false;
+                    let found : boolean = true;
                     if (typeof query.GET === 'string' ||
                         query.GET instanceof String)
                     {
                         if (query.ORDER == query.GET)
                         {
                             found = true;
-                            response = this.queryOrder(query.ORDER, response);
+                            //response = this.queryOrder(query.ORDER, response);
                         }
                     }
                     else
@@ -71,7 +70,7 @@ export default class QueryController {
                             if (query.ORDER == query.GET[i])
                             {
                                 found = true;
-                                response = this.queryOrder(query.ORDER, response);
+                                //response = this.queryOrder(query.ORDER, response);
                                 break;
                             }
                         }
@@ -90,11 +89,11 @@ export default class QueryController {
                 }
             }
 
-            return {status: 'received', ts: new Date().getTime()};
+            return response;
         }
-
-        // TODO: implement this
         return {status: 'received', ts: new Date().getTime()};
+        // TODO: implement this
+
     }// query
 
     /**
@@ -171,7 +170,9 @@ export default class QueryController {
     private queryAs(key: string, data: QueryResponse): QueryResponse
     {
         Log.trace('QueryController::queryAs( ' + JSON.stringify(key)  + ' )');
-        return {render: key, data};
+        var obj: any = {};
+        obj["render"] = key;
+        return Object.assign(obj, data);
     }// queryAs
 
     /**
@@ -236,11 +237,12 @@ export default class QueryController {
 
         for (var file in this.datasets)
         {
-            // file is this.datasets.id; dataList is the data object
+            // file is this.datasets.id; dataList is the data object(array of results)
+            if (!this.datasets.hasOwnProperty(file)) continue;
             var dataList = this.datasets[file];
             var items = JSON.parse(JSON.stringify(dataList));
 
-            // inside the array of object
+            // get each result object
             for (var keys in items)
             {
                 if (!items.hasOwnProperty(keys)) continue;
@@ -258,7 +260,8 @@ export default class QueryController {
                             var temp = this.getKey(String(key));
                             if (temp === String(instance))
                             {
-                                let obj = {[key]: value[instance]};
+                                var obj: any = {};
+                                obj[key] = value[instance];
                                 results.push(obj);
                                 Log.trace("HIIIIIIIIIII");
                             }
