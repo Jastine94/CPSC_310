@@ -18,7 +18,7 @@ describe("QueryController", function () {
 
     it("Should be able to validate a valid query", function () {
         // NOTE: this is not actually a valid query for D1
-        let query: QueryRequest = {GET: 'food', WHERE: {IS: 'apple'}, ORDER: 'food', AS: 'table'};
+        let query: QueryRequest = {GET: 'food', WHERE: {IS: 'apple'}, ORDER: 'food', AS: 'TABLE'};
         let dataset: Datasets = {};
         let controller = new QueryController(dataset);
         let isValid = controller.isValid(query);
@@ -37,17 +37,17 @@ describe("QueryController", function () {
 
     it("Should be able to query, although the answer will be empty", function () {
         // NOTE: this is not actually a valid query for D1, nor is the result correct.
-        let query: QueryRequest = {GET: 'food', WHERE: {IS: 'apple'}, ORDER: 'food', AS: 'table'};
+        let query: QueryRequest = {GET: 'food', WHERE: {IS: 'apple'}, ORDER: 'food', AS: 'TABLE'};
         let dataset: Datasets = {};
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
-        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        //Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).not.to.be.equal(null);
         // should check that the value is meaningful
     });
 
     it("ORDER should be in the GET, else not a valid query", function () {
-        let query: QueryRequest = {GET: ["courses_dept"], WHERE: {"courses_avg": 90}, ORDER: 'food', AS: 'table'};
+        let query: QueryRequest = {GET: ["courses_dept"], WHERE: {"courses_avg": 90}, ORDER: 'food', AS: 'TABLE'};
         let dataset: Datasets = {};
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
@@ -56,10 +56,10 @@ describe("QueryController", function () {
         expect(ret).to.be.equal(false);
     });
 
-    it("Should be able to get", function() {
-        let query: QueryRequest = { GET: ["courses_dept"],
+    it("Should be able to get when key is not present,result will be empty", function() {
+        let query: QueryRequest = { GET: ["courses_fail"],
                                     WHERE: {"courses_avg": 90},
-                                    ORDER: null, AS: 'table'};
+                                    ORDER: null, AS: 'TABLE'};
 
         let dataset: Datasets = {
                     "courses" :
@@ -73,11 +73,100 @@ describe("QueryController", function () {
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
-        expect(ret).to.be.equal({ render: 'TABLE', result: 'hi'});
+        expect(ret).to.eql({ render: 'TABLE', result: []});
     });
 
+    it("Should be able to get one items with one key", function() {
+        let query: QueryRequest = { GET: ["courses_dept"],
+                                    WHERE: {"courses_avg": 90},
+                                    ORDER: null, AS: 'TABLE'};
 
+        let dataset: Datasets = {
+                    "courses" :
+                    {"result": [{
+                    		"id": 40969,
+                    		"Professor": "graves, marcia;zeiler, kathryn",
+                    		"Avg": 90,
+                    		"Subject": "biol"
+                    	}]}};
 
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({render: 'TABLE', result: [{courses_dept: "biol"}]});
+    });
+
+    it("Should be able to get multiple items with one key", function() {
+        let query: QueryRequest = { GET: ["courses_dept"],
+                                    WHERE: {"courses_avg": 90},
+                                    ORDER: null, AS: 'TABLE'};
+
+        let dataset: Datasets = {
+                    "courses" :
+                    {"result":
+                        [{
+                            "id": 40969,
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 90,
+                            "Subject": "biol"
+                        },
+                        {
+                            "id": 40969,
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": 40969,
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 90,
+                            "Subject": "math"
+                        }]
+                    }};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({ render: 'TABLE', result: [ {"courses_dept": "biol"},
+                                                        {"courses_dept": "cpsc"},
+                                                        {"courses_dept": "math"}]});
+    });
+
+    it("Should be able to get multiple items with 2 keys", function() {
+        let query: QueryRequest = { GET: ["courses_dept", "courses_id"],
+                                    WHERE: {"courses_avg": 90},
+                                    ORDER: null, AS: 'TABLE'};
+
+        let dataset: Datasets = {
+                    "courses" :
+                    {"result":
+                        [{
+                            "id": 1,
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 90,
+                            "Subject": "biol"
+                        },
+                        {
+                            "id": 2,
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": 3,
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 90,
+                            "Subject": "math"
+                        }]
+                    }};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({ render: 'TABLE', result: [{"courses_dept": "biol", "courses_id": 1},
+                                                        {"courses_dept": "cpsc","courses_id": 2},
+                                                        {"courses_dept": "math","courses_id": 3}]});
+    });
 
     // simple query
     it("Should be able to query, although the answer will be empty", function () {
@@ -94,7 +183,7 @@ describe("QueryController", function () {
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
-        expect(ret).not.to.be.equal(null);
+        expect(ret).to.eql({ render: 'TABLE', result: []});
         // TODO: should check that the value is meaningful
     });
 
@@ -137,7 +226,7 @@ describe("QueryController", function () {
         let controller = new QueryController(dataset);
         let ret =controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
-        expect(ret).not.to.be.equal(null);
+        expect(ret).to.eql({ render: 'TABLE', result: []});
         // should be returning an empty set
     });
 
@@ -212,7 +301,7 @@ describe("QueryController", function () {
         let expected_result = { render: 'TABLE',
                                 result:
                                     [   {courses_instructor: 'kiczales, gregor'},
-                                        { courses_instructor: ''}]};
+                                        {courses_instructor: ''}]};
         expect(ret).to.be.equal(expected_result.toString());
         // output of the test should be object with the correct information
     });
@@ -275,7 +364,7 @@ describe("QueryController", function () {
                                         {courses_instructor: 'goodey, wayne;srivastava, diane'},
                                         {courses_instructor: 'dianehahaha'},
                                         {courses_instructor: 'goodey, wayndianee'},
-                                        { courses_instructor: 'dididididianeh'}]};
+                                        {courses_instructor: 'dididididianeh'}]};
         expect(ret).to.be.equal(expected_value);
         // todo: might not exactly output as wanted
     });
