@@ -34,23 +34,23 @@ export default class DatasetController {
         // TODO: this should check if the dataset is on disk in ./data if it is not already in memory.
 
         // if (this.datasets[id] !=== null){
-            // if the dataset[id] specified is not null and can return something, return that dataset,
-            // if not, then search through the json files within the data folder to see if it contains it
-            // and if the case where it does not contain that dataset inside the data folder, then return null
+        // if the dataset[id] specified is not null and can return something, return that dataset,
+        // if not, then search through the json files within the data folder to see if it contains it
+        // and if the case where it does not contain that dataset inside the data folder, then return null
         // }
 
         try{
             var fs = require(id);
             // TODO: change to ./data folder
             if (!fs.existsSync('./dataMock' + id)){
-              // TODO: load dataset from disk and then load
+                // TODO: load dataset from disk and then load
             }
             return this.datasets[id];
             // do stuff
         }
         catch (err){
-          Log.error('DatasetController::getDataset() - ERROR: ' + err);
-          return null;
+            Log.error('DatasetController::getDataset() - ERROR: ' + err);
+            return null;
         }
     } //getDataset
 
@@ -112,6 +112,11 @@ export default class DatasetController {
      * @param data base64 representation of a zip file
      * @returns {Promise<boolean>} returns true if successful; false if the dataset was invalid (for whatever reason)
      */
+    // TODO: iterate through files in zip (zip.files)
+    // The contents of the file will depend on the id provided. e.g.,
+    // some zips will contain .html files, some will contain .json files.
+    // You can depend on 'id' to differentiate how the zip should be handled,
+    // although you sho uld still be tolerant to errors.
     public process(id: string, data: any): Promise<boolean> {
         Log.trace('DatasetController::process( ' + id + '... )');
 
@@ -121,37 +126,32 @@ export default class DatasetController {
                 let myZip = new JSZip();
                 myZip.loadAsync(data, {base64: true}).then(function (zip: JSZip) {
                     Log.trace('DatasetController::process(..) - unzipped');
+
                     let processedDataset = new Array();
-
-                    let async_data: any;
+                    let promises:any[] = [];
+                    // let async_data: any;
                     /** async_data is the promise that retrieves all the info from the zip file and stores it in
-                    processedDataset **/
+                     processedDataset **/
                     zip.folder(id).forEach(function (relativePath, file){
-                        // Log.trace('Iteration num: ' + file.name);
-                        async_data = file.async("string").then(function (data) {
-                            // let file_name: string = file.name.replace('courses/', "");
+                        promises.push(file.async("string").then(function (data) {
+                            Log.trace('Retrieved Data from: ' + file.name);
                             let courseinfo: any;
-                            // courseinfo = '{"fileName": ' + '"' + file_name + '"';
-                            // courseinfo = courseinfo + ',' + data.substring(1,data.length-1)+ '}';
-                            // courseinfo = JSON.parse(courseinfo);
                             courseinfo = JSON.parse(data);
-                            processedDataset.push(courseinfo);
-                            });
+                            let emptydata ='{"result":[],"rank":0}';
+                            if (data !== emptydata){
+                                processedDataset.push(courseinfo);
+                            }
+                        }).catch(function(reason){
+                            Log.trace('Fail to get the file from the zip file: ' + reason);
+                        }))
                     });
-
-                    Promise.all([async_data]).then(value => {
+                    Promise.all(promises).then(function(results){
+                        Log.trace("Now will be going to save zip file into disk and memory");
                         that.save(id, processedDataset);
                         fulfill(true);
-                    }, reason => {
-                        console.log('Failed to process all dataset files: ' + reason);
+                    }).catch(function(reason){
+                        Log.trace("Failed to iterate through all files: " + reason);
                     });
-
-                    // TODO: iterate through files in zip (zip.files)
-                    // The contents of the file will depend on the id provided. e.g.,
-                    // some zips will contain .html files, some will contain .json files.
-                    // You can depend on 'id' to differentiate how the zip should be handled,
-                    // although you sho uld still be tolerant to errors.
-
                 }).catch(function (err) {
                     Log.trace('DatasetController::process(..) - unzip ERROR: ' + err.message);
                     reject(err);
@@ -173,8 +173,10 @@ export default class DatasetController {
     private save(id: string, processedDataset: any) {
         // TODO: actually write to disk in the ./data directory
         // add it to the memory model
-        this.datasets[id] = processedDataset;
+        // this.datasets[id] = processedDataset;
+        this.datasets[id] = this.saveDataset(processedDataset);
 
+        Log.trace('Saved onto disk');
         var data_location: string = __dirname+"\/..\/..\/data\/";
         var data = JSON.stringify(processedDataset);
         fs.access(data_location, fs.F_OK, function(err) {
@@ -187,4 +189,9 @@ export default class DatasetController {
         });
     } //save
 
+    private saveDataset(processedDataset:any){
+        let finalDataset: any;
+
+        return finalDataset;
+    }
 }
