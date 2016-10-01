@@ -48,9 +48,20 @@ export default class RouteHandler {
                 Log.trace('RouteHandler::putDataset(..) on end; total length: ' + req.body.length);
 
                 let controller = RouteHandler.datasetController;
+                let exists = controller.getDataset(id);
+                Log.trace("The current " + id +": exists? " + (exists !== null));
+
                 controller.process(id, req.body).then(function (result) {
                     Log.trace('RouteHandler::putDataset(..) - processed');
-                    res.json(200, {success: result});
+                    if (exists !== null){
+                        res.json(201, {success: result});
+                        Log.trace('Success: '+result);
+                    }
+                    else {
+                        res.json(204, {success: result}); //this is a new id
+                    }
+                    // TODO: make sure that it handles a zip with invalid files
+                    //need to check if the id is new or just replaced
                 }).catch(function (err: Error) {
                     Log.trace('RouteHandler::putDataset(..) - ERROR: ' + err.message);
                     res.json(400, {err: err.message});
@@ -113,9 +124,10 @@ export default class RouteHandler {
                 let dataset_contained = controller.getDataset(id); // todo: dataset parameter
                 if (dataset_contained !== null){
                     // delete the dataset from memory;
-                    controller.deleteDataset(dataset_contained, id);
+                    controller.deleteDataset(id);
 
                 }
+                // Todo: else you can break the loop possibly 
                 // also have to delete the dataset in the data folder
                 controller.process(id, req.body).then(function (result) {
                     Log.trace('RouteHandler::deleteDataset(..) - processed');

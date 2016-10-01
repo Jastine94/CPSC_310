@@ -33,25 +33,30 @@ export default class DatasetController {
     public getDataset(id: string): any {
         // TODO: this should check if the dataset is on disk in ./data if it is not already in memory.
 
-        // if (this.datasets[id] !=== null){
-        // if the dataset[id] specified is not null and can return something, return that dataset,
-        // if not, then search through the json files within the data folder to see if it contains it
-        // and if the case where it does not contain that dataset inside the data folder, then return null
-        // }
+        Log.trace('DatasetController::getDataset() - start ');
+        let data_dir: string = __dirname+"\/..\/..\/data\/";
 
-        try{
-            let fs = require(id);
-            // TODO: change to ./data folder
-            if (!fs.existsSync('./dataMock' + id)){
-                // TODO: load dataset from disk and then load
-            }
+        if(this.datasets.hasOwnProperty(id)){
             return this.datasets[id];
-            // do stuff
         }
-        catch (err){
-            Log.error('DatasetController::getDataset() - ERROR: ' + err);
-            return null;
+        if(fs.existsSync(data_dir+id+'.json')) {
+            this.datasets[id] = fs.readFileSync(data_dir + id + '.json');
+            return this.datasets[id];
         }
+
+        return null;
+        // try{
+        //     let fs = require(id);
+        //     // TODO: change to ./data folder
+        //     if (!fs.existsSync('./dataMock' + id)){
+        //         // TODO: load dataset from disk and then load
+        //     }
+        //     return this.datasets[id];
+        //     // do stuff
+        // }
+        // catch (err){
+        //     Log.error('DatasetController::getDataset() - ERROR: ' + err);
+        //     return null;
     } //getDataset
 
     /**
@@ -77,7 +82,9 @@ export default class DatasetController {
                     //     }
                     //     this.datasets = data;
                     // });
-                    this.datasets = fs.readFileSync(data_dir+file);
+                    let id = file.replace('.json','');
+                    Log.trace("Dataset with id: " + id + " - will be added to the dataset")
+                    this.datasets[id] = fs.readFileSync(data_dir+file);
                     // first one is async and second one is sync
                 });
             });
@@ -88,15 +95,18 @@ export default class DatasetController {
 
     /**
      * Returns true if the dataset is deleted from the Datasets
+     *
+     * @param id - the id of the dataset to be deleted
+     * TODO: Might want to change the return type
      */
-    public deleteDataset(dataset: Datasets, id:string): boolean {
+    public deleteDataset(id:string): boolean {
         Log.trace("DatasetController::deleteDataset() started");
         let data_json: string = __dirname+"\/..\/..\/data\/"+id+'.json';
         Log.trace('Json file to be deleted from the data folder id: ' + data_json);
-        if (this.datasets === dataset){
-            this.datasets = {};
+
+        if (this.datasets[id].hasOwnProperty(id) !== null){
+            this.datasets[id] = null;
             Log.trace("deleted datasets have the following length: " + Object.keys(this.datasets).length);
-            // should validate that it is empty
             fs.unlinkSync(data_json);
             return true;
         }
@@ -154,7 +164,7 @@ export default class DatasetController {
                     }).catch(function(reason){
                         Log.trace("Failed to iterate through all files: " + reason);
                     });
-
+                    fulfill(true);
                     // var p = new Promise(function(resolve, reject) {
                     //     zip.folder(id).forEach(function (relativePath, file){
                     //         file.async("string").then(function (data) {
@@ -195,13 +205,12 @@ export default class DatasetController {
      */
     private save(id: string, processedDataset: any) {
         // TODO: actually write to disk in the ./data directory
-        let datastructure: any = this.saveDataset(processedDataset);
-        this.datasets = datastructure;
+        let datastructure: any = this.parseDataset(processedDataset);
+        this.datasets[id] = datastructure;
 
-        Log.trace('Saving onto disk');
+        Log.trace('DatasetController::save( ' + id + '... )');
         let  data_location: string = __dirname+"\/..\/..\/data\/";
         let data = JSON.stringify(datastructure);
-        // let data = JSON.stringify(processedDataset);
         Log.trace("Parsing the dataset into a json");
         let exist_datafolder: boolean = fs.existsSync(data_location);
 
@@ -212,7 +221,7 @@ export default class DatasetController {
             fs.mkdirSync(data_location);
             fs.writeFileSync(data_location+id+".json", data);
         }
-        Log.trace("saved onto disk");
+        Log.trace('DatasetController::save completed');
         // fs.access(data_location, fs.F_OK, function(err) {
         //     if (!err) {
         //         fs.writeFileSync(data_location+id+".json", data);
@@ -224,13 +233,17 @@ export default class DatasetController {
         // });
     } //save
 
-    private saveDataset(processedDataset:any){
-        Log.trace("Starting to save the dataset into data structure");
+    /**
+     * Return the dataset that only contain key value pairs of -- Subject, id, Avg, Professor, Title, Passs,
+     * Fail and Audit
+     *
+     * @param processedDataset - dataset that needs to be parsed
+     */
+    private parseDataset(processedDataset:any):any{
+        Log.trace('DatasetController::parseDataset');
 
         let finalDataset = new Array();
-        // let tempresobj: any = {};
         for (let i = 0; i < processedDataset.length; i++) {
-
             let tempresobj: any = {};
             // Log.trace('Starting the first for loop with i value of: ' + i);
             let temparr = processedDataset[i];
@@ -255,5 +268,5 @@ export default class DatasetController {
             finalDataset.push(tempresobj);
         }
         return finalDataset;
-    }
+    } //parseDataset
 }

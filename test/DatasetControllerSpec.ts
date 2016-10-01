@@ -40,25 +40,27 @@ describe("DatasetController", function () {
     //
     it("Should be able to save 310sampe.zip content into disk ", function () {
         Log.test("starting 310sampe.zip test")
-        var data = fs.readFileSync("test\/310sampe.zip");
+        var data = fs.readFileSync("test\/310courses.1.0.zip");
         let controller = new DatasetController();
-        return controller.process('courses', data).then(function(result){
-            Log.test("310 sample json created!! It's " +  result);
-        })
+        // return controller.process('courses', data).then(function(result){
+        //     Log.test("310 sample json created!! It's " +  result);
+        // })
+        let datasets = controller.getDataset('');
+        Log.test('Info inside the dataset is: ' + datasets);
     });
 
-    it("Should be able to save second_data.zip onto disk and retrieve it with getDatasets()", function(){
-        Log.test("Start to unzip second_data.zip and load onto disk");
-        // var file = fs.readFileSync("test\/310courses.1.0.zip");
-        var file = fs.readFileSync("test\/second_data.zip");
-            // if (err){throw err;}
-            let controller = new DatasetController();
-            return controller.process('courses',file).then(function (result){
-                Log.test('SECOND DATA RESULTS: ' + result);
-                // let retrieved_datasets = controller.getDatasets();
-                // should contain four objects and inside those objects should be four different jsons
-            });
-    });
+    // it("Should be able to save second_data.zip onto disk and retrieve it with getDatasets()", function(){
+    //     Log.test("Start to unzip second_data.zip and load onto disk");
+    //     // var file = fs.readFileSync("test\/310courses.1.0.zip");
+    //     var file = fs.readFileSync("test\/310courses.1.0.zip");
+    //         // if (err){throw err;}
+    //         let controller = new DatasetController();
+    //         return controller.process('courses',file).then(function (result){
+    //             Log.test('SECOND DATA RESULTS: ' + result);
+    //             // let retrieved_datasets = controller.getDatasets();
+    //             // should contain four objects and inside those objects should be four different jsons
+    //         });
+    // });
 
     // it("Should be able to retrieve all data from disk", function(){
     //     // TODO: FIX THIS NOT ASYNC CALL, currently does not work
