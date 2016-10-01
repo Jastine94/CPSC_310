@@ -40,7 +40,7 @@ export default class DatasetController {
         // }
 
         try{
-            var fs = require(id);
+            let fs = require(id);
             // TODO: change to ./data folder
             if (!fs.existsSync('./dataMock' + id)){
                 // TODO: load dataset from disk and then load
@@ -62,7 +62,7 @@ export default class DatasetController {
         Log.trace('DatasetController :: getDatasets is being called');
 
         if (Object.keys(this.datasets).length === 0 && this.datasets.constructor === Object){
-            var data_dir: string = __dirname+"\/..\/..\/data\/";
+            let data_dir: string = __dirname+"\/..\/..\/data\/";
             fs.readdir( data_dir, function( err, files ) {
                 if( err ) {
                     Log.trace( "Directory could not be loaded: " + err );
@@ -91,7 +91,7 @@ export default class DatasetController {
      */
     public deleteDataset(dataset: Datasets, id:string): boolean {
         Log.trace("DatasetController::deleteDataset() started");
-        var data_json: string = __dirname+"\/..\/..\/data\/"+id+'.json';
+        let data_json: string = __dirname+"\/..\/..\/data\/"+id+'.json';
         Log.trace('Json file to be deleted from the data folder id: ' + data_json);
         if (this.datasets === dataset){
             this.datasets = {};
@@ -132,15 +132,17 @@ export default class DatasetController {
                     // let async_data: any;
                     /** async_data is the promise that retrieves all the info from the zip file and stores it in
                      processedDataset **/
+
+
                     zip.folder(id).forEach(function (relativePath, file){
                         promises.push(file.async("string").then(function (data) {
-                            Log.trace('Retrieved Data from: ' + file.name);
                             let courseinfo: any;
                             courseinfo = JSON.parse(data);
                             let emptydata ='{"result":[],"rank":0}';
                             if (data !== emptydata){
                                 processedDataset.push(courseinfo);
                             }
+                            fulfill(true);
                         }).catch(function(reason){
                             Log.trace('Fail to get the file from the zip file: ' + reason);
                         }))
@@ -152,6 +154,27 @@ export default class DatasetController {
                     }).catch(function(reason){
                         Log.trace("Failed to iterate through all files: " + reason);
                     });
+
+                    // var p = new Promise(function(resolve, reject) {
+                    //     zip.folder(id).forEach(function (relativePath, file){
+                    //         file.async("string").then(function (data) {
+                    //             let courseinfo: any;
+                    //             courseinfo = JSON.parse(data);
+                    //             let emptydata ='{"result":[],"rank":0}';
+                    //             if (data !== emptydata){
+                    //                 processedDataset.push(courseinfo);
+                    //             }
+                    //         }).catch(function(reason){
+                    //             Log.trace('Fail to get the file from the zip file: ' + reason);
+                    //         })})
+                    //     });
+                    // p.then(function() {
+                    //     Log.trace("Now will be going to save zip file into disk and memory");
+                    //     that.save(id, processedDataset);
+                    //     fulfill(true);
+                    // }).catch(function(reason) {
+                    //     Log.trace("Failed to iterate through all files: " + reason);
+                    // });
                 }).catch(function (err) {
                     Log.trace('DatasetController::process(..) - unzip ERROR: ' + err.message);
                     reject(err);
@@ -172,26 +195,65 @@ export default class DatasetController {
      */
     private save(id: string, processedDataset: any) {
         // TODO: actually write to disk in the ./data directory
-        // add it to the memory model
-        // this.datasets[id] = processedDataset;
-        this.datasets[id] = this.saveDataset(processedDataset);
+        let datastructure: any = this.saveDataset(processedDataset);
+        this.datasets = datastructure;
 
-        Log.trace('Saved onto disk');
-        var data_location: string = __dirname+"\/..\/..\/data\/";
-        var data = JSON.stringify(processedDataset);
-        fs.access(data_location, fs.F_OK, function(err) {
-            if (!err) {
-                fs.writeFileSync(data_location+id+".json", data);
-            } else {
-                fs.mkdirSync(data_location);
-                fs.writeFileSync(data_location+id+".json", data);
-            }
-        });
+        Log.trace('Saving onto disk');
+        let  data_location: string = __dirname+"\/..\/..\/data\/";
+        let data = JSON.stringify(datastructure);
+        // let data = JSON.stringify(processedDataset);
+        Log.trace("Parsing the dataset into a json");
+        let exist_datafolder: boolean = fs.existsSync(data_location);
+
+        if (exist_datafolder){
+            fs.writeFileSync(data_location+id+".json", data);
+        }
+        else {
+            fs.mkdirSync(data_location);
+            fs.writeFileSync(data_location+id+".json", data);
+        }
+        Log.trace("saved onto disk");
+        // fs.access(data_location, fs.F_OK, function(err) {
+        //     if (!err) {
+        //         fs.writeFileSync(data_location+id+".json", data);
+        //     } else {
+        //         fs.mkdirSync(data_location);
+        //         fs.writeFileSync(data_location+id+".json", data);
+        //     }
+        //     Log.trace("saved onto disk");
+        // });
     } //save
 
     private saveDataset(processedDataset:any){
-        let finalDataset: any;
+        Log.trace("Starting to save the dataset into data structure");
 
+        let finalDataset = new Array();
+        // let tempresobj: any = {};
+        for (let i = 0; i < processedDataset.length; i++) {
+
+            let tempresobj: any = {};
+            // Log.trace('Starting the first for loop with i value of: ' + i);
+            let temparr = processedDataset[i];
+            let resarr = temparr.result;
+
+            let tempresarr = new Array();
+            for (let j = 0; j < resarr.length; j++) {
+
+                let resdata = resarr[j];
+                let tempobj: any = {};
+                for (let key in resdata) {
+                    // Log.trace("object value is: " + key + ':' + resdata[key]);
+                    if (key === 'Subject' || key === 'id' || key === 'Avg' || key === 'Professor' ||
+                        key === 'Title' || key === 'Pass' || key === 'Fail' || key === 'Audit') {
+                        tempobj[key] = resdata[key];
+                        // Log.trace("temporary inner object has the value:" + key + ":" + tempobj[key]);
+                    }
+                }
+                tempresarr.push(tempobj);
+            }
+            tempresobj["result"] = tempresarr;
+            finalDataset.push(tempresobj);
+        }
         return finalDataset;
     }
 }
