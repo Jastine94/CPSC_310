@@ -95,11 +95,8 @@ export default class QueryController {
                         response = this.queryWhere(query.WHERE, response);
                         Log.trace(JSON.stringify(response));
                         queryResponse = this.queryGet(query.GET, response);
-
                         //response = this.queryOrder(query.ORDER, response);
                     }
-
-                    Log.trace(JSON.stringify(queryResponse));
                 }
                 else if (q == 'AS')
                 {
@@ -207,6 +204,22 @@ export default class QueryController {
                                     if ((temp === String(instance)) &&
                                         (keyContains[k] > value[instance]))
                                     {
+                                        accResult.push(value);
+                                    }
+                                }
+                            }
+                            else if ('IS' == where)
+                            {
+                                let keyContains = key[where];
+                                for (let k in keyContains)
+                                {
+                                    var temp = this.getKey(k.toString());
+                                    var patt = new RegExp(keyContains[k].split("*").join(".*"));
+                                    Log.trace (JSON.stringify(value[instance]));
+                                    if ((temp === String(instance)) &&
+                                        (patt.test(value[instance])))
+                                    {
+                                        Log.trace(keyContains[k]);
                                         accResult.push(value);
                                     }
                                 }

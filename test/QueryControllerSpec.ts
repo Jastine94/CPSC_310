@@ -16,6 +16,160 @@ describe("QueryController", function () {
     afterEach(function () {
     });
 
+    // is string comparison query
+    it("Should be able to get with where is clause without wildcard", function () {
+        let query: QueryRequest = {GET: ["courses_dept", "courses_instructor"],
+                                    WHERE: {
+                                          IS: {
+                                                "courses_dept": "cpsc"
+                                              }
+                                          },
+                                    ORDER: "courses_dept",
+                                    AS: "TABLE"
+                                  };
+        let dataset: Datasets = {
+                    "courses" :
+                    [{"result": [{
+                    		"id": 1,
+                    		"Professor": "graves, marcia;zeiler, kathryn",
+                    		"Avg": 84,
+                    		"Subject": "biol"
+                    	},
+                        {
+                            "id": 2,
+                            "Professor": "holmes, reid",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": 3,
+                            "Professor": "gregor",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        }]},
+                    {"result": [{
+                    		"id": 4,
+                    		"Professor": "another result",
+                    		"Avg": 95,
+                    		"Subject": "biol"
+                        },
+                        {
+                            "id": 5,
+                            "Professor": "carter",
+                            "Avg": 84,
+                            "Subject": "cpsc"
+                        }]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({ render: 'TABLE', result: [{"courses_dept":"cpsc", "courses_instructor" : "holmes, reid"},
+                                                      {"courses_dept": "cpsc", "courses_instructor" : "gregor"},
+                                                      {"courses_dept": "cpsc", "courses_instructor" : "carter"}]});
+    });
+
+    it("Should be able to get with where is clause with wildcard", function () {
+        let query: QueryRequest = {GET: ["courses_dept", "courses_instructor"],
+                                    WHERE: {
+                                          IS: {
+                                                "courses_dept": "*ps*"
+                                              }
+                                          },
+                                    ORDER: "courses_dept",
+                                    AS: "TABLE"
+                                  };
+        let dataset: Datasets = {
+                    "courses" :
+                    [{"result": [{
+                    		"id": 1,
+                    		"Professor": "graves, marcia;zeiler, kathryn",
+                    		"Avg": 84,
+                    		"Subject": "biol"
+                    	},
+                        {
+                            "id": 2,
+                            "Professor": "holmes, reid",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": 3,
+                            "Professor": "gregor",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        }]},
+                    {"result": [{
+                    		"id": 4,
+                    		"Professor": "another result",
+                    		"Avg": 95,
+                    		"Subject": "biol"
+                        },
+                        {
+                            "id": 5,
+                            "Professor": "carter",
+                            "Avg": 84,
+                            "Subject": "cpsc"
+                        }]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({ render: 'TABLE', result: [{"courses_dept":"cpsc", "courses_instructor" : "holmes, reid"},
+                                                      {"courses_dept": "cpsc", "courses_instructor" : "gregor"},
+                                                      {"courses_dept": "cpsc", "courses_instructor" : "carter"}]});
+    });
+
+    it("Should be able to get with where is clause with wildcard", function () {
+        let query: QueryRequest = {GET: ["courses_dept", "courses_instructor"],
+                                    WHERE: {
+                                          IS: {
+                                                "courses_instructor": "*grego*"
+                                              }
+                                          },
+                                    ORDER: "courses_dept",
+                                    AS: "TABLE"
+                                  };
+        let dataset: Datasets = {
+                    "courses" :
+                    [{"result": [{
+                    		"id": 1,
+                    		"Professor": "gregor",
+                    		"Avg": 84,
+                    		"Subject": "cpsc 1"
+                    	},
+                        {
+                            "id": 2,
+                            "Professor": "gregoria",
+                            "Avg": 90,
+                            "Subject": "cpsc 2"
+                        },
+                        {
+                            "id": 3,
+                            "Professor": "gregur",
+                            "Avg": 90,
+                            "Subject": "cpsc 3"
+                        }]},
+                    {"result": [{
+                    		"id": 4,
+                    		"Professor": "aaagregor",
+                    		"Avg": 95,
+                    		"Subject": "cpsc 3"
+                        },
+                        {
+                            "id": 5,
+                            "Professor": "carter",
+                            "Avg": 84,
+                            "Subject": "cpsc"
+                        }]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({ render: 'TABLE', result: [{"courses_dept":"cpsc 1", "courses_instructor" : "gregor"},
+                                                      {"courses_dept": "cpsc 2", "courses_instructor" : "gregoria"},
+                                                      {"courses_dept": "cpsc 3", "courses_instructor" : "aaagregor"}]});
+    });
+
     it("Should be able to get with one key where eq clause", function() {
         let query: QueryRequest = { GET: ["courses_dept"],
                                     WHERE: {
