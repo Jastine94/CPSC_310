@@ -182,7 +182,32 @@ export default class QueryController {
                                         (keyContains[k] == value[instance]))
                                     {
                                         accResult.push(value);
-                                        Log.trace("HII" + JSON.stringify(accResult));
+                                    }
+                                }
+                            }
+                            else if ('GT' == where)
+                            {
+                                let keyContains = key[where];
+                                for (let k in keyContains)
+                                {
+                                    var temp = this.getKey(k.toString());
+                                    if ((temp === String(instance)) &&
+                                        (keyContains[k] < value[instance]))
+                                    {
+                                        accResult.push(value);
+                                    }
+                                }
+                            }
+                            else if ('LT' == where)
+                            {
+                                let keyContains = key[where];
+                                for (let k in keyContains)
+                                {
+                                    var temp = this.getKey(k.toString());
+                                    if ((temp === String(instance)) &&
+                                        (keyContains[k] > value[instance]))
+                                    {
+                                        accResult.push(value);
                                     }
                                 }
                             }
@@ -283,9 +308,6 @@ export default class QueryController {
     {
         var queryResult : QueryResponse = {};
         var results : any[] = [];
-
-        Log.trace("!!!!!!" + JSON.stringify(data));
-
         for (var k = 0; k < data.length; ++k)
         {
             let value  = data[k];
@@ -294,7 +316,6 @@ export default class QueryController {
             for (var i = 0; i < key.length; ++i)
             {
                 var temp = this.getKey(key[i].toString());
-
                 for (var instance in value)
                 {
                     if (temp === String(instance))
@@ -307,6 +328,7 @@ export default class QueryController {
             }
             if (gotData)
             {
+                Log.trace(JSON.stringify(obj));
                 results.push(obj);
             }
         }

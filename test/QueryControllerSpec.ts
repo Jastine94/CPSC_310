@@ -67,7 +67,106 @@ describe("QueryController", function () {
                                                       {courses_dept: "cpsc"}]});
     });
 
-/*
+    it("Should be able to get with 2 key where gt clause", function() {
+        let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
+                                    WHERE: {
+                                        "GT": {
+                                            "courses_avg": 85
+                                            }
+                                        },
+                                    ORDER: null, AS: 'TABLE'};
+
+        let dataset: Datasets = {
+                    "courses" :
+                    [{"result": [{
+                    		"id": 1,
+                    		"Professor": "graves, marcia;zeiler, kathryn",
+                    		"Avg": 84,
+                    		"Subject": "biol"
+                    	},
+                        {
+                            "id": 2,
+                            "Professor": "holmes, reid",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": 3,
+                            "Professor": "gregor",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        }]},
+                    {"result": [{
+                    		"id": 4,
+                    		"Professor": "another result",
+                    		"Avg": 95,
+                    		"Subject": "biol"
+                        },
+                        {
+                            "id": 5,
+                            "Professor": "carter",
+                            "Avg": 84,
+                            "Subject": "cpsc"
+                        }]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "cpsc", "courses_avg" : 90},
+                                                      {"courses_dept": "cpsc", "courses_avg" : 90},
+                                                      {"courses_dept": "biol", "courses_avg" : 95}]});
+    });
+
+    it("Should be able to get with 2 key where gt clause", function() {
+        let query: QueryRequest = { GET: ["courses_dept", "courses_id"],
+                                    WHERE: {
+                                        "LT": {
+                                            "courses_avg": 85
+                                            }
+                                        },
+                                    ORDER: null, AS: 'TABLE'};
+
+        let dataset: Datasets = {
+                    "courses" :
+                    [{"result": [{
+                    		"id": 1,
+                    		"Professor": "graves, marcia;zeiler, kathryn",
+                    		"Avg": 84,
+                    		"Subject": "biol"
+                    	},
+                        {
+                            "id": 2,
+                            "Professor": "holmes, reid",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": 3,
+                            "Professor": "gregor",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        }]},
+                    {"result": [{
+                    		"id": 4,
+                    		"Professor": "another result",
+                    		"Avg": 95,
+                    		"Subject": "biol"
+                        },
+                        {
+                            "id": 5,
+                            "Professor": "carter",
+                            "Avg": 84,
+                            "Subject": "cpsc"
+                        }]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "biol", "courses_id" : 1},
+                                                      {"courses_dept": "cpsc", "courses_id" : 5}]});
+    });
+
+
     it("Should be able to validate a valid query", function () {
         // NOTE: this is not actually a valid query for D1
         let query: QueryRequest = {GET: 'food', WHERE: {IS: 'apple'}, ORDER: 'food', AS: 'TABLE'};
@@ -142,12 +241,12 @@ describe("QueryController", function () {
 
         let dataset: Datasets = {
                     "courses" :
-                    {"result": [{
+                    [{"result": [{
                     		"id": 40969,
                     		"Professor": "graves, marcia;zeiler, kathryn",
                     		"Avg": 90,
                     		"Subject": "biol"
-                    	}]}};
+                        }]}]};
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
@@ -166,7 +265,7 @@ describe("QueryController", function () {
 
         let dataset: Datasets = {
                     "courses" :
-                    {"result":
+                    [{"result":
                         [{
                             "id": 40969,
                             "Professor": "graves, marcia;zeiler, kathryn",
@@ -185,7 +284,7 @@ describe("QueryController", function () {
                             "Avg": 90,
                             "Subject": "math"
                         }]
-                    }};
+                    }]};
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
@@ -206,7 +305,7 @@ describe("QueryController", function () {
 
         let dataset: Datasets = {
                     "courses" :
-                    {"result":
+                    [{"result":
                         [{
                             "id": 1,
                             "Professor": "graves, marcia;zeiler, kathryn",
@@ -225,7 +324,7 @@ describe("QueryController", function () {
                             "Avg": 90,
                             "Subject": "math"
                         }]
-                    }};
+                    }]};
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
@@ -263,12 +362,12 @@ describe("QueryController", function () {
 
         let dataset: Datasets = {
                     "courses" :
-                    {"result": [{
+                    [{"result": [{
                     		"id": 40969,
                     		"Professor": "graves, marcia;zeiler, kathryn",
                     		"Avg": 91.5,
                     		"Subject": "biol"
-                    	}]}};
+                    	}]}]};
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
@@ -290,7 +389,7 @@ describe("QueryController", function () {
                                     };
         let dataset: Datasets = {
                             "courses":
-                                {"result":
+                                [{"result":
                                     [{
                                         "Title": "mod chinese auth",
                                         "Section": "001",
@@ -311,7 +410,7 @@ describe("QueryController", function () {
                                         "Campus": "ubc",
                                         "Subject": "asia"
                                     }]
-                                }
+                                }]
                             };
         let controller = new QueryController(dataset);
         let ret =controller.query(query);
@@ -333,7 +432,7 @@ describe("QueryController", function () {
                                     };
         let dataset: Datasets = {
                     "courses" :
-                    {"result": [{
+                    [{"result": [{
                             "id": 40969,
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 84,
@@ -347,14 +446,14 @@ describe("QueryController", function () {
                             "Pass" : 100,
                             "Subject": "cpsc"
                         }
-                    ]}};
+                    ]}]};
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({ render: 'TABLE', result: [{"courses_avg": 84, "courses_pass" : 100}]});
     });
-*/
+
 /*
     //simple query with the correct format of using LOGIC COMPARISON AND NOT {filter} with a valid dataset
     it("Should be able to query and return a valid response with", function(){
