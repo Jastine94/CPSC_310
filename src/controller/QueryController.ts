@@ -145,7 +145,6 @@ export default class QueryController {
         for (var myCurrentDataSet in this.datasets)
         {
             // myCurrentDataSet is this.datasets.id; resultList is the data object(array of results)
-            if (!this.datasets.hasOwnProperty(myCurrentDataSet)) continue;
             var myDataList = this.datasets[myCurrentDataSet];
             var resultList = JSON.parse(JSON.stringify(myDataList));
 
@@ -163,8 +162,6 @@ export default class QueryController {
                     {
                         for (var where in key)
                         {
-                            if (!key.hasOwnProperty(where)) continue;
-
                             if ('AND' == where || 'OR' == where  || 'NOT' == where)
                             {
                                 //TODO: do something with the array recursive
@@ -350,14 +347,12 @@ export default class QueryController {
         for (var file in this.datasets)
         {
             // file is this.datasets.id; dataList is the data object(array of results)
-            if (!this.datasets.hasOwnProperty(file)) continue;
             var dataList = this.datasets[file];
             var items = JSON.parse(JSON.stringify(dataList));
 
             // get each result object
             for (var keys in items)
             {
-                //if (!items.hasOwnProperty(keys)) continue;
                 var result = items[keys];
                 let valuesList = result["result"];
 
