@@ -38,16 +38,16 @@ describe("DatasetController", function () {
     // });
 
     //
-    it("Should be able to save 310sampe.zip content into disk ", function () {
-        Log.test("starting 310sampe.zip test")
-        var data = fs.readFileSync("test\/310courses.1.0.zip");
-        let controller = new DatasetController();
-        // return controller.process('courses', data).then(function(result){
-        //     Log.test("310 sample json created!! It's " +  result);
-        // })
-        let datasets = controller.getDataset('');
-        Log.test('Info inside the dataset is: ' + datasets);
-    });
+    // it("Should be able to save 310sampe.zip content into disk ", function () {
+    //     Log.test("starting 310sampe.zip test")
+    //     var data = fs.readFileSync("test\/310courses.1.0.zip");
+    //     let controller = new DatasetController();
+    //     // return controller.process('courses', data).then(function(result){
+    //     //     Log.test("310 sample json created!! It's " +  result);
+    //     // })
+    //     let datasets = controller.getDataset('');
+    //     Log.test('Info inside the dataset is: ' + datasets);
+    // });
 
     it("Should be able to save second_data.zip onto disk and retrieve it with getDatasets()", function(){
         Log.test("Start to unzip second_data.zip and load onto disk");

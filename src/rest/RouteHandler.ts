@@ -65,7 +65,7 @@ export default class RouteHandler {
                     // TODO: make sure that it handles a zip with invalid files
                     //need to check if the id is new or just replaced
                 }).catch(function (err: Error) {
-                    Log.trace('RouteHandler::putDataset(..) - ERROR: ' + err.message);
+                    Log.trace('--  RouteHandler::putDataset(..) - ERROR: ' + err.message);
                     res.json(400, {err: err.message});
                 });
             });
@@ -128,8 +128,8 @@ export default class RouteHandler {
                     res.json(204, {success: result}); //dataset was deleted
                     Log.trace("204 Sucessfully deleted");
                 }).catch(function (err: Error) {
-                    Log.trace('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
                     res.json(404, {err: err.message});
+                    Log.trace('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
                 });
             });
 

@@ -7,6 +7,7 @@ import JSZip = require('jszip');
 
 //
 import fs = require('fs');
+import {error} from "util";
 
 /**
  * In memory representation of all datasets.
@@ -94,7 +95,7 @@ export default class DatasetController {
     } //getDatasets
 
     /**
-     * Returns true if the dataset is deleted from the Datasets
+     * Deletes the dataset only if it exists, if it doesn't it throws an error
      *
      * @param id - the id of the dataset to be deleted
      * TODO: Might want to change the return type
@@ -115,9 +116,9 @@ export default class DatasetController {
                         fulfill(true);
                     }
                 }
-                reject(true);
+                else reject("File does not exist on disk");
             }catch (err) {
-                Log.trace('DatasetController::deleteDataset(..) - ERROR: ' + err);
+                Log.trace('DatasetController::deleteDataset(..) - ERROR: ' + err.message);
                 reject(err);
             }
         });
@@ -149,10 +150,9 @@ export default class DatasetController {
 
                     let processedDataset = new Array();
                     let promises:any[] = [];
-                    // let async_data: any;
-                    /** async_data is the promise that retrieves all the info from the zip file and stores it in
+                    /** promises is the promise that retrieves all the info from the zip file and stores it in
                      processedDataset **/
-
+                    let err_data: boolean = false;
 
                     zip.folder(id).forEach(function (relativePath, file){
                         promises.push(file.async("string").then(function (data) {
@@ -162,39 +162,27 @@ export default class DatasetController {
                             if (data !== emptydata){
                                 processedDataset.push(courseinfo);
                             }
-                            fulfill(true);
-                        }).catch(function(reason){
-                            Log.trace('Fail to get the file from the zip file: ' + reason);
+                        }).catch(function(err){
+                            err_data = true;
+                            Log.trace('Fail to get the file from the zip file: ' + err);
+                            reject(err);
                         }))
                     });
-                    Promise.all(promises).then(function(results){
-                        Log.trace("Now will be going to save zip file into disk and memory");
-                        that.save(id, processedDataset);
-                        fulfill(true);
-                    }).catch(function(reason){
-                        Log.trace("Failed to iterate through all files: " + reason);
+                    Promise.all(promises).then(function (results) {
+                        if (err_data){
+                            Log.trace("The data in the zip file does not have the correct format")
+                            reject(true);
+                        }
+                        else {
+                            Log.trace("Now will be going to save zip file into disk and memory");
+                            that.save(id, processedDataset);
+                            fulfill(true);
+                        }
+                    }).catch(function (err) {
+                        Log.trace("Failed to iterate through all files: " + err.message);
+                        reject(err);
                     });
-                    fulfill(true);
-                    // var p = new Promise(function(resolve, reject) {
-                    //     zip.folder(id).forEach(function (relativePath, file){
-                    //         file.async("string").then(function (data) {
-                    //             let courseinfo: any;
-                    //             courseinfo = JSON.parse(data);
-                    //             let emptydata ='{"result":[],"rank":0}';
-                    //             if (data !== emptydata){
-                    //                 processedDataset.push(courseinfo);
-                    //             }
-                    //         }).catch(function(reason){
-                    //             Log.trace('Fail to get the file from the zip file: ' + reason);
-                    //         })})
-                    //     });
-                    // p.then(function() {
-                    //     Log.trace("Now will be going to save zip file into disk and memory");
-                    //     that.save(id, processedDataset);
-                    //     fulfill(true);
-                    // }).catch(function(reason) {
-                    //     Log.trace("Failed to iterate through all files: " + reason);
-                    // });
+
                 }).catch(function (err) {
                     Log.trace('DatasetController::process(..) - unzip ERROR: ' + err.message);
                     reject(err);
