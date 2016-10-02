@@ -10,6 +10,7 @@ import QueryController from '../controller/QueryController';
 
 import {QueryRequest} from "../controller/QueryController";
 import Log from '../Util';
+import {fullResponse} from "restify";
 
 export default class RouteHandler {
 
@@ -54,11 +55,12 @@ export default class RouteHandler {
                 controller.process(id, req.body).then(function (result) {
                     Log.trace('RouteHandler::putDataset(..) - processed');
                     if (exists !== null){
-                        res.json(201, {success: result});
-                        Log.trace('Success: '+result);
+                        res.json(201, {success: result}); //this is replacing an existing id
+                        Log.trace('201 Success: '+result);
                     }
                     else {
                         res.json(204, {success: result}); //this is a new id
+                        Log.trace('204 Success: '+result);
                     }
                     // TODO: make sure that it handles a zip with invalid files
                     //need to check if the id is new or just replaced
@@ -119,19 +121,12 @@ export default class RouteHandler {
                 // need to edit the following code to delete the dataset
                 let controller = RouteHandler.datasetController;
 
-                // need to geet datasets and see if it's contained
-                // first is the check the conrtoller
-                let dataset_contained = controller.getDataset(id); // todo: dataset parameter
-                if (dataset_contained !== null){
-                    // delete the dataset from memory;
-                    controller.deleteDataset(id);
-
-                }
-                // Todo: else you can break the loop possibly 
+                // Todo: else you can break the loop possibly
                 // also have to delete the dataset in the data folder
-                controller.process(id, req.body).then(function (result) {
+                controller.deleteDataset(id).then(function (result) {
                     Log.trace('RouteHandler::deleteDataset(..) - processed');
-                    res.json(204, {success: result});
+                    res.json(204, {success: result}); //dataset was deleted
+                    Log.trace("204 Sucessfully deleted");
                 }).catch(function (err: Error) {
                     Log.trace('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
                     res.json(404, {err: err.message});
@@ -140,7 +135,7 @@ export default class RouteHandler {
 
         } catch (err) {
             Log.error('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
-            res.send(400, {err: err.message});
+            res.send(404, {err: err.message});
         }
         return next();
 

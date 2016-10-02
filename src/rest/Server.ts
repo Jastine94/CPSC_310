@@ -71,6 +71,8 @@ export default class Server {
                 // curl -is -X POST -d '{ "key": "value" }' http://localhost:4321/query
                 that.rest.post('/query', restify.bodyParser(), RouteHandler.postQuery);
 
+                that.rest.del('/dataset/:id', RouteHandler.deleteDataset);
+
                 that.rest.listen(that.port, function () {
                     Log.info('Server::start() - restify listening: ' + that.rest.url);
                     fulfill(true);

@@ -99,18 +99,28 @@ export default class DatasetController {
      * @param id - the id of the dataset to be deleted
      * TODO: Might want to change the return type
      */
-    public deleteDataset(id:string): boolean {
+    public deleteDataset(id:string): Promise<boolean> {
         Log.trace("DatasetController::deleteDataset() started");
-        let data_json: string = __dirname+"\/..\/..\/data\/"+id+'.json';
-        Log.trace('Json file to be deleted from the data folder id: ' + data_json);
 
-        if (this.datasets[id].hasOwnProperty(id) !== null){
-            this.datasets[id] = null;
-            Log.trace("deleted datasets have the following length: " + Object.keys(this.datasets).length);
-            fs.unlinkSync(data_json);
-            return true;
-        }
-        else return false;
+        let that = this;
+        return new Promise(function (fulfill, reject) {
+            try {
+                let data_json: string = __dirname + "\/..\/..\/data\/" + id + '.json';
+                Log.trace('Json file to be deleted from the data folder id: ' + data_json);
+                if (fs.existsSync(data_json)) {
+                    if (that.datasets.hasOwnProperty(id) !== null) {
+                        that.datasets[id] = null;
+                        Log.trace("deleted datasets have the following length: " + Object.keys(that.datasets).length);
+                        fs.unlinkSync(data_json);
+                        fulfill(true);
+                    }
+                }
+                reject(true);
+            }catch (err) {
+                Log.trace('DatasetController::deleteDataset(..) - ERROR: ' + err);
+                reject(err);
+            }
+        });
     } //deleteDataset
 
 
