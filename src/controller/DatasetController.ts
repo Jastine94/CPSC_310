@@ -216,11 +216,14 @@ export default class DatasetController {
     private save(id: string, processedDataset: any) {
         // TODO: actually write to disk in the ./data directory
         let datastructure: any = this.parseDataset(processedDataset);
+        let newobj: any = {};
+        newobj[id] = datastructure;
         this.datasets[id] = datastructure;
 
         Log.trace('DatasetController::save( ' + id + '... )');
         let  data_location: string = __dirname+"\/..\/..\/data\/";
-        let data = JSON.stringify(datastructure);
+        let data = JSON.stringify(newobj);
+        // let data = JSON.stringify(datastructure);
         Log.trace("Parsing the dataset into a json");
         let exist_datafolder: boolean = fs.existsSync(data_location);
 

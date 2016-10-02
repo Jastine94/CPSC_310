@@ -52,7 +52,7 @@ describe("DatasetController", function () {
     it("Should be able to save second_data.zip onto disk and retrieve it with getDatasets()", function(){
         Log.test("Start to unzip second_data.zip and load onto disk");
         // var file = fs.readFileSync("test\/310courses.1.0.zip");
-        var file = fs.readFileSync("test\/310courses.1.0.zip");
+        var file = fs.readFileSync("test\/second_data.zip");
             // if (err){throw err;}
             let controller = new DatasetController();
             return controller.process('courses',file).then(function (result){
