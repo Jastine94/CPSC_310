@@ -16,6 +16,58 @@ describe("QueryController", function () {
     afterEach(function () {
     });
 
+    it("Should be able to get with one key where eq clause", function() {
+        let query: QueryRequest = { GET: ["courses_dept"],
+                                    WHERE: {
+                                        EQ: {
+                                            "courses_avg": 84
+                                            }
+                                        },
+                                    ORDER: null, AS: 'TABLE'};
+
+        let dataset: Datasets = {
+                    "courses" :
+                    [{"result": [{
+                    		"id": 1,
+                    		"Professor": "graves, marcia;zeiler, kathryn",
+                    		"Avg": 84,
+                    		"Subject": "biol"
+                    	},
+                        {
+                            "id": 2,
+                            "Professor": "holmes, reid",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": 3,
+                            "Professor": "gregor",
+                            "Avg": 84,
+                            "Subject": "cpsc"
+                        }]},
+                    {"result": [{
+                    		"id": 4,
+                    		"Professor": "another result",
+                    		"Avg": 84,
+                    		"Subject": "biol"
+                        },
+                        {
+                            "id": 5,
+                            "Professor": "carter",
+                            "Avg": 84,
+                            "Subject": "cpsc"
+                        }]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({render: 'TABLE', result: [{courses_dept: "biol"},
+                                                      {courses_dept: "cpsc"},
+                                                      {courses_dept: "biol"},
+                                                      {courses_dept: "cpsc"}]});
+    });
+
+/*
     it("Should be able to validate a valid query", function () {
         // NOTE: this is not actually a valid query for D1
         let query: QueryRequest = {GET: 'food', WHERE: {IS: 'apple'}, ORDER: 'food', AS: 'TABLE'};
@@ -35,6 +87,15 @@ describe("QueryController", function () {
         expect(isValid).to.equal(false);
     });
 
+    it("ORDER should be in the GET, else not a valid query", function () {
+        let query: QueryRequest = {GET: ["courses_dept"], WHERE: {"courses_avg": 90}, ORDER: 'courses_avg', AS: 'TABLE'};
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({status: 'failed', error: "invalid query"});
+    });
+
     it("Should be able to query, although the answer will be empty", function () {
         // NOTE: this is not actually a valid query for D1, nor is the result correct.
         let query: QueryRequest = {GET: 'food', WHERE: {IS: 'apple'}, ORDER: 'food', AS: 'TABLE'};
@@ -48,7 +109,11 @@ describe("QueryController", function () {
 
     it("Should be able to get when key is not present,result will be empty", function() {
         let query: QueryRequest = { GET: ["courses_fail"],
-                                    WHERE: {"courses_avg": 90},
+                                    WHERE: {
+                                        EQ: {
+                                            "courses_avg": 90
+                                            }
+                                        },
                                     ORDER: null, AS: 'TABLE'};
 
         let dataset: Datasets = {
@@ -68,7 +133,11 @@ describe("QueryController", function () {
 
     it("Should be able to get one items with one key", function() {
         let query: QueryRequest = { GET: ["courses_dept"],
-                                    WHERE: {"courses_avg": 90},
+                                    WHERE: {
+                                        EQ: {
+                                            "courses_avg": 90
+                                            }
+                                        },
                                     ORDER: null, AS: 'TABLE'};
 
         let dataset: Datasets = {
@@ -88,7 +157,11 @@ describe("QueryController", function () {
 
     it("Should be able to get multiple items with one key", function() {
         let query: QueryRequest = { GET: ["courses_dept"],
-                                    WHERE: {"courses_avg": 90},
+                                    WHERE: {
+                                        EQ: {
+                                            "courses_avg": 90
+                                            }
+                                        },
                                     ORDER: null, AS: 'TABLE'};
 
         let dataset: Datasets = {
@@ -124,7 +197,11 @@ describe("QueryController", function () {
 
     it("Should be able to get multiple items with 2 keys", function() {
         let query: QueryRequest = { GET: ["courses_dept", "courses_id"],
-                                    WHERE: {"courses_avg": 90},
+                                    WHERE: {
+                                        EQ: {
+                                            "courses_avg": 90
+                                            }
+                                        },
                                     ORDER: null, AS: 'TABLE'};
 
         let dataset: Datasets = {
@@ -166,7 +243,7 @@ describe("QueryController", function () {
                                                 "courses_avg": 90
                                               }
                                           },
-                                    ORDER: "courses_avg",
+                                    ORDER: "courses_dept",
                                     AS: "TABLE"
                                   };
         let dataset: Datasets = {};
@@ -179,7 +256,9 @@ describe("QueryController", function () {
     it("Should be able to get multiple keys; 3 keys", function() {
         let query: QueryRequest = { GET: ["courses_fail", "courses_id",
                                           "courses_instructor", "courses_avg", "courses_dept"],
-                                    WHERE: {"courses_avg": 90},
+                                    WHERE: {
+                                        EQ: {"courses_avg": 91.5}
+                                    },
                                     ORDER: null, AS: 'TABLE'};
 
         let dataset: Datasets = {
@@ -199,13 +278,13 @@ describe("QueryController", function () {
     });
 
     //simple query that contains the course but does not return any info since the dataset will not meet the criteria
-    it("Should be able to query, but will have empty answer since dataset will not contain filtered requirements", function(){
+    it("Should be able to query, but will have empty answer since dataset will not contain courses_avg: 84", function(){
        let query: QueryRequest = {GET: ["courses_dept", "courses_pass"],
                                     WHERE: {
                                         EQ: {
                                             "courses_avg": 84
-                                        }
-                                    },
+                                            }
+                                        },
                                     ORDER: "courses_pass",
                                     AS: "TABLE"
                                     };
@@ -240,6 +319,42 @@ describe("QueryController", function () {
         expect(ret).to.eql({ render: 'TABLE', result: []});
         // should be returning an empty set
     });
+
+    //simple query that contains the course but does not return any info since the dataset will not meet the criteria
+    it("Should be able to query, should return courses with courses_avg: 84", function(){
+       let query: QueryRequest = {GET: ["courses_avg", "courses_pass", "courses_fail"],
+                                    WHERE: {
+                                        EQ: {
+                                            "courses_avg": 84
+                                        }
+                                    },
+                                    ORDER: "courses_pass",
+                                    AS: "TABLE"
+                                    };
+        let dataset: Datasets = {
+                    "courses" :
+                    {"result": [{
+                            "id": 40969,
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 84,
+                            "Pass" : 100,
+                            "Subject": "biol"
+                        },
+                        {
+                            "id": 40969,
+                            "Professor": "gg",
+                            "Avg": 85,
+                            "Pass" : 100,
+                            "Subject": "cpsc"
+                        }
+                    ]}};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({ render: 'TABLE', result: [{"courses_avg": 84, "courses_pass" : 100}]});
+    });
+*/
 /*
     //simple query with the correct format of using LOGIC COMPARISON AND NOT {filter} with a valid dataset
     it("Should be able to query and return a valid response with", function(){
@@ -405,16 +520,6 @@ describe("QueryController", function () {
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).not.to.be.equal(null);
         // TODO: should check that the value is meaningful
-    });
-
-    it("ORDER should be in the GET, else not a valid query", function () {
-        let query: QueryRequest = {GET: ["courses_dept"], WHERE: {"courses_avg": 90}, ORDER: 'food', AS: 'TABLE'};
-        let dataset: Datasets = {};
-        let controller = new QueryController(dataset);
-        let ret = controller.query(query);
-        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
-        // bad request
-        expect(ret).to.be.equal(false);
     });
     */
 });

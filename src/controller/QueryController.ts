@@ -18,9 +18,11 @@ export interface QueryResponse {
 
 export default class QueryController {
     private datasets: Datasets = null;
+    private returnDatasets: Datasets = null;
 
     constructor(datasets: Datasets) {
         this.datasets = datasets;
+        this.returnDatasets = null;
     }
 
     public isValid(query: QueryRequest): boolean {
@@ -35,31 +37,39 @@ export default class QueryController {
 
         if (this.isValid(query))
         {
-            let response : QueryResponse = {};
+            let response : any[];
+            let queryResponse : QueryResponse = {};
+            let getPresent: boolean = false;
+            let wherePresent: boolean = false;
             for (var q in query)
             {
                 if (q == 'GET')
                 {
-                    response = this.queryGet(query.GET);
-                    Log.trace(JSON.stringify(response));
+                    getPresent = true;
                 }
                 else if (q == 'WHERE')
                 {
-                    //response = this.queryWhere(query.WHERE, response);
-                    Log.trace(JSON.stringify(response));
+                    if (getPresent)
+                    {
+                        wherePresent = true;
+                    }
+
                 }
                 else if (q == 'ORDER')
                 {
-                    // TODO check whether ORDER is in GET
+                    // continue only if order is in GET else not a valid query
                     // check if GET is of type string
-                    let found : boolean = true;
-                    if (typeof query.GET === 'string' ||
+                    let found : boolean = false;
+                    if (query.ORDER == null)
+                    {
+                        found = true;
+                    }
+                    else if (typeof query.GET === 'string' ||
                         query.GET instanceof String)
                     {
                         if (query.ORDER == query.GET)
                         {
                             found = true;
-                            //response = this.queryOrder(query.ORDER, response);
                         }
                     }
                     else
@@ -70,7 +80,6 @@ export default class QueryController {
                             if (query.ORDER == query.GET[i])
                             {
                                 found = true;
-                                //response = this.queryOrder(query.ORDER, response);
                                 break;
                             }
                         }
@@ -78,18 +87,30 @@ export default class QueryController {
 
                     if (!found)
                     {
-                        return false;
+                        return {status: 'failed', error: "invalid query"};
                     }
-                    Log.trace(JSON.stringify(response));
+                    else
+                    {
+                        // note that where must be done before get
+                        response = this.queryWhere(query.WHERE, response);
+                        Log.trace(JSON.stringify(response));
+                        queryResponse = this.queryGet(query.GET, response);
+
+                        //response = this.queryOrder(query.ORDER, response);
+                    }
+
+                    Log.trace(JSON.stringify(queryResponse));
                 }
                 else if (q == 'AS')
                 {
-                    response = this.queryAs(query.AS, response);
-                    Log.trace(JSON.stringify(response));
+                    queryResponse = {result : queryResponse};
+                    queryResponse = this.queryAs(query.AS, queryResponse);
+                    Log.trace(JSON.stringify(queryResponse));
                 }
             }
 
-            return response;
+            return queryResponse;
+
         }
         return {status: 'received', ts: new Date().getTime()};
         // TODO: implement this
@@ -102,32 +123,13 @@ export default class QueryController {
      * @param key
      * @returns {QueryResponse}
      */
-    private queryGet(key: string | string[]): QueryResponse
+    private queryGet(key: string | string[], data: any[]): QueryResponse
     {
         Log.trace('QueryController::queryGet( ' + JSON.stringify(key) + ' )');
-        var dataSetKey : string;
-        var response : QueryResponse = {result: "insert answer here"};
-        var retValue : {};
-
-        retValue = this.getValue(key);
-
-        // TODO: remove
-
-        /*
-        if (typeof key === 'string' || key instanceof String)
-        {
-
-        }
-        else
-        {
-            for (var i = 0; i < key.length; ++i)
-            {
-                 retValue = this.getValue(key[i].toString());
-            }
-        }
-        */
-
-        response = {result: retValue};
+        let dataSetKey : string;
+        let response : QueryResponse = {};
+        let retValue = this.getValue(key, data);
+        response = retValue;
 
         return response;
     }// queryGet
@@ -139,18 +141,58 @@ export default class QueryController {
      * @param data, QueryResponse that is being filered
      * @returns {QueryResponse}
      */
-    private queryWhere(key: {}, data: QueryResponse): QueryResponse
+    private queryWhere(key: any, data: any[]): any[]
     {
-        Log.trace('QueryController::queryWhere( ' + JSON.stringify(key) + ' )');
+        let accResult : any = [];
 
-        for (var where in key)
+        for (var myCurrentDataSet in this.datasets)
         {
-            if (!key.hasOwnProperty(where)) continue;
+            // myCurrentDataSet is this.datasets.id; resultList is the data object(array of results)
+            if (!this.datasets.hasOwnProperty(myCurrentDataSet)) continue;
+            var myDataList = this.datasets[myCurrentDataSet];
+            var resultList = JSON.parse(JSON.stringify(myDataList));
 
-            //Log.trace(where);
+            // get each result object
+            for (var keys in resultList)
+            {
+                var result = resultList[keys];
+                let valuesList = result["result"];
+
+                for (var values in valuesList)
+                {
+                    var value = valuesList[values];
+                    // id_key : value pair == value : instance
+                    for (var instance in value)
+                    {
+                        for (var where in key)
+                        {
+                            if (!key.hasOwnProperty(where)) continue;
+
+                            if ('AND' == where || 'OR' == where  || 'NOT' == where)
+                            {
+                                //TODO: do something with the array recursive
+                            }
+                            else if ('EQ' == where)
+                            {
+                                let keyContains = key[where];
+                                for (let k in keyContains)
+                                {
+                                    var temp = this.getKey(k.toString());
+                                    if ((temp === String(instance)) &&
+                                        (keyContains[k] == value[instance]))
+                                    {
+                                        accResult.push(value);
+                                        Log.trace("HII" + JSON.stringify(accResult));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-
-        return {status: 'queryWhere', ts: new Date().getTime()};
+        data = accResult;
+        return data;
     }// queryWhere
 
     /**
@@ -176,9 +218,9 @@ export default class QueryController {
     private queryAs(key: string, data: QueryResponse): QueryResponse
     {
         Log.trace('QueryController::queryAs( ' + JSON.stringify(key)  + ' )');
-        var obj: any = {};
-        obj["render"] = key;
-        return Object.assign(obj, data);
+        var obj1: any = {};
+        obj1["render"] = key;
+        return Object.assign(obj1, data);
     }// queryAs
 
     /**
@@ -237,10 +279,39 @@ export default class QueryController {
      * @param key
      * @returns string []
      */
-    private getValue(key: string | string[]): any[]
+    private getValue(key: string | string[], data: any[]): QueryResponse
     {
+        var queryResult : QueryResponse = {};
         var results : any[] = [];
 
+        Log.trace("!!!!!!" + JSON.stringify(data));
+
+        for (var k = 0; k < data.length; ++k)
+        {
+            let value  = data[k];
+            let obj : any = {};
+            let gotData : boolean = false;
+            for (var i = 0; i < key.length; ++i)
+            {
+                var temp = this.getKey(key[i].toString());
+
+                for (var instance in value)
+                {
+                    if (temp === String(instance))
+                    {
+                        let tempObj : {} = {[key[i]] : value[instance]};
+                        Object.assign(obj, tempObj);
+                        gotData = true;
+                    }
+                }
+            }
+            if (gotData)
+            {
+                results.push(obj);
+            }
+        }
+
+        /*
         for (var file in this.datasets)
         {
             // file is this.datasets.id; dataList is the data object(array of results)
@@ -251,46 +322,37 @@ export default class QueryController {
             // get each result object
             for (var keys in items)
             {
-                if (!items.hasOwnProperty(keys)) continue;
+                //if (!items.hasOwnProperty(keys)) continue;
+                var result = items[keys];
+                let valuesList = result["result"];
 
-                if (keys == "result")
+                for (var values in valuesList)
                 {
-                    var valuesList = items["result"];
-
-                    for (var values in valuesList)
+                    var value = valuesList[values];
+                    let obj : any = {};
+                    let gotData : boolean = false;
+                    for (var i = 0; i < key.length; ++i)
                     {
-                        var value = valuesList[values];
-                        let obj : any = {};
-                        let gotData : boolean = false;
-                        for (var i = 0; i < key.length; ++i)
+                        var temp = this.getKey(key[i].toString());
+                        for (var instance in value)
                         {
-                            var temp = this.getKey(key[i].toString());
-                            for (var instance in value)
+                            if (temp === String(instance))
                             {
-                                if (temp === String(instance))
-                                {
-                                    if (Object.keys(obj).length === 0)
-                                    {
-                                        obj[key[i]] = value[instance];
-                                        gotData = true;
-                                    }
-                                    else
-                                    {
-                                        let tempObj : {} = {[key[i]] : value[instance]};
-                                        Object.assign(obj, tempObj);
-                                        gotData = true;
-                                    }
-                                }
+                                let tempObj : {} = {[key[i]] : value[instance]};
+                                Object.assign(obj, tempObj);
+                                gotData = true;
                             }
                         }
-                        if (gotData)
-                        {
-                            results.push(obj);
-                        }
+                    }
+                    if (gotData)
+                    {
+                        results.push(obj);
                     }
                 }
             }
         }
-        return results;
+        */
+        queryResult = results;
+        return queryResult;
     }// getValue
 }
