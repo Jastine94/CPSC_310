@@ -16,6 +16,56 @@ describe("QueryController", function () {
     afterEach(function () {
     });
 
+    it("Should be able to get with 2 key where gt clause", function() {
+        let query: QueryRequest = { GET: ["courses_dept", "courses_id"],
+                                    WHERE: {
+                                        "LT": {
+                                            "courses_avg": 85
+                                            }
+                                        },
+                                    ORDER: "courses_id", AS: 'TABLE'};
+
+        let dataset: Datasets = {
+                    "courses" :
+                    [{"result": [{
+                            "id": 5,
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 84,
+                            "Subject": "biol"
+                        },
+                        {
+                            "id": 1,
+                            "Professor": "holmes, reid",
+                            "Avg": 80,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": 3,
+                            "Professor": "gregor",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        }]},
+                    {"result": [{
+                            "id": 4,
+                            "Professor": "another result",
+                            "Avg": 95,
+                            "Subject": "biol"
+                        },
+                        {
+                            "id": 4,
+                            "Professor": "carter",
+                            "Avg": 84,
+                            "Subject": "cpsc"
+                        }]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "cpsc", "courses_id" : 1},
+                                                      {"courses_dept": "cpsc", "courses_id" : 4},
+                                                      {"courses_dept": "biol", "courses_id" : 5}]})
+    });
+
     // is string comparison query
     it("Should be able to get with where is clause without wildcard", function () {
         let query: QueryRequest = {GET: ["courses_dept", "courses_instructor"],
