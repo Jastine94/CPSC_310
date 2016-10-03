@@ -246,16 +246,31 @@ export default class QueryController {
      */
     private queryOrder(key: string, data: any[]): QueryResponse
     {
-        Log.trace('QueryController::queryOrder( ' + JSON.stringify(data) + ' )');
-
+        // ordering for number
         if (key == "courses_avg" || key == "courses_pass" ||
-            key == "courses_fail" || key == "courses_audit")
+            key == "courses_fail"|| key == "courses_audit")
         {
             data.sort(function (a, b) {
                   if (a[key] > b[key]) {
                     return 1;
                   }
                   if (a[key] < b[key]) {
+                    return -1;
+                  }
+                  // a must be equal to b
+                  return 0;
+              });
+        }
+        else // key is a string
+        {
+            data.sort(function (a, b) {
+                let aString = String(a[key]).toUpperCase();
+                let bString = String(b[key]).toUpperCase();
+
+                  if (aString > bString) {
+                    return 1;
+                  }
+                  if (aString < bString) {
                     return -1;
                   }
                   // a must be equal to b
