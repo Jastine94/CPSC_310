@@ -41,6 +41,7 @@ export default class QueryController {
             let queryResponse : QueryResponse = {};
             let getPresent: boolean = false;
             let wherePresent: boolean = false;
+            let orderPresent:boolean = false;
             for (var q in query)
             {
                 if (q == 'GET')
@@ -60,6 +61,7 @@ export default class QueryController {
                     // continue only if order is in GET else not a valid query
                     // check if GET is of type string
                     let found : boolean = false;
+                    orderPresent = true;
                     // if (query.ORDER == null)
                     if (query.ORDER == "" || query.ORDER == null)
                     {
@@ -90,17 +92,26 @@ export default class QueryController {
                     {
                         return {status: 'failed', error: "invalid query"};
                     }
-                    else
+                }
+                else if (q == 'AS')
+                {
+                    if (wherePresent && getPresent)
                     {
                         // note that where must be done before get
                         response = this.queryWhere(query.WHERE, response);
                         Log.trace(JSON.stringify(response));
-                        queryResponse = this.queryGet(query.GET, response);
-                        //response = this.queryOrder(query.ORDER, response);
+                        response = this.queryGet(query.GET, response);
+                        if (orderPresent)
+                        {
+                            //let unorderedResponse : [] = queryResponse;
+                            queryResponse = this.queryOrder(query.ORDER, response);
+                        }
+                        else
+                        {
+                            queryResponse = response;
+                        }
                     }
-                }
-                else if (q == 'AS')
-                {
+
                     queryResponse = {result : queryResponse};
                     queryResponse = this.queryAs(query.AS, queryResponse);
                     Log.trace(JSON.stringify(queryResponse));
@@ -121,15 +132,12 @@ export default class QueryController {
      * @param key
      * @returns {QueryResponse}
      */
-    private queryGet(key: string | string[], data: any[]): QueryResponse
+    private queryGet(key: string | string[], data: any[]): any[]
     {
         Log.trace('QueryController::queryGet( ' + JSON.stringify(key) + ' )');
         let dataSetKey : string;
-        let response : QueryResponse = {};
-        let retValue = this.getValue(key, data);
-        response = retValue;
 
-        return response;
+        return this.getValue(key, data);
     }// queryGet
 
     /**
@@ -213,7 +221,6 @@ export default class QueryController {
                                 {
                                     var temp = this.getKey(k.toString());
                                     var patt = new RegExp(keyContains[k].split("*").join(".*"));
-                                    Log.trace (JSON.stringify(value[instance]));
                                     if ((temp === String(instance)) &&
                                         (patt.test(value[instance])))
                                     {
@@ -227,8 +234,7 @@ export default class QueryController {
                 }
             }
         }
-        data = accResult;
-        return data;
+        return accResult;
     }// queryWhere
 
     /**
@@ -238,10 +244,26 @@ export default class QueryController {
      * @param data, QueryResponse that is being ordered
      * @returns {QueryResponse}
      */
-    private queryOrder(key: string, data: QueryResponse): QueryResponse
+    private queryOrder(key: string, data: any[]): QueryResponse
     {
-        Log.trace('QueryController::queryOrder( ' + JSON.stringify(key) + ' )');
-        return {status: 'queryOrder', ts: new Date().getTime()};
+        Log.trace('QueryController::queryOrder( ' + JSON.stringify(data) + ' )');
+
+        data.sort(function (a, b) {
+              if (a[key] > b[key]) {
+                return 1;
+              }
+              if (a[key] < b[key]) {
+                return -1;
+              }
+              // a must be equal to b
+              return 0;
+          });
+
+        Log.trace("ORDERED!!!!!!!!!" + JSON.stringify(data));
+        let queryOrderedResult :QueryResponse = [];
+
+        queryOrderedResult = data;
+        return queryOrderedResult;
     }// queryOrder
 
     /**
@@ -315,9 +337,8 @@ export default class QueryController {
      * @param key
      * @returns string []
      */
-    private getValue(key: string | string[], data: any[]): QueryResponse
+    private getValue(key: string | string[], data: any[]): any[]
     {
-        var queryResult : QueryResponse = {};
         var results : any[] = [];
         for (var k = 0; k < data.length; ++k)
         {
@@ -383,7 +404,6 @@ export default class QueryController {
             }
         }
         */
-        queryResult = results;
-        return queryResult;
+        return results;
     }// getValue
 }
