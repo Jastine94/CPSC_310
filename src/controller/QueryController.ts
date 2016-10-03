@@ -169,9 +169,20 @@ export default class QueryController {
                     {
                         for (var where in key)
                         {
-                            if ('AND' == where || 'OR' == where  || 'NOT' == where)
+                            if ('AND' == where || 'OR' == where)
                             {
                                 //TODO: do something with the array recursive
+                            }
+                            else if ('NOT' == where)
+                            {
+                                let getNotNot : any[] = [];
+                                let totalList : any[] = valuesList;
+
+                                getNotNot = this.queryWhere(key[where], data);
+                                accResult = this.getArrayDiff(resultList, getNotNot);
+
+                                Log.trace(("Not!!!!" + JSON.stringify(accResult)));
+                                return accResult;
                             }
                             else if ('EQ' == where)
                             {
@@ -379,4 +390,52 @@ export default class QueryController {
         }
         return results;
     }// getValue
+
+    /**
+     * Get the corresponsing values based on the key in the dataset
+     *
+     * @param key
+     * @returns string []
+     */
+    private getArrayDiff(totalList : any[], toRemove: any[]): any[]
+    {
+        let ret : any [] = [];
+        let total : any[] = [];
+         if (!(Array.isArray(total) && Array.isArray(toRemove))) {
+            return ret;
+        }
+
+        for (var keys in totalList)
+        {
+            var result = totalList[keys];
+            let valuesList = result["result"];
+
+            for (var values in valuesList)
+            {
+                total.push(valuesList[values]);
+            }
+        }
+
+        for (var i = 0; i < total.length; ++i)
+        {
+            var key = total[i];
+            
+            let isSame : boolean = false;
+            for (var item in toRemove)
+            {
+                if (JSON.stringify(toRemove[item]) == JSON.stringify(key))
+                {
+                    isSame = true;
+                }
+            }
+
+            if (!isSame)
+            {
+                ret.push(key);
+            }
+        }
+
+        return ret
+        ;
+    }
 }
