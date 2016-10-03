@@ -99,7 +99,6 @@ export default class QueryController {
                     {
                         // note that where must be done before get
                         response = this.queryWhere(query.WHERE, response);
-                        Log.trace(JSON.stringify(response));
                         response = this.queryGet(query.GET, response);
                         if (orderPresent)
                         {
@@ -134,7 +133,6 @@ export default class QueryController {
      */
     private queryGet(key: string | string[], data: any[]): any[]
     {
-        Log.trace('QueryController::queryGet( ' + JSON.stringify(key) + ' )');
         let dataSetKey : string;
 
         return this.getValue(key, data);
@@ -224,7 +222,6 @@ export default class QueryController {
                                     if ((temp === String(instance)) &&
                                         (patt.test(value[instance])))
                                     {
-                                        Log.trace(keyContains[k]);
                                         accResult.push(value);
                                     }
                                 }
@@ -278,7 +275,6 @@ export default class QueryController {
               });
         }
 
-        Log.trace("ORDERED!!!!!!!!!" + JSON.stringify(data));
         let queryOrderedResult :QueryResponse = [];
 
         queryOrderedResult = data;
@@ -294,7 +290,6 @@ export default class QueryController {
      */
     private queryAs(key: string, data: QueryResponse): QueryResponse
     {
-        Log.trace('QueryController::queryAs( ' + JSON.stringify(key)  + ' )');
         var obj1: any = {};
         obj1["render"] = key;
         return Object.assign(obj1, data);
@@ -379,50 +374,9 @@ export default class QueryController {
             }
             if (gotData)
             {
-                Log.trace(JSON.stringify(obj));
                 results.push(obj);
             }
         }
-
-        /*
-        for (var file in this.datasets)
-        {
-            // file is this.datasets.id; dataList is the data object(array of results)
-            var dataList = this.datasets[file];
-            var items = JSON.parse(JSON.stringify(dataList));
-
-            // get each result object
-            for (var keys in items)
-            {
-                var result = items[keys];
-                let valuesList = result["result"];
-
-                for (var values in valuesList)
-                {
-                    var value = valuesList[values];
-                    let obj : any = {};
-                    let gotData : boolean = false;
-                    for (var i = 0; i < key.length; ++i)
-                    {
-                        var temp = this.getKey(key[i].toString());
-                        for (var instance in value)
-                        {
-                            if (temp === String(instance))
-                            {
-                                let tempObj : {} = {[key[i]] : value[instance]};
-                                Object.assign(obj, tempObj);
-                                gotData = true;
-                            }
-                        }
-                    }
-                    if (gotData)
-                    {
-                        results.push(obj);
-                    }
-                }
-            }
-        }
-        */
         return results;
     }// getValue
 }
