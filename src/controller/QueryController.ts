@@ -169,11 +169,11 @@ export default class QueryController {
                     {
                         for (var where in key)
                         {
-                            if ('AND' == where || 'OR' == where)
+                            if ('AND' == where || 'OR' == where || 'NOT' == where)
                             {
                                 //TODO: do something with the array recursive
                             }
-                            else if ('NOT' == where)
+                            else if ('NOTHING' == where)
                             {
                                 let getNotNot : any[] = [];
                                 let totalList : any[] = valuesList;
