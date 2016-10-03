@@ -66,32 +66,41 @@ export default class DatasetController {
     // TODO: if datasets is empty, load all dataset files in ./data from disk
     public getDatasets(): Datasets {
         Log.trace('DatasetController :: getDatasets is being called');
+        Log.trace("value of whether dataset has something:" + (Object.keys(this.datasets).length === 0 && this.datasets.constructor === Object));
 
-        if (Object.keys(this.datasets).length === 0 && this.datasets.constructor === Object){
+        let that = this;
+
+        if (Object.keys(that.datasets).length === 0 && that.datasets.constructor === Object){
             let data_dir: string = __dirname+"\/..\/..\/data\/";
+            Log.trace('path for the data location is:' + data_dir);
             fs.readdir( data_dir, function( err, files ) {
                 if( err ) {
                     Log.trace( "Directory could not be loaded: " + err );
                     process.exit( 1 );
                 }
-                Log.trace('time to read files');
-                files.forEach( function( file, index ) {
-                    // fs.readFile(data_dir+file, (err: any, data: any) => {
-                    //     Log.trace("Data is: " + data);
-                    //         if (err){
-                    //         throw err;
-                    //     }
-                    //     this.datasets = data;
-                    // });
-                    let id = file.replace('.json','');
-                    Log.trace("Dataset with id: " + id + " - will be added to the dataset")
-                    this.datasets[id] = fs.readFileSync(data_dir+file);
-                    // first one is async and second one is sync
-                });
+                else {
+                    Log.trace('time to read files');
+                    files.forEach(function (file, index) {
+                        // fs.readFile(data_dir+file, (err: any, data: any) => {
+                        //     Log.trace("Data is: " + data);
+                        //         if (err){
+                        //         throw err;
+                        //     }
+                        //     this.datasets = data;
+                        // });
+                        let id = file.replace('.json', '');
+                        Log.trace("Dataset with id: " + id + " - will be added to the dataset")
+                        that.datasets[id] = fs.readFileSync(data_dir + file);
+                        Log.trace("object has been added: " + that.datasets[id]);
+                        Log.trace("Index of file in the data foldr is: " + index);
+                        // first one is async and second one is sync
+                    });
+                }
+                Log.trace("finished iterating through the data file");
             });
-            return this.datasets;
         }
-        else return this.datasets;
+        Log.trace("will complete it now!!!!" + that.datasets);
+        return that.datasets;
     } //getDatasets
 
     /**
