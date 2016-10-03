@@ -62,7 +62,8 @@ export default class QueryController {
                     // check if GET is of type string
                     let found : boolean = false;
                     orderPresent = true;
-                    if (query.ORDER == null)
+                    // if (query.ORDER == null)
+                    if (query.ORDER == "" || query.ORDER == null)
                     {
                         found = true;
                     }

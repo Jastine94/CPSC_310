@@ -82,18 +82,34 @@ export default class RouteHandler {
         try {
             let query: QueryRequest = req.params;
             let datasets: Datasets = RouteHandler.datasetController.getDatasets();
+            Log.trace("Retrieved all the datasets");
             let controller = new QueryController(datasets);
             let isValid = controller.isValid(query);
 
+            // if (Object.keys(datasets).length === 0)
+            // check if the dataset has it, if not it has to have a missing
+            // TODO: Check if the data is on disk if it is not in the dataset since it can shutdown between put & post
+            // 200: the query was successfully answered. The result should be sent in JSON according in the response body.
+            // 424: the query failed because it depends on a resource that has not been PUT. The body should contain {missing: ['id1', 'id2'...]}.
+            // 400: the query failed; body should contain {error: 'my text'} providing extra detail.
+
+            Log.trace("Query is valid? " + isValid);
             if (isValid === true) {
-                let result = controller.query(query);
+                let result:any = controller.query(query);
+                Log.trace("Completed querying it");
+                Log.trace("result is: " + result);
+                for (let i in result){
+                    console.log (i, result[i]); //only for printing purposess, todo: take out before commit
+                }
                 res.json(200, result);
+                Log.trace("200 Successful");
             } else {
-                res.json(400, {status: 'invalid query'});
+                res.json(400, {status: 'Invalid query'});
+                Log.trace("400 Error - Invalid query");
             }
         } catch (err) {
-            Log.error('RouteHandler::postQuery(..) - ERROR: ' + err);
-            res.send(403);
+            Log.error('RouteHandler::postQuery(..) - ERROR: '  + err);
+            res.send(400);
         }
         return next();
     }
