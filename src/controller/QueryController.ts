@@ -169,18 +169,17 @@ export default class QueryController {
                     {
                         for (var where in key)
                         {
-                            if ('AND' == where || 'OR' == where)
+                            if ('AND' == where || 'OR' == where || 'NOT' == where)
                             {
                                 //TODO: do something with the array recursive
                             }
-                            else if ('NOT' == where)
+                            else if ('NOTHING' == where)
                             {
                                 let getNotNot : any[] = [];
                                 let totalList : any[] = valuesList;
 
                                 getNotNot = this.queryWhere(key[where], data);
                                 accResult = this.getArrayDiff(resultList, getNotNot);
-                                return accResult;
                             }
                             else if ('EQ' == where)
                             {
@@ -399,9 +398,6 @@ export default class QueryController {
     {
         let ret : any [] = [];
         let total : any[] = [];
-         if (!(Array.isArray(total) && Array.isArray(toRemove))) {
-            return ret;
-        }
 
         for (var keys in totalList)
         {
@@ -433,7 +429,6 @@ export default class QueryController {
             }
         }
 
-        return ret
-        ;
+        return ret;
     }
 }
