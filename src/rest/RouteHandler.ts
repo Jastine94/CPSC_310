@@ -49,18 +49,19 @@ export default class RouteHandler {
                 //Log.trace('RouteHandler::putDataset(..) on end; total length: ' + req.body.length);
 
                 let controller = RouteHandler.datasetController;
-                let exists = controller.getDataset(id);
+                // let exists = controller.getDataset(id);
+                let exists: boolean = fs.existsSync(__dirname + "\/..\/..\/data\/" +id+'.json');
                 //Log.trace("The current " + id +": exists? " + (exists !== null));
 
                 controller.process(id, req.body).then(function (result) {
                     //Log.trace('RouteHandler::putDataset(..) - processed');
-                    if (exists !== null){
+                    if (exists){
                         res.json(201, {success: result}); //this is replacing an existing id
-                        //Log.trace('201 Success: '+result);
+                        // Log.trace('201 Success: '+result);
                     }
                     else {
                         res.json(204, {success: result}); //this is a new id
-                        //Log.trace('204 Success: '+result);
+                        // Log.trace('204 Success: '+result);
                     }
                     // TODO: make sure that it handles a zip with invalid files
                     //need to check if the id is new or just replaced
@@ -103,12 +104,13 @@ export default class RouteHandler {
                         let mids:any = {};
                         mids["missing"] = missing_id;
                         res.json(424, mids);
-                        //Log.trace("424 Missing: " + JSON.stringify(mids));
+                        Log.trace("424 Missing: " + JSON.stringify(mids));
+                    }
+                    else {
+                        res.json(200, result);
+                        Log.trace("200 Successful");
                     }
                 }
-                res.json(200, result);
-                //Log.trace("200 Successful");
-
             } else {
                 res.json(400, {status: 'Invalid query'});
                 //Log.trace("400 Error - Invalid query");
