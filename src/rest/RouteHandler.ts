@@ -21,7 +21,7 @@ export default class RouteHandler {
         fs.readFile('./src/rest/views/index.html', 'utf8', function (err: Error, file: Buffer) {
             if (err) {
                 res.send(500);
-                Log.error(JSON.stringify(err));
+                //Log.error(JSON.stringify(err));
                 return next();
             }
             res.write(file);
@@ -39,33 +39,33 @@ export default class RouteHandler {
             // adapted from: https://github.com/restify/node-restify/issues/880#issuecomment-133485821
             let buffer: any = [];
             req.on('data', function onRequestData(chunk: any) {
-                Log.trace('RouteHandler::putDataset(..) on data; chunk length: ' + chunk.length);
+                //Log.trace('RouteHandler::putDataset(..) on data; chunk length: ' + chunk.length);
                 buffer.push(chunk);
             });
 
             req.once('end', function () {
                 let concated = Buffer.concat(buffer);
                 req.body = concated.toString('base64');
-                Log.trace('RouteHandler::putDataset(..) on end; total length: ' + req.body.length);
+                //Log.trace('RouteHandler::putDataset(..) on end; total length: ' + req.body.length);
 
                 let controller = RouteHandler.datasetController;
                 let exists = controller.getDataset(id);
-                Log.trace("The current " + id +": exists? " + (exists !== null));
+                //Log.trace("The current " + id +": exists? " + (exists !== null));
 
                 controller.process(id, req.body).then(function (result) {
-                    Log.trace('RouteHandler::putDataset(..) - processed');
+                    //Log.trace('RouteHandler::putDataset(..) - processed');
                     if (exists !== null){
                         res.json(201, {success: result}); //this is replacing an existing id
-                        Log.trace('201 Success: '+result);
+                        //Log.trace('201 Success: '+result);
                     }
                     else {
                         res.json(204, {success: result}); //this is a new id
-                        Log.trace('204 Success: '+result);
+                        //Log.trace('204 Success: '+result);
                     }
                     // TODO: make sure that it handles a zip with invalid files
                     //need to check if the id is new or just replaced
                 }).catch(function (err: Error) {
-                    Log.trace('--  RouteHandler::putDataset(..) - ERROR: ' + err.message);
+                    //Log.trace('--  RouteHandler::putDataset(..) - ERROR: ' + err.message);
                     res.json(400, {err: err.message});
                 });
             });
@@ -78,11 +78,11 @@ export default class RouteHandler {
     }
 
     public static postQuery(req: restify.Request, res: restify.Response, next: restify.Next) {
-        Log.trace('RouteHandler::postQuery(..) - params: ' + JSON.stringify(req.params));
+        //Log.trace('RouteHandler::postQuery(..) - params: ' + JSON.stringify(req.params));
         try {
             let query: QueryRequest = req.params;
             let datasets: Datasets = RouteHandler.datasetController.getDatasets();
-            Log.trace("Retrieved all the datasets");
+            //Log.trace("Retrieved all the datasets");
             let controller = new QueryController(datasets);
             let isValid = controller.isValid(query);
 
@@ -103,7 +103,7 @@ export default class RouteHandler {
                         let mids:any = {};
                         mids["missing"] = missing_id;
                         res.json(424, mids);
-                        Log.trace("424 Missing: " + JSON.stringify(mids));
+                        //Log.trace("424 Missing: " + JSON.stringify(mids));
                     }
                 }
                 res.json(200, result);
@@ -114,7 +114,7 @@ export default class RouteHandler {
                 //Log.trace("400 Error - Invalid query");
             }
         } catch (err) {
-            Log.error('RouteHandler::postQuery(..) - ERROR: '  + err);
+            //Log.error('RouteHandler::postQuery(..) - ERROR: '  + err);
             res.send(400);
         }
         return next();
