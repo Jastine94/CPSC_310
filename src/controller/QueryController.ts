@@ -180,7 +180,6 @@ export default class QueryController {
 
                                 getNotNot = this.queryWhere(key[where], data);
                                 accResult = this.getArrayDiff(resultList, getNotNot);
-                                return accResult;
                             }
                             else if ('EQ' == where)
                             {
@@ -399,9 +398,6 @@ export default class QueryController {
     {
         let ret : any [] = [];
         let total : any[] = [];
-         if (!(Array.isArray(total) && Array.isArray(toRemove))) {
-            return ret;
-        }
 
         for (var keys in totalList)
         {
@@ -433,7 +429,6 @@ export default class QueryController {
             }
         }
 
-        return ret
-        ;
+        return ret;
     }
 }
