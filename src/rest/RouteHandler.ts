@@ -107,11 +107,11 @@ export default class RouteHandler {
                     }
                 }
                 res.json(200, result);
-                Log.trace("200 Successful");
+                //Log.trace("200 Successful");
 
             } else {
                 res.json(400, {status: 'Invalid query'});
-                Log.trace("400 Error - Invalid query");
+                //Log.trace("400 Error - Invalid query");
             }
         } catch (err) {
             Log.error('RouteHandler::postQuery(..) - ERROR: '  + err);
@@ -131,14 +131,14 @@ export default class RouteHandler {
             // adapted from: https://github.com/restify/node-restify/issues/880#issuecomment-133485821
             let buffer: any = [];
             req.on('data', function onRequestData(chunk: any) {
-                Log.trace('RouteHandler::deleteDataset(..) on data; chunk length: ' + chunk.length);
+                //Log.trace('RouteHandler::deleteDataset(..) on data; chunk length: ' + chunk.length);
                 buffer.push(chunk);
             });
 
             req.once('end', function () {
                 let concated = Buffer.concat(buffer);
                 req.body = concated.toString('base64');
-                Log.trace('RouteHandler::deleteDataset(..) on end; total length: ' + req.body.length);
+                //Log.trace('RouteHandler::deleteDataset(..) on end; total length: ' + req.body.length);
 
                 // need to edit the following code to delete the dataset
                 let controller = RouteHandler.datasetController;
@@ -146,17 +146,17 @@ export default class RouteHandler {
                 // Todo: else you can break the loop possibly
                 // also have to delete the dataset in the data folder
                 controller.deleteDataset(id).then(function (result) {
-                    Log.trace('RouteHandler::deleteDataset(..) - processed');
+                    //Log.trace('RouteHandler::deleteDataset(..) - processed');
                     res.json(204, {success: result}); //dataset was deleted
-                    Log.trace("204 Sucessfully deleted");
+                    //Log.trace("204 Sucessfully deleted");
                 }).catch(function (err: Error) {
                     res.json(404, {err: err.message});
-                    Log.trace('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
+                    //Log.trace('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
                 });
             });
 
         } catch (err) {
-            Log.error('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
+            //Log.error('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
             res.send(404, {err: err.message});
         }
         return next();

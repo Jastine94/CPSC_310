@@ -113,7 +113,7 @@ describe("QueryController", function () {
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
-        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        //Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "biol", "courses_avg" : 84},
                                                       {"courses_dept": "astu", "courses_avg" : 95}]});
     });
@@ -163,7 +163,7 @@ describe("QueryController", function () {
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
-        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        //Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "cpsc", "courses_avg" : 80},
                                                       {"courses_dept": "biol", "courses_avg" : 84},
                                                       {"courses_dept": "cpsc", "courses_avg" : 84}]})

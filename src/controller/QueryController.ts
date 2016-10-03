@@ -33,7 +33,7 @@ export default class QueryController {
     }
 
     public query(query: QueryRequest): QueryResponse {
-        Log.trace('QueryController::query( ' + JSON.stringify(query) + ' )');
+        //Log.trace('QueryController::query( ' + JSON.stringify(query) + ' )');
 
         if (this.isValid(query))
         {
@@ -113,7 +113,7 @@ export default class QueryController {
 
                     queryResponse = {result : queryResponse};
                     queryResponse = this.queryAs(query.AS, queryResponse);
-                    Log.trace(JSON.stringify(queryResponse));
+                    //Log.trace(JSON.stringify(queryResponse));
                 }
             }
 
@@ -180,8 +180,6 @@ export default class QueryController {
 
                                 getNotNot = this.queryWhere(key[where], data);
                                 accResult = this.getArrayDiff(resultList, getNotNot);
-
-                                Log.trace(("Not!!!!" + JSON.stringify(accResult)));
                                 return accResult;
                             }
                             else if ('EQ' == where)
@@ -419,7 +417,7 @@ export default class QueryController {
         for (var i = 0; i < total.length; ++i)
         {
             var key = total[i];
-            
+
             let isSame : boolean = false;
             for (var item in toRemove)
             {
