@@ -17,13 +17,13 @@ describe("QueryController", function () {
     });
 
     it("Should be able to get with 2 key where gt clause", function() {
-        let query: QueryRequest = { GET: ["courses_dept", "courses_id"],
+        let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
                                     WHERE: {
                                         "LT": {
                                             "courses_avg": 85
                                             }
                                         },
-                                    ORDER: "courses_id", AS: 'TABLE'};
+                                    ORDER: "courses_avg", AS: 'TABLE'};
 
         let dataset: Datasets = {
                     "courses" :
@@ -61,9 +61,9 @@ describe("QueryController", function () {
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
-        expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "cpsc", "courses_id" : 1},
-                                                      {"courses_dept": "cpsc", "courses_id" : 4},
-                                                      {"courses_dept": "biol", "courses_id" : 5}]})
+        expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "cpsc", "courses_avg" : 80},
+                                                      {"courses_dept": "biol", "courses_avg" : 84},
+                                                      {"courses_dept": "cpsc", "courses_avg" : 84}]})
     });
 
     // is string comparison query

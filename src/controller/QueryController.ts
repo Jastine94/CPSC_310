@@ -247,16 +247,20 @@ export default class QueryController {
     {
         Log.trace('QueryController::queryOrder( ' + JSON.stringify(data) + ' )');
 
-        data.sort(function (a, b) {
-              if (a[key] > b[key]) {
-                return 1;
-              }
-              if (a[key] < b[key]) {
-                return -1;
-              }
-              // a must be equal to b
-              return 0;
-          });
+        if (key == "courses_avg" || key == "courses_pass" ||
+            key == "courses_fail" || key == "courses_audit")
+        {
+            data.sort(function (a, b) {
+                  if (a[key] > b[key]) {
+                    return 1;
+                  }
+                  if (a[key] < b[key]) {
+                    return -1;
+                  }
+                  // a must be equal to b
+                  return 0;
+              });
+        }
 
         Log.trace("ORDERED!!!!!!!!!" + JSON.stringify(data));
         let queryOrderedResult :QueryResponse = [];
