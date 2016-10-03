@@ -86,23 +86,29 @@ export default class RouteHandler {
             let controller = new QueryController(datasets);
             let isValid = controller.isValid(query);
 
-            // if (Object.keys(datasets).length === 0)
-            // check if the dataset has it, if not it has to have a missing
-            // TODO: Check if the data is on disk if it is not in the dataset since it can shutdown between put & post
-            // 200: the query was successfully answered. The result should be sent in JSON according in the response body.
-            // 424: the query failed because it depends on a resource that has not been PUT. The body should contain {missing: ['id1', 'id2'...]}.
-            // 400: the query failed; body should contain {error: 'my text'} providing extra detail.
-
             Log.trace("Query is valid? " + isValid);
             if (isValid === true) {
                 let result:any = controller.query(query);
-                Log.trace("Completed querying it");
-                Log.trace("result is: " + result);
-                for (let i in result){
-                    console.log (i, result[i]); //only for printing purposess, todo: take out before commit
+                if(req.params.hasOwnProperty("GET")) {
+                    let value = req.params["GET"];
+                    let missing_id: string[] = [];
+                    for (let i = 0; i < value.length; i++) {
+                        let temp_pos = value[i].indexOf("_");
+                        let id = value[i].substring(0, temp_pos);
+                        if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json"))) {
+                            missing_id.push(id);
+                        }
+                    }
+                    if (missing_id.length > 0){
+                        let mids:any = {};
+                        mids["missing"] = missing_id;
+                        res.json(424, mids);
+                        Log.trace("424 Missing: " + JSON.stringify(mids));
+                    }
                 }
                 res.json(200, result);
                 Log.trace("200 Successful");
+
             } else {
                 res.json(400, {status: 'Invalid query'});
                 Log.trace("400 Error - Invalid query");

@@ -34,17 +34,21 @@ export default class DatasetController {
     public getDataset(id: string): any {
         // TODO: this should check if the dataset is on disk in ./data if it is not already in memory.
 
+        let that = this;
         Log.trace('DatasetController::getDataset() - start ');
         let data_dir: string = __dirname+"\/..\/..\/data\/";
 
-        if(this.datasets.hasOwnProperty(id)){
-            return this.datasets[id];
+        if(that.datasets.hasOwnProperty(id)){
+            Log.trace("COmpleted get dataset");
+            return that.datasets[id];
         }
-        if(fs.existsSync(data_dir+id+'.json')) {
-            this.datasets[id] = fs.readFileSync(data_dir + id + '.json');
-            return this.datasets[id];
+        else if(fs.existsSync(data_dir+id+'.json')) {
+            that.datasets[id] = fs.readFileSync(data_dir + id + '.json');
+            Log.trace("COmpleted get dataset");
+            return that.datasets[id];
         }
 
+        Log.trace("COmpleted get dataset");
         return null;
         // try{
         //     let fs = require(id);
@@ -73,33 +77,21 @@ export default class DatasetController {
         if (Object.keys(that.datasets).length === 0 && that.datasets.constructor === Object){
             let data_dir: string = __dirname+"\/..\/..\/data\/";
             Log.trace('path for the data location is:' + data_dir);
-            fs.readdir( data_dir, function( err, files ) {
-                if( err ) {
-                    Log.trace( "Directory could not be loaded: " + err );
-                    process.exit( 1 );
-                }
-                else {
-                    Log.trace('time to read files');
-                    files.forEach(function (file, index) {
-                        // fs.readFile(data_dir+file, (err: any, data: any) => {
-                        //     Log.trace("Data is: " + data);
-                        //         if (err){
-                        //         throw err;
-                        //     }
-                        //     this.datasets = data;
-                        // });
-                        let id = file.replace('.json', '');
-                        Log.trace("Dataset with id: " + id + " - will be added to the dataset")
-                        that.datasets[id] = fs.readFileSync(data_dir + file);
-                        Log.trace("object has been added: " + that.datasets[id]);
-                        Log.trace("Index of file in the data foldr is: " + index);
-                        // first one is async and second one is sync
-                    });
-                }
-                Log.trace("finished iterating through the data file");
-            });
+
+            let exist_datafolder: boolean = fs.existsSync(data_dir);
+
+            if(exist_datafolder){
+
+                let files = fs.readdirSync(data_dir);
+                files.forEach(function (file, index) {
+                    let id = file.replace('.json', '');
+                    Log.trace("Dataset with id: " + id + " - will be added to the dataset");
+                    that.datasets[id] = fs.readFileSync(data_dir + file);
+                })
+                Log.trace("DatasetController :: getDatasets - completed");
+                return that.datasets;
+            }
         }
-        Log.trace("will complete it now!!!!" + that.datasets);
         return that.datasets;
     } //getDatasets
 
@@ -191,7 +183,7 @@ export default class DatasetController {
                         Log.trace("Failed to iterate through all files: " + err.message);
                         reject(err);
                     });
-
+                    // reject(true); // TODO: Take out, only putting here to see if I can find out why it works for the public test
                 }).catch(function (err) {
                     Log.trace('DatasetController::process(..) - unzip ERROR: ' + err.message);
                     reject(err);
