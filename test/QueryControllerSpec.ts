@@ -16,6 +16,40 @@ describe("QueryController", function () {
     afterEach(function () {
     });
 
+    it("Should be able to get with 2 key with when none is not", function() {
+        let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
+                                    WHERE: {
+                                        "NOT": {
+                                            "LT": {
+                                                "courses_avg": 85
+                                                }
+                                            }
+                                        },
+                                    ORDER: "courses_avg", AS: 'TABLE'};
+
+        let dataset: Datasets = {
+                    "courses" :
+                    [{"result": [{
+                            "id": "1",
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 86,
+                            "Subject": "biol"
+                        }]},
+                    {"result": [{
+                            "id": "2",
+                            "Professor": "another result",
+                            "Avg": 95,
+                            "Subject": "cpsc"
+                        }
+                        ]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "biol", "courses_avg" : 86},
+                                                      {"courses_dept": "cpsc", "courses_avg" : 95}]});
+    });
+
     it("Should be able to get with 2 key with not", function() {
         let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
                                     WHERE: {
@@ -67,7 +101,7 @@ describe("QueryController", function () {
                                                       {"courses_dept": "biol", "courses_avg" : 95}]});
     });
 
-    it("Should be able to get with 2 key with not", function() {
+    it("Should be able to get with 2 key with not is a wild card", function() {
         let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
                                     WHERE: {
                                         "NOT": {
@@ -113,11 +147,115 @@ describe("QueryController", function () {
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
-        //Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "biol", "courses_avg" : 84},
                                                       {"courses_dept": "astu", "courses_avg" : 95}]});
     });
 
+    it("Should be able to get with 2 key with not with empty result", function() {
+        let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
+                                    WHERE: {
+                                        "NOT": {
+                                            "IS": {
+                                                "courses_dept": "cpsc"
+                                                }
+                                            }
+                                        },
+                                    ORDER: "courses_avg", AS: 'TABLE'};
+
+        let dataset: Datasets = {
+                    "courses" :
+                    [{"result": [{
+                            "id": "1",
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 84,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": "2",
+                            "Professor": "holmes, reid",
+                            "Avg": 80,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": "3",
+                            "Professor": "gregor",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        }]},
+                    {"result": [{
+                            "id": "4",
+                            "Professor": "another result",
+                            "Avg": 95,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": "5",
+                            "Professor": "carter",
+                            "Avg": 84,
+                            "Subject": "cpsc"
+                        }]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({render: 'TABLE', result: []});
+    });
+
+    it("Should be able to get with 2 key with double negation", function() {
+        let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
+                                    WHERE: {
+                                        "NOT": {
+                                            "NOT" :
+                                            {
+                                                "IS": {
+                                                    "courses_dept": "*psc"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                    ORDER: "courses_avg", AS: 'TABLE'};
+
+        let dataset: Datasets = {
+                    "courses" :
+                    [{"result": [{
+                            "id": "1",
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 84,
+                            "Subject": "biol"
+                        },
+                        {
+                            "id": "2",
+                            "Professor": "holmes, reid",
+                            "Avg": 80,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": "3",
+                            "Professor": "gregor",
+                            "Avg": 90,
+                            "Subject": "cpsc"
+                        }]},
+                    {"result": [{
+                            "id": "4",
+                            "Professor": "another result",
+                            "Avg": 95,
+                            "Subject": "astu"
+                        },
+                        {
+                            "id": "5",
+                            "Professor": "carter",
+                            "Avg": 84,
+                            "Subject": "cpsc"
+                        }]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "cpsc", "courses_avg" : 80},
+                                                      {"courses_dept": "cpsc", "courses_avg" : 84},
+                                                      {"courses_dept": "cpsc", "courses_avg" : 90}]});
+    });
 
     it("Should be able to get with 2 key where lt clause and order by avg", function() {
         let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
@@ -163,7 +301,7 @@ describe("QueryController", function () {
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
-        //Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "cpsc", "courses_avg" : 80},
                                                       {"courses_dept": "biol", "courses_avg" : 84},
                                                       {"courses_dept": "cpsc", "courses_avg" : 84}]})
@@ -882,23 +1020,22 @@ describe("QueryController", function () {
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         let expected_result = { render: 'TABLE',
                                 result:
-                                    [   {courses_instructor: 'kiczales, gregor'},
-                                        {courses_instructor: ''}]};
-        expect(ret).to.be.equal(expected_result.toString());
-        // output of the test should be object with the correct information
+                                    [{courses_instructor: 'kiczales, gregor'},
+                                     {courses_instructor: ''}]};
+        expect(ret).to.eql(expected_result);
     });
 
     // SCOMPARISON with [*] comparison
     it("Should be able to query and return all values that contain [*] string", function(){
         let query: QueryRequest = {
-                                    GET: ["courses_average"],
+                                    GET: ["courses_avg"],
                                     WHERE: {
                                         AND: [
-                                            {IS: {"courses_instructor":"diane*"}},
+                                            {"IS": {"courses_instructor":"diane*"}},
                                             {"GT": {"courses_avg": 60}}
                                         ]
                                     },
-                                    ORDER: "courses_id",
+                                    ORDER: "courses_avg",
                                     AS: "TABLE"
         };
 
@@ -942,15 +1079,12 @@ describe("QueryController", function () {
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         let expected_value =  { render: 'TABLE',
                                 result:
-                                    [
-                                        {courses_instructor: 'goodey, wayne;srivastava, diane'},
+                                        [{courses_instructor: 'goodey, wayne;srivastava, diane'},
                                         {courses_instructor: 'dianehahaha'},
                                         {courses_instructor: 'goodey, wayndianee'},
                                         {courses_instructor: 'dididididianeh'}]};
-        expect(ret).to.be.equal(expected_value);
-        // todo: might not exactly output as wanted
+        expect(ret).to.eql(expected_value);
     });
-
 
     // complex query
     it("Should be able to query, although the answer will be empty", function () {

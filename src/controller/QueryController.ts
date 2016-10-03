@@ -169,16 +169,17 @@ export default class QueryController {
                     {
                         for (var where in key)
                         {
-                            if ('AND' == where || 'OR' == where || 'NOT' == where)
+                            if ('AND' == where || 'OR' == where)
                             {
                                 //TODO: do something with the array recursive
+                                return accResult;
                             }
-                            else if ('NOTHING' == where)
+                            else if ('NOT' == where)
                             {
                                 let getNotNot : any[] = [];
-                                let totalList : any[] = valuesList;
-
                                 getNotNot = this.queryWhere(key[where], data);
+
+                                //Log.trace("GEt NOt NOt length !!!" + String(getNotNot.length));
                                 accResult = this.getArrayDiff(resultList, getNotNot);
                             }
                             else if ('EQ' == where)
