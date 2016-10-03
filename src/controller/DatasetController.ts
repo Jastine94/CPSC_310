@@ -163,7 +163,12 @@ export default class DatasetController {
                                processedDataset.push(courseinfo);
                             }
                         })
-                    )});
+                            .catch(function(err){
+                            Log.trace('Fail to get the file from the zip file: ' + err);
+                            reject(err);
+                            reject(true);
+                        }))
+                        });
                     Promise.all(promises).then(function (results) {
                         if (empty_folder){
                             reject(true);
@@ -177,16 +182,18 @@ export default class DatasetController {
                     }).catch(function (err) {
                         //Log.trace("Failed to iterate through all files: " + err.message);
                         reject(err);
-                        // reject(true);
+                        reject(true);
                     });
                     // reject(true); // TODO: Take out, only putting here to see if I can find out why it works for the public test
                 }).catch(function (err) {
                     //Log.trace('DatasetController::process(..) - unzip ERROR: ' + err.message);
                     reject(err);
+                    reject(true);
                 });
             } catch (err) {
                 //Log.trace('DatasetController::process(..) - ERROR: ' + err);
                 reject(err);
+                reject(true);
             }
         });
     } //process
