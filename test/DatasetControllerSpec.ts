@@ -40,7 +40,7 @@ describe("DatasetController", function () {
     //
     it("Should be able to save 310sampe.zip content into disk ", function () {
         Log.test("starting 310sampe.zip test")
-        var data = fs.readFileSync("test\/310courses.1.0.zip");
+        var data = fs.readFileSync("test\/310sampe.zip");
         let controller = new DatasetController();
         // return controller.process('courses', data).then(function(result){
         //     Log.test("310 sample json created!! It's " +  result);
