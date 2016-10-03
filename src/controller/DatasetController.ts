@@ -38,7 +38,8 @@ export default class DatasetController {
         Log.trace('DatasetController::getDataset() - start ');
         let data_dir: string = __dirname+"\/..\/..\/data\/";
 
-        if(that.datasets.hasOwnProperty(id)){
+        // if(that.datasets.hasOwnProperty(id)){
+        if(that.datasets[id] !== 'undefined'){
             Log.trace("COmpleted get dataset");
             return that.datasets[id];
         }
@@ -110,7 +111,8 @@ export default class DatasetController {
                 let data_json: string = __dirname + "\/..\/..\/data\/" + id + '.json';
                 Log.trace('Json file to be deleted from the data folder id: ' + data_json);
                 if (fs.existsSync(data_json)) {
-                    if (that.datasets.hasOwnProperty(id) !== null) {
+                    // if (that.datasets.hasOwnProperty(id) !== null) {
+                    if (that.datasets[id] !== 'undefined') {
                         that.datasets[id] = null;
                         Log.trace("deleted datasets have the following length: " + Object.keys(that.datasets).length);
                         fs.unlinkSync(data_json);
