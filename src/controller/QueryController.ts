@@ -54,7 +54,6 @@ export default class QueryController {
                     {
                         wherePresent = true;
                     }
-
                 }
                 else if (q == 'ORDER')
                 {
@@ -62,7 +61,7 @@ export default class QueryController {
                     // check if GET is of type string
                     let found : boolean = false;
                     orderPresent = true;
-                    // if (query.ORDER == null)
+
                     if (query.ORDER == "" || query.ORDER == null)
                     {
                         found = true;
@@ -99,10 +98,10 @@ export default class QueryController {
                     {
                         // note that where must be done before get
                         response = this.queryWhere(query.WHERE, response,false);
+                        Log.trace("response" + JSON.stringify(response));
                         response = this.queryGet(query.GET, response);
                         if (orderPresent)
                         {
-                            //let unorderedResponse : [] = queryResponse;
                             queryResponse = this.queryOrder(query.ORDER, response);
                         }
                         else
@@ -113,7 +112,6 @@ export default class QueryController {
 
                     queryResponse = {result : queryResponse};
                     queryResponse = this.queryAs(query.AS, queryResponse);
-                    //Log.trace(JSON.stringify(queryResponse));
                 }
             }
 
@@ -121,8 +119,6 @@ export default class QueryController {
 
         }
         return {status: 'received', ts: new Date().getTime()};
-        // TODO: implement this
-
     }// query
 
     /**
@@ -155,109 +151,246 @@ export default class QueryController {
             var myDataList = this.datasets[myCurrentDataSet];
             var resultList = JSON.parse(JSON.stringify(myDataList));
 
-            // get each result object
-            for (var keys in resultList)
-            {
-                var result = resultList[keys];
-                let valuesList = result["result"];
-
-                for (var values in valuesList)
-                {
-                    var value = valuesList[values];
                     // id_key : value pair == value : instance
-                    for (var instance in value)
+
+                    for (var where in key)
                     {
-                        for (var where in key)
+                        if ('OR' == where)
                         {
-                            if ('AND' == where || 'OR' == where)
+                            //TODO: do something with the array recursive
+                            return accResult;
+                        }
+                        else if ('AND' == where)
+                        {
+                            let keyContains = key[where];
+                            let firstOne: boolean = true;
+                            for (var it in keyContains)
                             {
-                                //TODO: do something with the array recursive
-                                return accResult;
-                            }
-                            else if ('NOT' == where)
-                            {
-                                let getNotNot : any[] = [];
-                                if (!isNot)
+                                let item = keyContains[it];
+                                let itemList = JSON.parse(JSON.stringify(item));
+
+                                for (var i in itemList)
                                 {
-                                    accResult = this.queryWhere(key[where], data, true);
-                                }
-                                else
-                                {
-                                    accResult = this.queryWhere(key[where], data, false);
-                                }
-                                return accResult;
-                            }
-                            else if ('EQ' == where)
-                            {
-                                let keyContains = key[where];
-                                for (let k in keyContains)
-                                {
-                                    var temp = this.getKey(k.toString());
-                                    if ((temp === String(instance)) &&
-                                        (keyContains[k] == value[instance]) && !isNot)
+                                    let tempKey : {} = {[i] : itemList[i]};
+                                    let emptyList : any[] = [];
+
+                                    Log.trace("tempKey" + JSON.stringify(tempKey));
+                                    if (firstOne)
                                     {
-                                        accResult.push(value);
+                                        firstOne = false;
+                                        if ('NOT' == i)
+                                        {
+                                            accResult = this.queryWhere(tempKey, data, isNot);
+                                        }
+                                        else
+                                        {
+                                            accResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot);
+                                        }
                                     }
-                                    else if ((temp === String(instance)) &&
-                                        (keyContains[k] != value[instance]) && isNot)
+                                    else
                                     {
-                                        accResult.push(value);
-                                    }
-                                }
-                            }
-                            else if ('GT' == where)
-                            {
-                                let keyContains = key[where];
-                                for (let k in keyContains)
-                                {
-                                    var temp = this.getKey(k.toString());
-                                    if ((temp === String(instance)) &&
-                                        (keyContains[k] < value[instance]) && !isNot)
-                                    {
-                                        accResult.push(value);
-                                    }
-                                    else if ((temp === String(instance)) &&
-                                        (keyContains[k] > value[instance]) && isNot)
-                                    {
-                                        accResult.push(value);
+                                        let newList: any[] = [];
+                                        emptyList = [];
+                                        newList.push({"result": accResult});
+                                        // handle case where not is in inside and
+                                        if ('NOT' == i)
+                                        {
+                                            accResult = this.queryWhere(tempKey, newList, isNot);
+                                        }
+                                        else
+                                        {
+                                            accResult = this.queryWhereHelper(tempKey, newList, emptyList, isNot);
+                                        }
                                     }
                                 }
                             }
-                            else if ('LT' == where)
+
+                            return accResult;
+                        }
+                        else if ('NOT' == where)
+                        {
+                            let getNotNot : any[] = [];
+                            if (!isNot)
                             {
-                                let keyContains = key[where];
-                                for (let k in keyContains)
+                                accResult = this.queryWhere(key[where], data, true);
+                            }
+                            else
+                            {
+                                accResult = this.queryWhere(key[where], data, false);
+                            }
+
+                            return accResult;
+                        }
+                        else
+                        {
+                            accResult = this.queryWhereHelper(key, resultList, accResult, isNot);
+                        }
+                        /*
+                        else if ('EQ' == where)
+                        {
+                            let keyContains = key[where];
+                            for (let k in keyContains)
+                            {
+                                var temp = this.getKey(k.toString());
+                                if ((temp === String(instance)) &&
+                                    (keyContains[k] == value[instance]) && !isNot)
                                 {
-                                    var temp = this.getKey(k.toString());
-                                    if ((temp === String(instance)) &&
-                                        (keyContains[k] > value[instance]) && ! isNot)
-                                    {
-                                        accResult.push(value);
-                                    }
-                                    else if ((temp === String(instance)) &&
-                                        (keyContains[k] < value[instance]) && isNot)
-                                    {
-                                        accResult.push(value);
-                                    }
+                                    accResult.push(value);
+                                }
+                                else if ((temp === String(instance)) &&
+                                    (keyContains[k] != value[instance]) && isNot)
+                                {
+                                    accResult.push(value);
                                 }
                             }
-                            else if ('IS' == where)
+                        }
+                        else if ('GT' == where)
+                        {
+                            let keyContains = key[where];
+                            for (let k in keyContains)
                             {
-                                let keyContains = key[where];
-                                for (let k in keyContains)
+                                var temp = this.getKey(k.toString());
+                                if ((temp === String(instance)) &&
+                                    (keyContains[k] < value[instance]) && !isNot)
                                 {
-                                    var temp = this.getKey(k.toString());
-                                    var patt = new RegExp(keyContains[k].split("*").join(".*"));
-                                    if ((temp === String(instance)) &&
-                                        (patt.test(value[instance])) && !isNot)
-                                    {
-                                        accResult.push(value);
-                                    }
-                                    else if ((temp === String(instance)) &&
-                                        (!patt.test(value[instance])) && isNot)
-                                    {
-                                        accResult.push(value);
-                                    }
+                                    accResult.push(value);
+                                }
+                                else if ((temp === String(instance)) &&
+                                    (keyContains[k] > value[instance]) && isNot)
+                                {
+                                    accResult.push(value);
+                                }
+                            }
+                        }
+                        else if ('LT' == where)
+                        {
+                            let keyContains = key[where];
+                            for (let k in keyContains)
+                            {
+                                var temp = this.getKey(k.toString());
+                                if ((temp === String(instance)) &&
+                                    (keyContains[k] > value[instance]) && ! isNot)
+                                {
+                                    accResult.push(value);
+                                }
+                                else if ((temp === String(instance)) &&
+                                    (keyContains[k] < value[instance]) && isNot)
+                                {
+                                    accResult.push(value);
+                                }
+                            }
+                        }
+                        else if ('IS' == where)
+                        {
+                            let keyContains = key[where];
+                            for (let k in keyContains)
+                            {
+                                var temp = this.getKey(k.toString());
+                                var patt = new RegExp(keyContains[k].split("*").join(".*"));
+                                if ((temp === String(instance)) &&
+                                    (patt.test(value[instance])) && !isNot)
+                                {
+                                    accResult.push(value);
+                                }
+                                else if ((temp === String(instance)) &&
+                                    (!patt.test(value[instance])) && isNot)
+                                {
+                                    accResult.push(value);
+                                }
+                            }
+                        }
+                        */
+            }
+        }
+        return accResult;
+    }// queryWhere
+
+    private queryWhereHelper(key: any, resultList: any[], ret : any [], isNot : boolean): any[]
+    {
+        // get each result object
+        for (var keys in resultList)
+        {
+            var result = resultList[keys];
+            let valuesList = result["result"];
+
+            for (var values in valuesList)
+            {
+                var value = valuesList[values];
+
+                for (var instance in value)
+                {
+                    for (var where in key)
+                    {
+                        if ('EQ' == where)
+                        {
+                            let keyContains = key[where];
+                            for (let k in keyContains)
+                            {
+                                var temp = this.getKey(k.toString());
+                                if ((temp === String(instance)) &&
+                                    (keyContains[k] == value[instance]) && !isNot)
+                                {
+                                    ret.push(value);
+                                }
+                                else if ((temp === String(instance)) &&
+                                    (keyContains[k] != value[instance]) && isNot)
+                                {
+                                    ret.push(value);
+                                }
+                            }
+                        }
+                        else if ('GT' == where)
+                        {
+                            let keyContains = key[where];
+                            for (let k in keyContains)
+                            {
+                                var temp = this.getKey(k.toString());
+                                if ((temp === String(instance)) &&
+                                    (keyContains[k] < value[instance]) && !isNot)
+                                {
+                                    ret.push(value);
+                                }
+                                else if ((temp === String(instance)) &&
+                                    (keyContains[k] > value[instance]) && isNot)
+                                {
+                                    ret.push(value);
+                                }
+                            }
+                        }
+                        else if ('LT' == where)
+                        {
+                            let keyContains = key[where];
+                            for (let k in keyContains)
+                            {
+                                var temp = this.getKey(k.toString());
+                                if ((temp === String(instance)) &&
+                                    (keyContains[k] > value[instance]) && ! isNot)
+                                {
+                                    ret.push(value);
+                                }
+                                else if ((temp === String(instance)) &&
+                                    (keyContains[k] < value[instance]) && isNot)
+                                {
+                                    ret.push(value);
+                                }
+                            }
+                        }
+                        else if ('IS' == where)
+                        {
+                            let keyContains = key[where];
+                            for (let k in keyContains)
+                            {
+                                var temp = this.getKey(k.toString());
+                                var patt = new RegExp(keyContains[k].split("*").join(".*"));
+                                if ((temp === String(instance)) &&
+                                    (patt.test(value[instance])) && !isNot)
+                                {
+                                    ret.push(value);
+                                }
+                                else if ((temp === String(instance)) &&
+                                    (!patt.test(value[instance])) && isNot)
+                                {
+                                    ret.push(value);
                                 }
                             }
                         }
@@ -265,8 +398,9 @@ export default class QueryController {
                 }
             }
         }
-        return accResult;
-    }// queryWhere
+
+        return ret;
+    }
 
     /**
      * order the query response to based on key

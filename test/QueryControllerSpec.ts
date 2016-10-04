@@ -50,14 +50,13 @@ describe("QueryController", function () {
                                                       {"courses_dept": "cpsc", "courses_avg" : 95}]});
     });
 
-    it("Should be able to get with 2 key with when is with and", function() {
+    it("Should be able to get with 2 key with and array", function() {
         let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
                                     WHERE: {
-                                        "NOT": {
                                             "AND": [{
                                                 "IS": {"courses_dept" : "cpsc"},
-                                                "GT": {"courses_avg" : 95}
-                                            }]}
+                                                "EQ": {"courses_avg" : 95}
+                                            }]
                                         },
                                     ORDER: "courses_avg", AS: 'TABLE'};
 
@@ -74,13 +73,31 @@ describe("QueryController", function () {
                             "Professor": "another result",
                             "Avg": 95,
                             "Subject": "cpsc"
+                        },
+                        {
+                                "id": "10",
+                                "Professor": "another result",
+                                "Avg": 95,
+                                "Subject": "cpscblabla"
+                            },
+                        {
+                            "id": "3",
+                            "Professor": "another result",
+                            "Avg": 92,
+                            "Subject": "cpsc"
+                        },
+                        {
+                            "id": "4",
+                            "Professor": "another result",
+                            "Avg": 95,
+                            "Subject": "key"
                         }
                         ]}]};
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
-        expect(ret).to.eql({render: 'TABLE', result: []});
+        expect(ret).to.eql({render: 'TABLE', result: [{"courses_dept": "cpsc", "courses_avg" : 95}]});
     });
 
     it("Should be able to get with 2 key with not", function() {
@@ -982,25 +999,22 @@ describe("QueryController", function () {
         expect(ret).to.eql({ render: 'TABLE', result: [{"courses_avg": 84, "courses_pass" : 100}]});
     });
 
-/*
     //simple query with the correct format of using LOGIC COMPARISON AND NOT {filter} with a valid dataset
     it("Should be able to query and return a valid response with", function(){
         let query: QueryRequest = {
                                     GET: ["courses_instructor"],
                                     WHERE: {
-                                        AND: {
-                                            IS: {"courses_dept" : "cpsc"},
-                                            NOT: {
-                                                EQ:{"courses_avg": 75}
-                                            }
-                                        }
-                                    },
-                                    ORDER: null,
-                                    AS: "TABLE"
-        };
+                                        AND: [{
+                                            "IS": {"courses_dept" : "cpsc"},
+                                            "NOT": {
+                                                "EQ":{"courses_avg": 75}
+                                            }}]
+                                        },
+                                    ORDER : null,
+                                    AS: "TABLE"};
         let dataset: Datasets = {
                                 "courses":
-                                    {"result":
+                                    [{"result":
                                         [
                                             {
                                                 "Title": "comptn, progrmng",
@@ -1046,7 +1060,7 @@ describe("QueryController", function () {
                                                 "Campus": "ubc",
                                                 "Subject": "cpsc"
                                             }]
-                                    }
+                                    }]
         };
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
@@ -1061,19 +1075,19 @@ describe("QueryController", function () {
     // SCOMPARISON with [*] comparison
     it("Should be able to query and return all values that contain [*] string", function(){
         let query: QueryRequest = {
-                                    GET: ["courses_avg"],
+                                    GET: ["courses_instructor"],
                                     WHERE: {
                                         AND: [
                                             {"IS": {"courses_instructor":"diane*"}},
                                             {"GT": {"courses_avg": 60}}
                                         ]
                                     },
-                                    ORDER: "courses_avg",
+                                    ORDER: null,
                                     AS: "TABLE"
         };
 
         let dataset: Datasets = {"courses":
-                                    {"result":
+                                    [{"result":
                                     [{
                                         "Title": "fund ecology",
                                         "Section": "201",
@@ -1106,7 +1120,7 @@ describe("QueryController", function () {
                                             "Avg": 74.27,
                                             "Subject": "biol"
                                         }
-                                        ]}};
+                                    ]}]};
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
@@ -1118,6 +1132,8 @@ describe("QueryController", function () {
                                         {courses_instructor: 'dididididianeh'}]};
         expect(ret).to.eql(expected_value);
     });
+
+    /*
 
     // complex query
     it("Should be able to query, although the answer will be empty", function () {
