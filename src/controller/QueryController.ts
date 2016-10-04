@@ -50,10 +50,7 @@ export default class QueryController {
                 }
                 else if (q == 'WHERE')
                 {
-                    if (getPresent)
-                    {
-                        wherePresent = true;
-                    }
+                    wherePresent = true;
                 }
                 else if (q == 'ORDER')
                 {
@@ -97,9 +94,11 @@ export default class QueryController {
                     if (wherePresent && getPresent)
                     {
                         // note that where must be done before get
-                        response = this.queryWhere(query.WHERE, response,false);
-                        Log.trace("response" + JSON.stringify(response));
+                        response = this.queryWhere(query.WHERE, response, false);
                         response = this.queryGet(query.GET, response);
+
+                        //Log.trace("response" + JSON.stringify(response));
+                        queryResponse = response;
                         if (orderPresent)
                         {
                             queryResponse = this.queryOrder(query.ORDER, response);
@@ -173,8 +172,6 @@ export default class QueryController {
                                 {
                                     let tempKey : {} = {[i] : itemList[i]};
                                     let emptyList : any[] = [];
-
-                                    Log.trace("tempKey" + JSON.stringify(tempKey));
                                     if (firstOne)
                                     {
                                         firstOne = false;
@@ -381,16 +378,35 @@ export default class QueryController {
                             for (let k in keyContains)
                             {
                                 var temp = this.getKey(k.toString());
-                                var patt = new RegExp(keyContains[k].split("*").join(".*"));
-                                if ((temp === String(instance)) &&
-                                    (patt.test(value[instance])) && !isNot)
+                                //let wildcardPresent = ;
+
+                                if (!keyContains[k].includes("*"))
                                 {
-                                    ret.push(value);
+                                    if ((temp === String(instance)) &&
+                                        (keyContains[k] == value[instance]) && !isNot)
+                                    {
+                                        ret.push(value);
+                                    }
+                                    else if ((temp === String(instance)) &&
+                                             (keyContains[k] != value[instance]) && isNot)
+                                    {
+                                        ret.push(value);
+                                    }
                                 }
-                                else if ((temp === String(instance)) &&
-                                    (!patt.test(value[instance])) && isNot)
+                                else
                                 {
-                                    ret.push(value);
+                                    var patt = new RegExp(keyContains[k].split("*").join(".*"));
+
+                                    if ((temp === String(instance)) &&
+                                        (value[instance].match(patt)) && !isNot)
+                                    {
+                                        ret.push(value);
+                                    }
+                                    else if ((temp === String(instance)) &&
+                                        (!value[instance].match(patt)) && isNot)
+                                    {
+                                        ret.push(value);
+                                    }
                                 }
                             }
                         }
@@ -556,7 +572,6 @@ export default class QueryController {
      */
     private getArrayDiff(totalList : any[], toRemove: any[]): any[]
     {
-        Log.trace("getArrayDiff(...)");
         let ret : any [] = [];
         let total : any[] = [];
 
@@ -571,16 +586,12 @@ export default class QueryController {
             }
         }
 
-        Log.trace("Starting comparsion");
-
         for (var i = 0; i < total.length; ++i)
         {
-            Log.trace("total.length" + String(total.length) + String(i));
             var key = total[i];
 
             let isSame : boolean = false;
 
-            Log.trace("checking to remove" + JSON.stringify(toRemove));
             for (var item in toRemove)
             {
                 if (JSON.stringify(toRemove[item]) == JSON.stringify(key))
@@ -595,8 +606,6 @@ export default class QueryController {
                 ret.push(key);
             }
         }
-
-        Log.trace ("done comparision");
 
         return ret;
     } //getArrayDiff
