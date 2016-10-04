@@ -90,7 +90,6 @@ export default class RouteHandler {
             Log.trace("Query is valid? " + isValid);
             if (isValid) {
                 if(req.params.hasOwnProperty("GET")) {
-                    Log.trace("HiIIIIII");
                     let value = req.params["GET"];
                     let missing_id: string[] = [];
                     for (let i = 0; i < value.length; i++) {
@@ -118,9 +117,13 @@ export default class RouteHandler {
                         }
                     }
                 }
+                else {
+                    res.json(400, {status: 'Invalid query'});
+                    Log.trace("400 Error - Invalid query");
+                }
             } else {
                 res.json(400, {status: 'Invalid query'});
-                //Log.trace("400 Error - Invalid query");
+                Log.trace("400 Error - Invalid query");
             }
         } catch (err) {
             //Log.error('RouteHandler::postQuery(..) - ERROR: '  + err);
