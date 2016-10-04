@@ -495,7 +495,7 @@ export default class QueryController {
         }
         else if ("courses_id" == key)
         {
-            tempKey = "id";
+            tempKey = "Course";
         }
         else if ("courses_avg" == key)
         {
