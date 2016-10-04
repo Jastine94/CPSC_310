@@ -98,7 +98,7 @@ export default class QueryController {
                     if (wherePresent && getPresent)
                     {
                         // note that where must be done before get
-                        response = this.queryWhere(query.WHERE, response);
+                        response = this.queryWhere(query.WHERE, response,false);
                         response = this.queryGet(query.GET, response);
                         if (orderPresent)
                         {
@@ -145,7 +145,7 @@ export default class QueryController {
      * @param data, QueryResponse that is being filered
      * @returns {QueryResponse}
      */
-    private queryWhere(key: any, data: any[]): any[]
+    private queryWhere(key: any, data: any[], isNot: boolean): any[]
     {
         let accResult : any = [];
 
@@ -177,11 +177,15 @@ export default class QueryController {
                             else if ('NOT' == where)
                             {
                                 let getNotNot : any[] = [];
-                                let totalList : any[] = resultList;
-                                getNotNot = this.queryWhere(key[where], data);
-
-                                //Log.trace("GEt NOt NOt length !!!" + String(getNotNot.length));
-                                accResult = this.getArrayDiff(totalList, getNotNot);
+                                if (!isNot)
+                                {
+                                    accResult = this.queryWhere(key[where], data, true);
+                                }
+                                else
+                                {
+                                    accResult = this.queryWhere(key[where], data, false);
+                                }
+                                return accResult;
                             }
                             else if ('EQ' == where)
                             {
@@ -190,7 +194,12 @@ export default class QueryController {
                                 {
                                     var temp = this.getKey(k.toString());
                                     if ((temp === String(instance)) &&
-                                        (keyContains[k] == value[instance]))
+                                        (keyContains[k] == value[instance]) && !isNot)
+                                    {
+                                        accResult.push(value);
+                                    }
+                                    else if ((temp === String(instance)) &&
+                                        (keyContains[k] != value[instance]) && isNot)
                                     {
                                         accResult.push(value);
                                     }
@@ -203,7 +212,12 @@ export default class QueryController {
                                 {
                                     var temp = this.getKey(k.toString());
                                     if ((temp === String(instance)) &&
-                                        (keyContains[k] < value[instance]))
+                                        (keyContains[k] < value[instance]) && !isNot)
+                                    {
+                                        accResult.push(value);
+                                    }
+                                    else if ((temp === String(instance)) &&
+                                        (keyContains[k] > value[instance]) && isNot)
                                     {
                                         accResult.push(value);
                                     }
@@ -216,7 +230,12 @@ export default class QueryController {
                                 {
                                     var temp = this.getKey(k.toString());
                                     if ((temp === String(instance)) &&
-                                        (keyContains[k] > value[instance]))
+                                        (keyContains[k] > value[instance]) && ! isNot)
+                                    {
+                                        accResult.push(value);
+                                    }
+                                    else if ((temp === String(instance)) &&
+                                        (keyContains[k] < value[instance]) && isNot)
                                     {
                                         accResult.push(value);
                                     }
@@ -230,7 +249,12 @@ export default class QueryController {
                                     var temp = this.getKey(k.toString());
                                     var patt = new RegExp(keyContains[k].split("*").join(".*"));
                                     if ((temp === String(instance)) &&
-                                        (patt.test(value[instance])))
+                                        (patt.test(value[instance])) && !isNot)
+                                    {
+                                        accResult.push(value);
+                                    }
+                                    else if ((temp === String(instance)) &&
+                                        (!patt.test(value[instance])) && isNot)
                                     {
                                         accResult.push(value);
                                     }
@@ -398,6 +422,7 @@ export default class QueryController {
      */
     private getArrayDiff(totalList : any[], toRemove: any[]): any[]
     {
+        Log.trace("getArrayDiff(...)");
         let ret : any [] = [];
         let total : any[] = [];
 
@@ -412,16 +437,22 @@ export default class QueryController {
             }
         }
 
+        Log.trace("Starting comparsion");
+
         for (var i = 0; i < total.length; ++i)
         {
+            Log.trace("total.length" + String(total.length) + String(i));
             var key = total[i];
 
             let isSame : boolean = false;
+
+            Log.trace("checking to remove" + JSON.stringify(toRemove));
             for (var item in toRemove)
             {
                 if (JSON.stringify(toRemove[item]) == JSON.stringify(key))
                 {
                     isSame = true;
+                    break;
                 }
             }
 
@@ -430,6 +461,8 @@ export default class QueryController {
                 ret.push(key);
             }
         }
+
+        Log.trace ("done comparision");
 
         return ret;
     } //getArrayDiff
