@@ -50,6 +50,39 @@ describe("QueryController", function () {
                                                       {"courses_dept": "cpsc", "courses_avg" : 95}]});
     });
 
+    it("Should be able to get with 2 key with when is with and", function() {
+        let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
+                                    WHERE: {
+                                        "NOT": {
+                                            "AND": [{
+                                                "IS": {"courses_dept" : "cpsc"},
+                                                "GT": {"courses_avg" : 95}
+                                            }]}
+                                        },
+                                    ORDER: "courses_avg", AS: 'TABLE'};
+
+        let dataset: Datasets = {
+                    "courses" :
+                    [{"result": [{
+                            "id": "1",
+                            "Professor": "graves, marcia;zeiler, kathryn",
+                            "Avg": 86,
+                            "Subject": "biol"
+                        }]},
+                    {"result": [{
+                            "id": "2",
+                            "Professor": "another result",
+                            "Avg": 95,
+                            "Subject": "cpsc"
+                        }
+                        ]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({render: 'TABLE', result: []});
+    });
+
     it("Should be able to get with 2 key with not", function() {
         let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
                                     WHERE: {

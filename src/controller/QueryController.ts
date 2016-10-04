@@ -177,10 +177,11 @@ export default class QueryController {
                             else if ('NOT' == where)
                             {
                                 let getNotNot : any[] = [];
+                                let totalList : any[] = resultList;
                                 getNotNot = this.queryWhere(key[where], data);
 
                                 //Log.trace("GEt NOt NOt length !!!" + String(getNotNot.length));
-                                accResult = this.getArrayDiff(resultList, getNotNot);
+                                accResult = this.getArrayDiff(totalList, getNotNot);
                             }
                             else if ('EQ' == where)
                             {
@@ -431,5 +432,5 @@ export default class QueryController {
         }
 
         return ret;
-    }
+    } //getArrayDiff
 }
