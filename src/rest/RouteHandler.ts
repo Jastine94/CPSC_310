@@ -88,9 +88,9 @@ export default class RouteHandler {
             let isValid = controller.isValid(query);
 
             Log.trace("Query is valid? " + isValid);
-            if (isValid === true) {
-                let result:any = controller.query(query);
+            if (isValid) {
                 if(req.params.hasOwnProperty("GET")) {
+                    Log.trace("HiIIIIII");
                     let value = req.params["GET"];
                     let missing_id: string[] = [];
                     for (let i = 0; i < value.length; i++) {
@@ -107,8 +107,15 @@ export default class RouteHandler {
                         Log.trace("424 Missing: " + JSON.stringify(mids));
                     }
                     else {
-                        res.json(200, result);
-                        Log.trace("200 Successful");
+                        let result:any = controller.query(query);
+                        if (result.status === "failed"){
+                            res.json(400, {status: 'Invalid query'});
+                            Log.trace("400 Invalid query");
+                        }
+                        else {
+                            res.json(200, result);
+                            Log.trace("200 Successful" + result);
+                        }
                     }
                 }
             } else {
