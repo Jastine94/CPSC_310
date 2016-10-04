@@ -267,7 +267,7 @@ export default class DatasetController {
                         tempobj[key] = resdata[key];
                         // Log.trace("temporary inner object has the value:" + key + ":" + tempobj[key]);
                     }
-                    else if (key === 'id'){
+                    else if (key === 'Course'){
                         tempobj[key] = resdata[key].toString();
                     }
                 }
