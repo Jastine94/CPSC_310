@@ -32,6 +32,83 @@ export default class QueryController {
         return false;
     }
 
+    // public isValid(query: QueryRequest): boolean {
+    //     // see if it is a valid query???
+    //     // FIRST, check if GET is even inside it?
+    //     let number = new RegExp("[1-9]*[0-9]+('.'[0-9]+");
+    //     let string = new RegExp("[a-zA-Z0-9,_-]+");
+    //     let key = new RegExp(string+'_'+string);
+    //     if (query.hasOwnProperty("GET") && query.hasOwnProperty("WHERE") && query.hasOwnProperty("AS")){
+    //         //first check if it has the properties of GET WHERE & AS
+    //         // second check the value of GET is an array
+    //         // then check that the array has keys of string_string
+    //         // use a for loop to check the values inside the the get vallue
+    //         let getVals = query["GET"];
+    //         let validGET: boolean = true;
+    //         for (let i = 0; i < getVals.length; i++){
+    //             let validKey:boolean = key.test(getVals[i]);
+    //             if (!validKey){
+    //                 validGET = false;
+    //             }
+    //         }
+    //
+    //         // WHERE
+    //         let whereVals = query["WHERE"];
+    //         let logicComparison:{} = {};
+    //         let mComparison:{} = {};
+    //         let sComparison:{} = {};
+    //         let negation:{} = {};
+    //
+    //         // FILTER
+    //         let filter = logicComparison || mComparison || sComparison || negation;
+    //
+    //
+    //         // LOGIC COMPARISON
+    //         // LOGIC
+    //         let logic:string; // need to input string value here
+    //         if (logic == "AND" || logic == "OR"){
+    //             // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
+    //         }else {
+    //             return false;
+    //         }
+    //         // MCOMPARISON
+    //         let mComparator: string; // need to input the mcaparator value here
+    //         if (mComparator == "LT" || mComparator == "GT" || mComparator =="EQ"){
+    //             // MCOMPARISON ::= MCOMPARATOR ':{' key ':' number '}'
+    //         }else {
+    //             return false;
+    //         }
+    //
+    //         // SCOMPARISON
+    //         let isComp: string; // need to set this value to the where clause's
+    //         if (isComp == 'IS'){
+    //             // SCOMPARISON ::= 'IS:{' key ':' [*]? string [*]? '}'
+    //         }else {
+    //             return false;
+    //         }
+    //
+    //         // NEGATION
+    //         let neg: string; // make sure that the input value of the negation is here
+    //         if (neg == 'NOT'){
+    //             // NEGATION ::= 'NOT :{' FILTER '}'
+    //         }else {
+    //             return false;
+    //         }
+    //
+    //
+    //
+    //         let asTABLE:boolean = (query["AS"] == 'TABLE');
+    //
+    //         if (asTABLE && validGET){
+    //             return true;
+    //         }
+    //
+    //         return true;
+    //     }
+    //     else return false;
+    // }
+
+
     public query(query: QueryRequest): QueryResponse {
         //Log.trace('QueryController::query( ' + JSON.stringify(query) + ' )');
 
