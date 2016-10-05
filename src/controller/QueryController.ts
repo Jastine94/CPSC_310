@@ -150,155 +150,115 @@ export default class QueryController {
             var myDataList = this.datasets[myCurrentDataSet];
             var resultList = JSON.parse(JSON.stringify(myDataList));
 
-                    // id_key : value pair == value : instance
+            if (data !== undefined)
+            {
+                resultList = data;
+            }
 
-                    for (var where in key)
+            // id_key : value pair == value : instance
+            for (var where in key)
+            {
+                if ('OR' == where)
+                {
+                    //TODO: do something with the array recursive
+                    let keyContains = key[where];
+                    let firstOne: boolean = true;
+                    for (var it in keyContains)
                     {
-                        if ('OR' == where)
-                        {
-                            //TODO: do something with the array recursive
-                            return accResult;
-                        }
-                        else if ('AND' == where)
-                        {
-                            let keyContains = key[where];
-                            let firstOne: boolean = true;
-                            for (var it in keyContains)
-                            {
-                                let item = keyContains[it];
-                                let itemList = JSON.parse(JSON.stringify(item));
+                        let item = keyContains[it];
+                        let itemList = JSON.parse(JSON.stringify(item));
 
-                                for (var i in itemList)
-                                {
-                                    let tempKey : {} = {[i] : itemList[i]};
-                                    let emptyList : any[] = [];
-                                    if (firstOne)
-                                    {
-                                        firstOne = false;
-                                        if ('NOT' == i)
-                                        {
-                                            accResult = this.queryWhere(tempKey, data, isNot);
-                                        }
-                                        else
-                                        {
-                                            accResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        let newList: any[] = [];
-                                        emptyList = [];
-                                        newList.push({"result": accResult});
-                                        // handle case where not is in inside and
-                                        if ('NOT' == i)
-                                        {
-                                            accResult = this.queryWhere(tempKey, newList, isNot);
-                                        }
-                                        else
-                                        {
-                                            accResult = this.queryWhereHelper(tempKey, newList, emptyList, isNot);
-                                        }
-                                    }
-                                }
+                        for (var i in itemList)
+                        {
+                            let tempKey : {} = {[i] : itemList[i]};
+                            if ('AND' == i)
+                            {
+                                accResult = this.queryWhere(tempKey, data, isNot);
                             }
-
-                            return accResult;
-                        }
-                        else if ('NOT' == where)
-                        {
-                            let getNotNot : any[] = [];
-                            if (!isNot)
+                            else if ('NOT' == i)
                             {
-                                accResult = this.queryWhere(key[where], data, true);
+                                let trimResult: any[] = [];
+                                trimResult.push({"result": accResult});
+                                // need to remove the not items that is in the accResult so far
+                                trimResult = this.queryWhere(tempKey, trimResult, isNot);
+                                accResult = this.queryWhere(tempKey, data, isNot);
+                                accResult.concat(trimResult);
                             }
                             else
                             {
-                                accResult = this.queryWhere(key[where], data, false);
+                                resultList = JSON.parse(JSON.stringify(myDataList));
+                                accResult = this.queryWhereHelper(tempKey, resultList, accResult, isNot);
                             }
+                        }
+                    }
+                    return accResult;
+                }
+                else if ('AND' == where)
+                {
+                    let keyContains = key[where];
+                    let firstOne: boolean = true;
+                    for (var it in keyContains)
+                    {
+                        let item = keyContains[it];
+                        let itemList = JSON.parse(JSON.stringify(item));
 
-                            return accResult;
-                        }
-                        else
+                        for (var i in itemList)
                         {
-                            accResult = this.queryWhereHelper(key, resultList, accResult, isNot);
-                        }
-                        /*
-                        else if ('EQ' == where)
-                        {
-                            let keyContains = key[where];
-                            for (let k in keyContains)
+                            let tempKey : {} = {[i] : itemList[i]};
+                            let emptyList : any[] = [];
+                            if (firstOne)
                             {
-                                var temp = this.getKey(k.toString());
-                                if ((temp === String(instance)) &&
-                                    (keyContains[k] == value[instance]) && !isNot)
+                                firstOne = false;
+                                if ('NOT' == i || 'OR' == i)
                                 {
-                                    accResult.push(value);
+                                    accResult = this.queryWhere(tempKey, data, isNot);
                                 }
-                                else if ((temp === String(instance)) &&
-                                    (keyContains[k] != value[instance]) && isNot)
+                                else
                                 {
-                                    accResult.push(value);
+                                    accResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot);
+                                }
+                            }
+                            else
+                            {
+                                emptyList = [];
+                                let newList: any[] = [];
+                                newList.push({"result": accResult});
+                                // handle case where not is in inside and
+                                if ('NOT' == i || 'OR' == i)
+                                {
+                                    accResult = this.queryWhere(tempKey, newList, isNot);
+                                }
+                                else
+                                {
+                                    accResult = this.queryWhereHelper(tempKey, newList, emptyList, isNot);
                                 }
                             }
                         }
-                        else if ('GT' == where)
-                        {
-                            let keyContains = key[where];
-                            for (let k in keyContains)
-                            {
-                                var temp = this.getKey(k.toString());
-                                if ((temp === String(instance)) &&
-                                    (keyContains[k] < value[instance]) && !isNot)
-                                {
-                                    accResult.push(value);
-                                }
-                                else if ((temp === String(instance)) &&
-                                    (keyContains[k] > value[instance]) && isNot)
-                                {
-                                    accResult.push(value);
-                                }
-                            }
-                        }
-                        else if ('LT' == where)
-                        {
-                            let keyContains = key[where];
-                            for (let k in keyContains)
-                            {
-                                var temp = this.getKey(k.toString());
-                                if ((temp === String(instance)) &&
-                                    (keyContains[k] > value[instance]) && ! isNot)
-                                {
-                                    accResult.push(value);
-                                }
-                                else if ((temp === String(instance)) &&
-                                    (keyContains[k] < value[instance]) && isNot)
-                                {
-                                    accResult.push(value);
-                                }
-                            }
-                        }
-                        else if ('IS' == where)
-                        {
-                            let keyContains = key[where];
-                            for (let k in keyContains)
-                            {
-                                var temp = this.getKey(k.toString());
-                                var patt = new RegExp(keyContains[k].split("*").join(".*"));
-                                if ((temp === String(instance)) &&
-                                    (patt.test(value[instance])) && !isNot)
-                                {
-                                    accResult.push(value);
-                                }
-                                else if ((temp === String(instance)) &&
-                                    (!patt.test(value[instance])) && isNot)
-                                {
-                                    accResult.push(value);
-                                }
-                            }
-                        }
-                        */
+                    }
+                    return accResult;
+                }
+                else if ('NOT' == where)
+                {
+                    let getNotNot : any[] = [];
+                    if (!isNot)
+                    {
+                        accResult = this.queryWhere(key[where], data, true);
+                    }
+                    else
+                    {
+                        accResult = this.queryWhere(key[where], data, false);
+                    }
+                    data = [];
+                    return accResult;
+                }
+                else
+                {
+                    accResult = this.queryWhereHelper(key, resultList, accResult, isNot);
+                }
             }
         }
+
+        data = [];
         return accResult;
     }// queryWhere
 
@@ -374,11 +334,11 @@ export default class QueryController {
                         }
                         else if ('IS' == where)
                         {
+                            //Log.trace("IS");
                             let keyContains = key[where];
                             for (let k in keyContains)
                             {
                                 var temp = this.getKey(k.toString());
-                                //let wildcardPresent = ;
 
                                 if (!keyContains[k].includes("*"))
                                 {
@@ -395,7 +355,7 @@ export default class QueryController {
                                 }
                                 else
                                 {
-                                    var patt = new RegExp(keyContains[k].split("*").join(".*"));
+                                    var patt = new RegExp("^" + keyContains[k].split("*").join(".*") + "$");
 
                                     if ((temp === String(instance)) &&
                                         (value[instance].match(patt)) && !isNot)

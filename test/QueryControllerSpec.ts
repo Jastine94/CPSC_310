@@ -1076,7 +1076,7 @@ describe("QueryController", function () {
                                     GET: ["courses_instructor"],
                                     WHERE: {
                                         AND: [
-                                            {"IS": {"courses_instructor":"diane*"}},
+                                            {"IS": {"courses_instructor":"*diane*"}},
                                             {"GT": {"courses_avg": 60}}
                                         ]
                                     },
@@ -1131,8 +1131,6 @@ describe("QueryController", function () {
         expect(ret).to.eql(expected_value);
     });
 
-    /*
-
     // complex query
     it("Should be able to query, although the answer will be empty", function () {
         let query: QueryRequest = {
@@ -1156,7 +1154,5 @@ describe("QueryController", function () {
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).not.to.be.equal(null);
-        // TODO: should check that the value is meaningful
     });
-    */
 });
