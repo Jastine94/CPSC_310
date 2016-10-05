@@ -30,13 +30,13 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                            "id": "1",
+                            "Courses": "1",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 86,
                             "Subject": "biol"
                         }]},
                     {"result": [{
-                            "id": "2",
+                            "Courses": "2",
                             "Professor": "another result",
                             "Avg": 95,
                             "Subject": "cpsc"
@@ -63,31 +63,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                            "id": "1",
+                            "Course": "1",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 86,
                             "Subject": "biol"
                         }]},
                     {"result": [{
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "another result",
                             "Avg": 95,
                             "Subject": "cpsc"
                         },
                         {
-                                "id": "10",
+                                "Course": "10",
                                 "Professor": "another result",
                                 "Avg": 95,
                                 "Subject": "cpscblabla"
                             },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "another result",
                             "Avg": 92,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "4",
+                            "Course": "4",
                             "Professor": "another result",
                             "Avg": 95,
                             "Subject": "key"
@@ -114,31 +114,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                            "id": "1",
+                            "Course": "1",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 84,
                             "Subject": "biol"
                         },
                         {
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "holmes, reid",
                             "Avg": 80,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregor",
                             "Avg": 90,
                             "Subject": "cpsc"
                         }]},
                     {"result": [{
-                            "id": "4",
+                            "Course": "4",
                             "Professor": "another result",
                             "Avg": 95,
                             "Subject": "biol"
                         },
                         {
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "carter",
                             "Avg": 84,
                             "Subject": "cpsc"
@@ -165,31 +165,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                            "id": "1",
+                            "Course": "1",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 84,
                             "Subject": "biol"
                         },
                         {
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "holmes, reid",
                             "Avg": 80,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregor",
                             "Avg": 90,
                             "Subject": "cpsc"
                         }]},
                     {"result": [{
-                            "id": "4",
+                            "Course": "4",
                             "Professor": "another result",
                             "Avg": 95,
                             "Subject": "astu"
                         },
                         {
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "carter",
                             "Avg": 84,
                             "Subject": "cpsc"
@@ -216,31 +216,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                            "id": "1",
+                            "Course": "1",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 84,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "holmes, reid",
                             "Avg": 80,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregor",
                             "Avg": 90,
                             "Subject": "cpsc"
                         }]},
                     {"result": [{
-                            "id": "4",
+                            "Course": "4",
                             "Professor": "another result",
                             "Avg": 95,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "carter",
                             "Avg": 84,
                             "Subject": "cpsc"
@@ -269,31 +269,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                            "id": "1",
+                            "Course": "1",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 84,
                             "Subject": "biol"
                         },
                         {
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "holmes, reid",
                             "Avg": 80,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregor",
                             "Avg": 90,
                             "Subject": "cpsc"
                         }]},
                     {"result": [{
-                            "id": "4",
+                            "Course": "4",
                             "Professor": "another result",
                             "Avg": 95,
                             "Subject": "astu"
                         },
                         {
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "carter",
                             "Avg": 84,
                             "Subject": "cpsc"
@@ -319,31 +319,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 84,
                             "Subject": "biol"
                         },
                         {
-                            "id": "1",
+                            "Course": "1",
                             "Professor": "holmes, reid",
                             "Avg": 80,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregor",
                             "Avg": 90,
                             "Subject": "cpsc"
                         }]},
                     {"result": [{
-                            "id": "4",
+                            "Course": "4",
                             "Professor": "another result",
                             "Avg": 95,
                             "Subject": "biol"
                         },
                         {
-                            "id": 4,
+                            "Course": 4,
                             "Professor": "carter",
                             "Avg": 84,
                             "Subject": "cpsc"
@@ -369,31 +369,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 84,
                             "Subject": "biol"
                         },
                         {
-                            "id": "1",
+                            "Course": "1",
                             "Professor": "holmes, reid",
                             "Avg": 80,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregor",
                             "Avg": 91,
                             "Subject": "cpsc"
                         }]},
                     {"result": [{
-                            "id": "4",
+                            "Course": "4",
                             "Professor": "another result",
                             "Avg": 95,
                             "Subject": "biol"
                         },
                         {
-                            "id": "4",
+                            "Course": "4",
                             "Professor": "carter",
                             "Avg": 93,
                             "Subject": "cpsc"
@@ -421,31 +421,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                    		"id": "1",
+                    		"Course": "1",
                     		"Professor": "graves, marcia;zeiler, kathryn",
                     		"Avg": 84,
                     		"Subject": "biol"
                     	},
                         {
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "holmes, reid",
                             "Avg": 90,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregor",
                             "Avg": 90,
                             "Subject": "cpsc"
                         }]},
                     {"result": [{
-                    		"id": "4",
+                    		"Course": "4",
                     		"Professor": "another result",
                     		"Avg": 95,
                     		"Subject": "biol"
                         },
                         {
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "carter",
                             "Avg": 84,
                             "Subject": "cpsc"
@@ -472,31 +472,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                    		"id": "1",
+                    		"Course": "1",
                     		"Professor": "graves, marcia;zeiler, kathryn",
                     		"Avg": 84,
                     		"Subject": "biol"
                     	},
                         {
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "holmes, reid",
                             "Avg": 90,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregor",
                             "Avg": 90,
                             "Subject": "cpsc"
                         }]},
                     {"result": [{
-                    		"id": "4",
+                    		"Course": "4",
                     		"Professor": "another result",
                     		"Avg": 95,
                     		"Subject": "biol"
                         },
                         {
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "carter",
                             "Avg": 84,
                             "Subject": "cpsc"
@@ -523,31 +523,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                    		"id": "1",
+                    		"Course": "1",
                     		"Professor": "gregor",
                     		"Avg": 84,
                     		"Subject": "cpsc 1"
                     	},
                         {
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "gregoria",
                             "Avg": 90,
                             "Subject": "cpsc 2"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregur",
                             "Avg": 90,
                             "Subject": "cpsc 3"
                         }]},
                     {"result": [{
-                    		"id": "4",
+                    		"Course": "4",
                     		"Professor": "aaagregor",
                     		"Avg": 95,
                     		"Subject": "cpsc 3"
                         },
                         {
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "carter",
                             "Avg": 84,
                             "Subject": "cpsc"
@@ -573,31 +573,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                    		"id": "1",
+                    		"Course": "1",
                     		"Professor": "graves, marcia;zeiler, kathryn",
                     		"Avg": 84,
                     		"Subject": "biol"
                     	},
                         {
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "holmes, reid",
                             "Avg": 90,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregor",
                             "Avg": 84,
                             "Subject": "cpsc"
                         }]},
                     {"result": [{
-                    		"id": "4",
+                    		"Course": "4",
                     		"Professor": "another result",
                     		"Avg": 84,
                     		"Subject": "biol"
                         },
                         {
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "carter",
                             "Avg": 84,
                             "Subject": "cpsc"
@@ -624,31 +624,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                    		"id": "1",
+                    		"Course": "1",
                     		"Professor": "graves, marcia;zeiler, kathryn",
                     		"Avg": 84,
                     		"Subject": "biol"
                     	},
                         {
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "holmes, reid",
                             "Avg": 90,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregor",
                             "Avg": 90,
                             "Subject": "cpsc"
                         }]},
                     {"result": [{
-                    		"id": "4",
+                    		"Course": "4",
                     		"Professor": "another result",
                     		"Avg": 95,
                     		"Subject": "biol"
                         },
                         {
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "carter",
                             "Avg": 84,
                             "Subject": "cpsc"
@@ -674,31 +674,31 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                    		"id": "1",
+                    		"Course": "1",
                     		"Professor": "graves, marcia;zeiler, kathryn",
                     		"Avg": 84,
                     		"Subject": "biol"
                     	},
                         {
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "holmes, reid",
                             "Avg": 90,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "gregor",
                             "Avg": 90,
                             "Subject": "cpsc"
                         }]},
                     {"result": [{
-                    		"id": "4",
+                    		"Course": "4",
                     		"Professor": "another result",
                     		"Avg": 95,
                     		"Subject": "biol"
                         },
                         {
-                            "id": "5",
+                            "Course": "5",
                             "Professor": "carter",
                             "Avg": 84,
                             "Subject": "cpsc"
@@ -763,7 +763,7 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     {"result": [{
-                    		"id": "40969",
+                    		"Course": "40969",
                     		"Professor": "graves, marcia;zeiler, kathryn",
                     		"Avg": 90,
                     		"Subject": "biol"
@@ -787,7 +787,7 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                    		"id": "40969",
+                    		"Course": "40969",
                     		"Professor": "graves, marcia;zeiler, kathryn",
                     		"Avg": 90,
                     		"Subject": "biol"
@@ -812,19 +812,19 @@ describe("QueryController", function () {
                     "courses" :
                     [{"result":
                         [{
-                            "id": "40969",
+                            "Course": "40969",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 90,
                             "Subject": "biol"
                         },
                         {
-                            "id": "40969",
+                            "Course": "40969",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 90,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "40969",
+                            "Course": "40969",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 90,
                             "Subject": "math"
@@ -852,19 +852,19 @@ describe("QueryController", function () {
                     "courses" :
                     [{"result":
                         [{
-                            "id": "1",
+                            "Course": "1",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 90,
                             "Subject": "biol"
                         },
                         {
-                            "id": "2",
+                            "Course": "2",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 90,
                             "Subject": "cpsc"
                         },
                         {
-                            "id": "3",
+                            "Course": "3",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 90,
                             "Subject": "math"
@@ -908,7 +908,7 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                    		"id": "40969",
+                    		"Course": "40969",
                     		"Professor": "graves, marcia;zeiler, kathryn",
                     		"Avg": 91.5,
                     		"Subject": "biol"
@@ -978,14 +978,14 @@ describe("QueryController", function () {
         let dataset: Datasets = {
                     "courses" :
                     [{"result": [{
-                            "id": "40969",
+                            "Course": "40969",
                             "Professor": "graves, marcia;zeiler, kathryn",
                             "Avg": 84,
                             "Pass" : 100,
                             "Subject": "biol"
                         },
                         {
-                            "id": "40969",
+                            "Course": "40969",
                             "Professor": "gg",
                             "Avg": 85,
                             "Pass" : 100,
@@ -1022,7 +1022,6 @@ describe("QueryController", function () {
                                                 "Detail": "",
                                                 "Other": 2,
                                                 "Low": 36,
-                                                "id": "66968",
                                                 "Professor": "kiczales, gregor",
                                                 "Audit": 2,
                                                 "Withdrew": 12,
@@ -1044,7 +1043,6 @@ describe("QueryController", function () {
                                                 "Detail": "",
                                                 "Other": 2,
                                                 "Low": 36,
-                                                "id": "66969",
                                                 "Professor": "",
                                                 "Audit": 5,
                                                 "Withdrew": 24,
@@ -1078,7 +1076,7 @@ describe("QueryController", function () {
                                     GET: ["courses_instructor"],
                                     WHERE: {
                                         AND: [
-                                            {"IS": {"courses_instructor":"diane*"}},
+                                            {"IS": {"courses_instructor":"*diane*"}},
                                             {"GT": {"courses_avg": 60}}
                                         ]
                                     },
@@ -1091,7 +1089,7 @@ describe("QueryController", function () {
                                     [{
                                         "Title": "fund ecology",
                                         "Section": "201",
-                                        "id": "57865",
+                                        "Course": "57865",
                                         "Professor": "goodey, wayne;srivastava, diane",
                                         "Avg": 69.23,
                                         "Subject": "biol"
@@ -1099,7 +1097,7 @@ describe("QueryController", function () {
                                         {
                                             "Title": "fund ecology",
                                             "Section": "overall",
-                                            "id": "57866",
+                                            "Course": "57866",
                                             "Professor": "dianehahaha",
                                             "Avg": 68.07,
                                             "Subject": "biol"
@@ -1107,7 +1105,7 @@ describe("QueryController", function () {
                                         {
                                             "Title": "fund ecology",
                                             "Section": "921",
-                                            "id": "66714",
+                                            "Course": "66714",
                                             "Professor": "goodey, wayndianee",
                                             "Avg": 74.27,
                                             "Subject": "biol"
@@ -1115,7 +1113,7 @@ describe("QueryController", function () {
                                         {
                                             "Title": "fund ecology",
                                             "Section": "overall",
-                                            "id": "66715",
+                                            "Course": "66715",
                                             "Professor": "dididididianeh",
                                             "Avg": 74.27,
                                             "Subject": "biol"
@@ -1132,8 +1130,6 @@ describe("QueryController", function () {
                                         {courses_instructor: 'dididididianeh'}]};
         expect(ret).to.eql(expected_value);
     });
-
-    /*
 
     // complex query
     it("Should be able to query, although the answer will be empty", function () {
@@ -1158,7 +1154,5 @@ describe("QueryController", function () {
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).not.to.be.equal(null);
-        // TODO: should check that the value is meaningful
     });
-    */
 });
