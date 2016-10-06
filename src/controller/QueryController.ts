@@ -326,7 +326,7 @@ export default class QueryController {
                             if (firstOne)
                             {
                                 firstOne = false;
-                                if ('NOT' == i || 'OR' == i)
+                                if ('NOT' == i || 'OR' == i || 'AND' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, data, isNot);
                                 }
@@ -451,7 +451,6 @@ export default class QueryController {
                         }
                         else if ('IS' == where)
                         {
-                            //Log.trace("IS");
                             let keyContains = key[where];
                             for (let k in keyContains)
                             {
@@ -468,6 +467,7 @@ export default class QueryController {
                                              (keyContains[k] != value[instance]) && isNot)
                                     {
                                         ret.push(value);
+
                                     }
                                 }
                                 else

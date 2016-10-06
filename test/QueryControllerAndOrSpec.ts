@@ -23,10 +23,8 @@ describe("QueryControllerAND,OR", function () {
                                         OR: [
                                             {OR: [
                                                 {"IS": {"courses_instructor":"*gregor*"}},
-                                                {"GT": {"courses_avg": 94
-
-                                            }}
-                                            ]},
+                                                {"GT": {"courses_avg": 94}}
+                                            ]}
                                         ]
                                     },
                                     ORDER: null,
@@ -47,13 +45,73 @@ describe("QueryControllerAND,OR", function () {
                                                         "Pass" : 100,
                                                         "Subject": "cpsc"
                                                     }
-                                                ]}]};
+                                                ]},
+                                                {"result": [{
+                                                        "Course": "40969",
+                                                        "Professor": "random",
+                                                        "Avg": 84,
+                                                        "Pass" : 100,
+                                                        "Subject": "biol"
+                                                    }]}]};
 
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({ render: 'TABLE', result: [{"courses_instructor": "graves, gregor;zeiler, kathryn"},
                                                        {"courses_instructor" : "gg"}]});
+    });
+
+    it("Should be able to query nested AND AND query", function(){
+        let query: QueryRequest = {
+                                    GET: ["courses_instructor"],
+                                    WHERE: {
+                                        AND: [
+                                            {AND: [
+                                                {"IS": {"courses_instructor":"*gregor*"}},
+                                                {"GT": {"courses_avg": 80}}
+                                            ]},
+                                            {"IS" :{ "courses_dept" : "cpsc"}},
+                                        ]
+                                    },
+                                    ORDER: null,
+                                    AS: "TABLE"};
+                                    let dataset: Datasets = {
+                                                "courses" :
+                                                [{"result": [{
+                                                        "Course": "40969",
+                                                        "Professor": "graves, gregor;zeiler, kathryn",
+                                                        "Avg": 84,
+                                                        "Pass" : 100,
+                                                        "Subject": "biol"
+                                                    },
+                                                    {
+                                                        "Course": "1",
+                                                        "Professor": "gregorg",
+                                                        "Avg": 95,
+                                                        "Pass" : 100,
+                                                        "Subject": "cpsc"
+                                                    },
+                                                    {
+                                                        "Course": "40969",
+                                                        "Professor": "random1",
+                                                        "Avg": 95,
+                                                        "Pass" : 100,
+                                                        "Subject": "cpsc"
+                                                    }
+                                                ]},
+                                                {"result": [{
+                                                        "Course": "2",
+                                                        "Professor": "roagoain , gregoreoaifh",
+                                                        "Avg": 84,
+                                                        "Pass" : 100,
+                                                        "Subject": "cpsc"
+                                                    }]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({ render: 'TABLE', result: [{"courses_instructor": "gregorg"},
+                                                       {"courses_instructor" : "roagoain , gregoreoaifh"}]});
     });
 
     it("Should be able to query nested OR AND OR query", function(){
