@@ -33,10 +33,10 @@ export default class QueryController {
     // }
 
     public isValid(query: QueryRequest): boolean {
-        if (query == null){
+        if ( Object.keys(query).length === 0){
             return false;
         }
-        if (query.GET !== 'undefined' && query.WHERE !== 'undefined' && query.AS !== 'undefined'){
+        else if (query.hasOwnProperty("GET") && query.hasOwnProperty("WHERE") && query.hasOwnProperty("AS")){
             let validGET:boolean = this.checkGet(query);
             let validORDER:boolean = this.checkOrder(query);
             let validAS:boolean = this.checkAs(query);
@@ -44,7 +44,7 @@ export default class QueryController {
 
             for (let filter in query.WHERE){
                 validWHERE = this.checkFilter(query.WHERE, filter);
-                if (validWHERE == false){
+                if (validWHERE === false){
                     return false;
                 }
             }
@@ -112,7 +112,7 @@ export default class QueryController {
     private checkOrder(query: QueryRequest): boolean{
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
         for (let q in query){
-            if (q == "ORDER"){
+            if (q === "ORDER"){
                 return key.test(query.ORDER);
             }
             else return true;
@@ -121,7 +121,7 @@ export default class QueryController {
     } //checkOrder
 
     private checkAs(query: QueryRequest): boolean {
-        if (query.AS == "TABLE"){
+        if (query.AS === "TABLE"){
             return true;
         }else {
             return false;
