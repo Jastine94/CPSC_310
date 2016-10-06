@@ -25,89 +25,114 @@ export default class QueryController {
         this.returnDatasets = null;
     }
 
-    public isValid(query: QueryRequest): boolean {
-        if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
-            return true;
-        }
-        return false;
-    }
-
     // public isValid(query: QueryRequest): boolean {
-    //     // see if it is a valid query???
-    //     // FIRST, check if GET is even inside it?
-    //     let number = new RegExp("[1-9]*[0-9]+('.'[0-9]+");
-    //     let string = new RegExp("[a-zA-Z0-9,_-]+");
-    //     let key = new RegExp(string+'_'+string);
-    //     if (query.hasOwnProperty("GET") && query.hasOwnProperty("WHERE") && query.hasOwnProperty("AS")){
-    //         //first check if it has the properties of GET WHERE & AS
-    //         // second check the value of GET is an array
-    //         // then check that the array has keys of string_string
-    //         // use a for loop to check the values inside the the get vallue
-    //         let getVals = query["GET"];
-    //         let validGET: boolean = true;
-    //         for (let i = 0; i < getVals.length; i++){
-    //             let validKey:boolean = key.test(getVals[i]);
-    //             if (!validKey){
-    //                 validGET = false;
-    //             }
-    //         }
-    //
-    //         // WHERE
-    //         let whereVals = query["WHERE"];
-    //         let logicComparison:{} = {};
-    //         let mComparison:{} = {};
-    //         let sComparison:{} = {};
-    //         let negation:{} = {};
-    //
-    //         // FILTER
-    //         let filter = logicComparison || mComparison || sComparison || negation;
-    //
-    //
-    //         // LOGIC COMPARISON
-    //         // LOGIC
-    //         let logic:string; // need to input string value here
-    //         if (logic == "AND" || logic == "OR"){
-    //             // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
-    //         }else {
-    //             return false;
-    //         }
-    //         // MCOMPARISON
-    //         let mComparator: string; // need to input the mcaparator value here
-    //         if (mComparator == "LT" || mComparator == "GT" || mComparator =="EQ"){
-    //             // MCOMPARISON ::= MCOMPARATOR ':{' key ':' number '}'
-    //         }else {
-    //             return false;
-    //         }
-    //
-    //         // SCOMPARISON
-    //         let isComp: string; // need to set this value to the where clause's
-    //         if (isComp == 'IS'){
-    //             // SCOMPARISON ::= 'IS:{' key ':' [*]? string [*]? '}'
-    //         }else {
-    //             return false;
-    //         }
-    //
-    //         // NEGATION
-    //         let neg: string; // make sure that the input value of the negation is here
-    //         if (neg == 'NOT'){
-    //             // NEGATION ::= 'NOT :{' FILTER '}'
-    //         }else {
-    //             return false;
-    //         }
-    //
-    //
-    //
-    //         let asTABLE:boolean = (query["AS"] == 'TABLE');
-    //
-    //         if (asTABLE && validGET){
-    //             return true;
-    //         }
-    //
+    //     if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
     //         return true;
     //     }
-    //     else return false;
+    //     return false;
     // }
 
+    public isValid(query: QueryRequest): boolean {
+        if (query == null){
+            return false;
+        }
+        if (query.GET !== 'undefined' && query.WHERE !== 'undefined' && query.AS !== 'undefined'){
+            let validGET:boolean = this.checkGet(query);
+            let validORDER:boolean = this.checkOrder(query);
+            let validAS:boolean = this.checkAs(query);
+            let validWHERE: boolean;
+
+            for (let filter in query.WHERE){
+                // Log.trace("WHERE STUFF:"+ filter);
+                validWHERE = this.checkFilter(query.WHERE, filter);
+                // Log.trace("THIS VAL:" + validWHERE);
+                if (validWHERE == false){
+                    return false;
+                }
+                // Log.trace("WHER IS TRUE");
+            }
+            // Log.trace("GET:"+validGET);
+            // Log.trace("ORDER:"+validORDER);
+            // Log.trace("validAS:"+validAS);
+            return (validGET && validORDER && validAS &&validWHERE);
+        }
+        else return false;
+    }
+
+    private checkFilter(query: any, filter: any):boolean{ //need to add an accumulator
+        let numberRegex = new RegExp("[1-9]*[0-9]+(.[0-9]+)?");
+        let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
+        let sCompRegex = new RegExp("[*]?[a-zA-Z0-9,_-]+[*]?");
+        if (filter === "AND" || filter === "OR"){
+           // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
+            Log.trace("AND/OR FILTER IS APPLIED")
+            for (let filtobj in query[filter]){
+                // do recursion here
+                let filteredObj:any = filtobj;
+                for (let filtval in filteredObj) {
+                    return this.checkFilter(filteredObj, filtval);
+                }
+            }
+        }
+        else if (filter === "LT" || filter === "GT" || filter === "EQ"){
+           // MCOMPARISON ::= MCOMPARATOR ':{' key ':' number '}'
+            Log.trace("LT GT OR EQ IS APPLIED HERE")
+            let mcompvalue = query[filter];
+            // Log.trace('object' + mcompvalue)
+            for (let val in mcompvalue){
+                return (key.test(val) && numberRegex.test(mcompvalue[val]));
+            }
+        }
+        else if (filter === "IS"){
+            // SCOMPARISON ::= 'IS:{' key ':' [*]? string [*]? '}'
+            Log.trace("IS FILTER IS APPLIED")
+            let scompvalue = query[filter];
+            for (let val in scompvalue){
+                return (key.test(val) && sCompRegex.test(scompvalue[val]));
+            }
+        }
+        else if (filter === "NOT") {
+           // NEGATION ::= 'NOT :{' FILTER '}'
+            Log.trace("NOT FILTER IS APPLIED")
+            let negate = query[filter];
+            for (let filt in query[filter]){
+                return this.checkFilter(negate,filt);
+            }
+        }
+        return true;
+    }
+
+    private checkGet(query: QueryRequest): boolean {
+        let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
+        let getVals = query["GET"];
+        let validGET: boolean = true;
+        for (let i = 0; i < getVals.length; i++){
+            let validKey:boolean = key.test(getVals[i]);
+            if (!validKey){
+                validGET = false;
+            }
+        }
+        return validGET;
+    } //checkGet
+
+    private checkOrder(query: QueryRequest): boolean{
+        let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
+        for (let q in query){
+            if (q == "ORDER"){
+                return key.test(query.ORDER);
+            }
+            else return true;
+        }
+        return true;
+    } //checkOrder
+
+    private checkAs(query: QueryRequest): boolean {
+        if (query.AS == "TABLE"){
+            return true;
+        }else {
+            return false;
+        }
+    } //checkAs
 
     public query(query: QueryRequest): QueryResponse {
         //Log.trace('QueryController::query( ' + JSON.stringify(query) + ' )');

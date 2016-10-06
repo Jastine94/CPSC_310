@@ -83,7 +83,6 @@ export default class RouteHandler {
         try {
             let query: QueryRequest = req.params;
             let datasets: Datasets = RouteHandler.datasetController.getDatasets();
-            //Log.trace("Retrieved all the datasets");
             let controller = new QueryController(datasets);
             let isValid = controller.isValid(query);
 
@@ -113,7 +112,7 @@ export default class RouteHandler {
                         }
                         else {
                             res.json(200, result);
-                            Log.trace("200 Successful" + result);
+                            Log.trace("200 Successful");
                         }
                     }
                 }
