@@ -59,6 +59,7 @@ export default class QueryController {
     }
 
     private checkFilter(query: any, filter: any):boolean{ //need to add an accumulator
+        // TODO: ask if WHERE: filter <- the where clause has to have at least one filter value
         let numberRegex = new RegExp("[1-9]*[0-9]+(.[0-9]+)?");
         let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
         let sCompRegex = new RegExp("[*]?[a-zA-Z0-9,_-]+[*]?");

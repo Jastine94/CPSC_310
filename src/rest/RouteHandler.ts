@@ -65,15 +65,15 @@ export default class RouteHandler {
                     }
                     // TODO: make sure that it handles a zip with invalid files
                     //need to check if the id is new or just replaced
-                }).catch(function (err: Error) {
+                }).catch(function (error: Error) {
                     //Log.trace('--  RouteHandler::putDataset(..) - ERROR: ' + err.message);
-                    res.json(400, {err: err.message});
+                    res.json(400, {error: error.message});
                 });
             });
 
-        } catch (err) {
-            Log.error('RouteHandler::postDataset(..) - ERROR: ' + err.message);
-            res.send(400, {err: err.message});
+        } catch (error) {
+            Log.error('RouteHandler::postDataset(..) - ERROR: ' + error.message);
+            res.send(400, {error: error.message});
         }
         return next();
     }
@@ -111,7 +111,7 @@ export default class RouteHandler {
                     else {
                         let result:any = controller.query(query);
                         if (result.status === "failed"){
-                            res.json(400, {status: 'Invalid query'});
+                            res.json(400, {error: 'Invalid query'});
                             Log.trace("400 Invalid query");
                         }
                         else {
@@ -121,15 +121,15 @@ export default class RouteHandler {
                     }
                 }
                 else {
-                    res.json(400, {status: 'Invalid query'});
+                    res.json(400, {error: 'Invalid query'});
                     Log.trace("400 Error - Invalid query");
                 }
             } else {
-                res.json(400, {status: 'Invalid query'});
+                res.json(400, {error: 'Invalid query'});
                 Log.trace("400 Error - Invalid query");
             }
-        } catch (err) {
-            //Log.error('RouteHandler::postQuery(..) - ERROR: '  + err);
+        } catch (error) {
+            //Log.error('RouteHandler::postQuery(..) - ERROR: '  + error);
             res.send(400);
         }
         return next();
@@ -164,15 +164,15 @@ export default class RouteHandler {
                     //Log.trace('RouteHandler::deleteDataset(..) - processed');
                     res.json(204, {success: result}); //dataset was deleted
                     //Log.trace("204 Sucessfully deleted");
-                }).catch(function (err: Error) {
-                    res.json(404, {err: err.message});
-                    //Log.trace('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
+                }).catch(function (error: Error) {
+                    res.json(404, {error: "Dataset does not exist"});
+                    //Log.trace('RouteHandler::deleteDataset(..) - ERROR: ' + error.message);
                 });
             });
 
-        } catch (err) {
-            //Log.error('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
-            res.send(404, {err: err.message});
+        } catch (error) {
+            //Log.error('RouteHandler::deleteDataset(..) - ERROR: ' + error.message);
+            res.send(404, {error: error.message});
         }
         return next();
 
