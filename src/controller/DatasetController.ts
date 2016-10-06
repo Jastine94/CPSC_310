@@ -262,7 +262,7 @@ export default class DatasetController {
                 let tempobj: any = {};
                 for (let key in resdata) {
                     // Log.trace("object value is: " + key + ':' + resdata[key]);
-                    if (key === 'Subject' || key === 'Avg' || key === 'Professor' ||
+                    if (key === 'id' || key === 'Subject' || key === 'Avg' || key === 'Professor' ||
                         key === 'Title' || key === 'Pass' || key === 'Fail' || key === 'Audit') {
                         tempobj[key] = resdata[key];
                         // Log.trace("temporary inner object has the value:" + key + ":" + tempobj[key]);
