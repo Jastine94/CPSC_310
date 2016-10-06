@@ -35,7 +35,7 @@ export default class QueryController {
     // }
 
     public isValid(query: QueryRequest): boolean {
-        if ( Object.keys(query).length === 0 || typeof query === 'undefined' || query == null){
+        if ( Object.keys(query).length === 0 || typeof query === 'undefined' || query === null){
             return false;
         }
         else if (query.hasOwnProperty("GET") && query.hasOwnProperty("WHERE") && query.hasOwnProperty("AS")){
@@ -461,6 +461,23 @@ export default class QueryController {
                                     if ((temp === String(instance)) &&
                                         (keyContains[k] == value[instance]) && !isNot)
                                     {
+                                        // TODO: see if this is needed
+                                        /*
+                                        let pushed : boolean = true;
+                                        for (var i = 0 ; i < ret.length; ++i)
+                                        {
+                                            if (ret[i]["id"] == value["id"])
+                                            {
+                                                Log.trace("Dont  push");
+                                                pushed = false;
+                                                break;
+                                            }
+                                        }
+                                        if (pushed)
+                                        {
+                                            ret.push(value);
+                                        }
+                                        */
                                         ret.push(value);
                                     }
                                     else if ((temp === String(instance)) &&

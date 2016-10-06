@@ -256,20 +256,24 @@ export default class DatasetController {
             let resarr = temparr.result;
 
             let tempresarr = new Array();
+            let primaryKey : number = 0;
             for (let j = 0; j < resarr.length; j++) {
 
                 let resdata = resarr[j];
                 let tempobj: any = {};
                 for (let key in resdata) {
                     // Log.trace("object value is: " + key + ':' + resdata[key]);
-                    if (key === 'id' || key === 'Subject' || key === 'Avg' || key === 'Professor' ||
+                    if (key === 'Subject' || key === 'Avg' || key === 'Professor' ||
                         key === 'Title' || key === 'Pass' || key === 'Fail' || key === 'Audit') {
+
                         tempobj[key] = resdata[key];
                         // Log.trace("temporary inner object has the value:" + key + ":" + tempobj[key]);
                     }
                     else if (key === 'Course'){
                         tempobj[key] = resdata[key].toString();
                     }
+                    tempobj["myKey"] = primaryKey;
+                    primaryKey++;
                 }
                 tempresarr.push(tempobj);
             }

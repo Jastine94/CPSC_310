@@ -24,7 +24,8 @@ describe("QueryControllerAND,OR", function () {
                                             {OR: [
                                                 {"IS": {"courses_instructor":"*gregor*"}},
                                                 {"GT": {"courses_avg": 94}}
-                                            ]}
+                                            ]},
+                                            {"IS": {"courses_id": "40969"}}
                                         ]
                                     },
                                     ORDER: null,
@@ -32,6 +33,7 @@ describe("QueryControllerAND,OR", function () {
                                     let dataset: Datasets = {
                                                 "courses" :
                                                 [{"result": [{
+                                                        "id" : "1",
                                                         "Course": "40969",
                                                         "Professor": "graves, gregor;zeiler, kathryn",
                                                         "Avg": 84,
@@ -39,6 +41,7 @@ describe("QueryControllerAND,OR", function () {
                                                         "Subject": "biol"
                                                     },
                                                     {
+                                                        "id" : "2",
                                                         "Course": "40969",
                                                         "Professor": "gg",
                                                         "Avg": 95,
@@ -47,6 +50,7 @@ describe("QueryControllerAND,OR", function () {
                                                     }
                                                 ]},
                                                 {"result": [{
+                                                        "id" : "3",
                                                         "Course": "40969",
                                                         "Professor": "random",
                                                         "Avg": 84,
@@ -58,7 +62,8 @@ describe("QueryControllerAND,OR", function () {
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({ render: 'TABLE', result: [{"courses_instructor": "graves, gregor;zeiler, kathryn"},
-                                                       {"courses_instructor" : "gg"}]});
+                                                       {"courses_instructor" : "gg"},
+                                                       {"courses_instructor" : "random"}]});
     });
 
     it("Should be able to query nested AND AND query", function(){
