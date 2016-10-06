@@ -111,6 +111,9 @@ export default class QueryController {
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
         let getVals = query["GET"];
         let validGET: boolean = true;
+        if (getVals.length === 0){
+            return false;
+        }
         for (let i = 0; i < getVals.length; i++){
             let validKey:boolean = key.test(getVals[i]);
             if (!validKey){
