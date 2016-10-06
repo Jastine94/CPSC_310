@@ -215,7 +215,6 @@ export default class QueryController {
                         response = this.queryWhere(query.WHERE, response, false);
                         response = this.queryGet(query.GET, response);
 
-                        //Log.trace("response" + JSON.stringify(response));
                         queryResponse = response;
                         if (orderPresent)
                         {
@@ -278,7 +277,6 @@ export default class QueryController {
             {
                 if ('OR' == where)
                 {
-                    //TODO: do something with the array recursive
                     let keyContains = key[where];
                     let firstOne: boolean = true;
                     for (var it in keyContains)
@@ -305,7 +303,7 @@ export default class QueryController {
                             else
                             {
                                 resultList = JSON.parse(JSON.stringify(myDataList));
-                                accResult = this.queryWhereHelper(tempKey, resultList, accResult, isNot);
+                                accResult = this.queryWhereHelper(tempKey, resultList, accResult, isNot, true);
                             }
                         }
                     }
@@ -333,7 +331,8 @@ export default class QueryController {
                                 }
                                 else
                                 {
-                                    accResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot);
+                                    resultList = JSON.parse(JSON.stringify(myDataList));
+                                    accResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot, false);
                                 }
                             }
                             else
@@ -342,13 +341,13 @@ export default class QueryController {
                                 let newList: any[] = [];
                                 newList.push({"result": accResult});
                                 // handle case where not is in inside and
-                                if ('NOT' == i || 'OR' == i)
+                                if ('NOT' == i || 'OR' == i || 'AND' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, newList, isNot);
                                 }
                                 else
                                 {
-                                    accResult = this.queryWhereHelper(tempKey, newList, emptyList, isNot);
+                                    accResult = this.queryWhereHelper(tempKey, newList, emptyList, isNot, false);
                                 }
                             }
                         }
@@ -371,7 +370,7 @@ export default class QueryController {
                 }
                 else
                 {
-                    accResult = this.queryWhereHelper(key, resultList, accResult, isNot);
+                    accResult = this.queryWhereHelper(key, resultList, accResult, isNot, false);
                 }
             }
         }
@@ -380,7 +379,8 @@ export default class QueryController {
         return accResult;
     }// queryWhere
 
-    private queryWhereHelper(key: any, resultList: any[], ret : any [], isNot : boolean): any[]
+    private queryWhereHelper(key: any, resultList: any[], ret : any [],
+                            isNot : boolean, isOr : boolean): any[]
     {
         // get each result object
         for (var keys in resultList)
@@ -405,12 +405,32 @@ export default class QueryController {
                                 if ((temp === String(instance)) &&
                                     (keyContains[k] == value[instance]) && !isNot)
                                 {
-                                    ret.push(value);
+                                    if (isOr)
+                                    {
+                                        if (!this.isDuplicate(ret, value))
+                                        {
+                                            ret.push(value);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ret.push(value);
+                                    }
                                 }
                                 else if ((temp === String(instance)) &&
                                     (keyContains[k] != value[instance]) && isNot)
                                 {
-                                    ret.push(value);
+                                    if (isOr)
+                                    {
+                                        if (!this.isDuplicate(ret, value))
+                                        {
+                                            ret.push(value);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ret.push(value);
+                                    }
                                 }
                             }
                         }
@@ -423,12 +443,32 @@ export default class QueryController {
                                 if ((temp === String(instance)) &&
                                     (keyContains[k] < value[instance]) && !isNot)
                                 {
-                                    ret.push(value);
+                                    if (isOr)
+                                    {
+                                        if (!this.isDuplicate(ret, value))
+                                        {
+                                            ret.push(value);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ret.push(value);
+                                    }
                                 }
                                 else if ((temp === String(instance)) &&
                                     (keyContains[k] > value[instance]) && isNot)
                                 {
-                                    ret.push(value);
+                                    if (isOr)
+                                    {
+                                        if (!this.isDuplicate(ret, value))
+                                        {
+                                            ret.push(value);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ret.push(value);
+                                    }
                                 }
                             }
                         }
@@ -441,12 +481,32 @@ export default class QueryController {
                                 if ((temp === String(instance)) &&
                                     (keyContains[k] > value[instance]) && ! isNot)
                                 {
-                                    ret.push(value);
+                                    if (isOr)
+                                    {
+                                        if (!this.isDuplicate(ret, value))
+                                        {
+                                            ret.push(value);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ret.push(value);
+                                    }
                                 }
                                 else if ((temp === String(instance)) &&
                                     (keyContains[k] < value[instance]) && isNot)
                                 {
-                                    ret.push(value);
+                                    if (isOr)
+                                    {
+                                        if (!this.isDuplicate(ret, value))
+                                        {
+                                            ret.push(value);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ret.push(value);
+                                    }
                                 }
                             }
                         }
@@ -462,30 +522,32 @@ export default class QueryController {
                                     if ((temp === String(instance)) &&
                                         (keyContains[k] == value[instance]) && !isNot)
                                     {
-                                        // TODO: see if this is needed
-                                        /*
-                                        let pushed : boolean = true;
-                                        for (var i = 0 ; i < ret.length; ++i)
+                                        if (isOr)
                                         {
-                                            if (ret[i]["id"] == value["id"])
+                                            if (!this.isDuplicate(ret, value))
                                             {
-                                                Log.trace("Dont  push");
-                                                pushed = false;
-                                                break;
+                                                ret.push(value);
                                             }
                                         }
-                                        if (pushed)
+                                        else
                                         {
                                             ret.push(value);
                                         }
-                                        */
-                                        ret.push(value);
                                     }
                                     else if ((temp === String(instance)) &&
                                              (keyContains[k] != value[instance]) && isNot)
                                     {
-                                        ret.push(value);
-
+                                        if (isOr)
+                                        {
+                                            if (!this.isDuplicate(ret, value))
+                                            {
+                                                ret.push(value);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            ret.push(value);
+                                        }
                                     }
                                 }
                                 else
@@ -495,12 +557,32 @@ export default class QueryController {
                                     if ((temp === String(instance)) &&
                                         (value[instance].match(patt)) && !isNot)
                                     {
-                                        ret.push(value);
+                                        if (isOr)
+                                        {
+                                            if (!this.isDuplicate(ret, value))
+                                            {
+                                                ret.push(value);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            ret.push(value);
+                                        }
                                     }
                                     else if ((temp === String(instance)) &&
                                         (!value[instance].match(patt)) && isNot)
                                     {
-                                        ret.push(value);
+                                        if (isOr)
+                                        {
+                                            if (!this.isDuplicate(ret, value))
+                                            {
+                                                ret.push(value);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            ret.push(value);
+                                        }
                                     }
                                 }
                             }
@@ -660,48 +742,34 @@ export default class QueryController {
     }// getValue
 
     /**
-     * Get the corresponsing values based on the key in the dataset
+     * Check if the object is a duplicate and is already in the list
      *
-     * @param key
-     * @returns string []
+     * @param resultList
+     * @param instance
+     * @returns true if it is a duplicated else false
      */
-    private getArrayDiff(totalList : any[], toRemove: any[]): any[]
+    private isDuplicate(resultList: any[], instance : any) : boolean
     {
-        let ret : any [] = [];
-        let total : any[] = [];
+        let isDuplicate : boolean = false;
 
-        for (var keys in totalList)
+        for (var i = 0 ; i < resultList.length; ++i)
         {
-            var result = totalList[keys];
-            let valuesList = result["result"];
-
-            for (var values in valuesList)
+            if (resultList[i]["id"] !== undefined && instance["id"] !== undefined)
             {
-                total.push(valuesList[values]);
-            }
-        }
-
-        for (var i = 0; i < total.length; ++i)
-        {
-            var key = total[i];
-
-            let isSame : boolean = false;
-
-            for (var item in toRemove)
-            {
-                if (JSON.stringify(toRemove[item]) == JSON.stringify(key))
+                if (resultList[i]["id"] == instance["id"])
                 {
-                    isSame = true;
+                    isDuplicate = true;
                     break;
                 }
             }
-
-            if (!isSame)
+            else
             {
-                ret.push(key);
+                // there is no valid primary key
+                break;
             }
+
         }
 
-        return ret;
-    } //getArrayDiff
+        return isDuplicate;
+    } // isDuplicate
 }

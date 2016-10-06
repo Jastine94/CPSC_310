@@ -33,7 +33,7 @@ describe("QueryControllerAND,OR", function () {
                                     let dataset: Datasets = {
                                                 "courses" :
                                                 [{"result": [{
-                                                        "id" : "1",
+                                                        "id" : 1,
                                                         "Course": "40969",
                                                         "Professor": "graves, gregor;zeiler, kathryn",
                                                         "Avg": 84,
@@ -41,7 +41,7 @@ describe("QueryControllerAND,OR", function () {
                                                         "Subject": "biol"
                                                     },
                                                     {
-                                                        "id" : "2",
+                                                        "id" : 2,
                                                         "Course": "40969",
                                                         "Professor": "gg",
                                                         "Avg": 95,
@@ -50,7 +50,7 @@ describe("QueryControllerAND,OR", function () {
                                                     }
                                                 ]},
                                                 {"result": [{
-                                                        "id" : "3",
+                                                        "id" : 3,
                                                         "Course": "40969",
                                                         "Professor": "random",
                                                         "Avg": 84,
@@ -83,6 +83,7 @@ describe("QueryControllerAND,OR", function () {
                                     let dataset: Datasets = {
                                                 "courses" :
                                                 [{"result": [{
+                                                        "id" : 1,
                                                         "Course": "40969",
                                                         "Professor": "graves, gregor;zeiler, kathryn",
                                                         "Avg": 84,
@@ -90,6 +91,7 @@ describe("QueryControllerAND,OR", function () {
                                                         "Subject": "biol"
                                                     },
                                                     {
+                                                        "id" : 2,
                                                         "Course": "1",
                                                         "Professor": "gregorg",
                                                         "Avg": 95,
@@ -97,6 +99,7 @@ describe("QueryControllerAND,OR", function () {
                                                         "Subject": "cpsc"
                                                     },
                                                     {
+                                                        "id" : 3,
                                                         "Course": "40969",
                                                         "Professor": "random1",
                                                         "Avg": 95,
@@ -105,6 +108,7 @@ describe("QueryControllerAND,OR", function () {
                                                     }
                                                 ]},
                                                 {"result": [{
+                                                        "id" : 4,
                                                         "Course": "2",
                                                         "Professor": "roagoain , gregoreoaifh",
                                                         "Avg": 84,
@@ -139,6 +143,7 @@ describe("QueryControllerAND,OR", function () {
                                     let dataset: Datasets = {
                                                 "courses" :
                                                 [{"result": [{
+                                                        "id" : 1,
                                                         "Course": "40969",
                                                         "Professor": "graves, gregor;zeiler, kathryn",
                                                         "Avg": 84,
@@ -146,6 +151,7 @@ describe("QueryControllerAND,OR", function () {
                                                         "Subject": "biol"
                                                     },
                                                     {
+                                                        "id" : 2,
                                                         "Course": "40969",
                                                         "Professor": "gg",
                                                         "Avg": 95,
@@ -154,6 +160,7 @@ describe("QueryControllerAND,OR", function () {
                                                     }
                                                 ]},
                                                 {"result": [{
+                                                        "id" : 3,
                                                         "Course": "40969",
                                                         "Professor": "hi, gregor",
                                                         "Avg": 84,
@@ -161,6 +168,7 @@ describe("QueryControllerAND,OR", function () {
                                                         "Subject": "biol"
                                                     },
                                                     {
+                                                        "id" : 4,
                                                         "Course": "40969",
                                                         "Professor": "TT",
                                                         "Avg": 95,
