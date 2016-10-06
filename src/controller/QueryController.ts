@@ -5,6 +5,8 @@
 import {Datasets} from "./DatasetController";
 import Log from "../Util";
 
+import fs = require('fs');
+
 export interface QueryRequest {
     GET: string|string[];
     WHERE: {};
@@ -33,7 +35,7 @@ export default class QueryController {
     // }
 
     public isValid(query: QueryRequest): boolean {
-        if ( Object.keys(query).length === 0){
+        if ( Object.keys(query).length === 0 || typeof query === 'undefined' || query == null){
             return false;
         }
         else if (query.hasOwnProperty("GET") && query.hasOwnProperty("WHERE") && query.hasOwnProperty("AS")){
@@ -42,13 +44,16 @@ export default class QueryController {
             let validAS:boolean = this.checkAs(query);
             let validWHERE: boolean;
 
+            if (Object.keys(query.WHERE).length === 0){
+                return false;
+            }
             for (let filter in query.WHERE){
                 validWHERE = this.checkFilter(query.WHERE, filter);
                 if (validWHERE === false){
                     return false;
                 }
             }
-            return (validGET && validORDER && validAS &&validWHERE);
+            return (validGET && validORDER && validAS && validWHERE);
         }
         else return false;
     }
@@ -59,9 +64,7 @@ export default class QueryController {
         let sCompRegex = new RegExp("[*]?[a-zA-Z0-9,_-]+[*]?");
         if (filter === "AND" || filter === "OR"){
            // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
-           //  Log.trace("AND/OR FILTER IS APPLIED")
             for (let filtobj in query[filter]){
-                // do recursion here
                 let filteredObj:any = filtobj;
                 for (let filtval in filteredObj) {
                     return this.checkFilter(filteredObj, filtval);
@@ -70,24 +73,32 @@ export default class QueryController {
         }
         else if (filter === "LT" || filter === "GT" || filter === "EQ"){
            // MCOMPARISON ::= MCOMPARATOR ':{' key ':' number '}'
-           //  Log.trace("LT GT OR EQ IS APPLIED HERE")
             let mcompvalue = query[filter];
-            // Log.trace('object' + mcompvalue)
             for (let val in mcompvalue){
-                return (key.test(val) && numberRegex.test(mcompvalue[val]));
+                let fileExists: boolean = false;
+                if (key.test(val)){
+                    let id = this.retrieveIdFromKey(val);
+                    fileExists = fs.existsSync( __dirname+"\/..\/..\/data\/"+id+".json");
+                    Log.trace("JSON File exists:" + fileExists);
+                }
+                return (key.test(val) && fileExists && numberRegex.test(mcompvalue[val]));
             }
         }
         else if (filter === "IS"){
             // SCOMPARISON ::= 'IS:{' key ':' [*]? string [*]? '}'
-            // Log.trace("IS FILTER IS APPLIED")
             let scompvalue = query[filter];
             for (let val in scompvalue){
-                return (key.test(val) && sCompRegex.test(scompvalue[val]));
+                let fileExists: boolean = false;
+                if (key.test(val)){
+                    let id = this.retrieveIdFromKey(val);
+                    fileExists = fs.existsSync( __dirname+"\/..\/..\/data\/"+id+".json");
+                    Log.trace("JSON File exists:" + fileExists);
+                }
+                return (key.test(val) && fileExists && sCompRegex.test(scompvalue[val]));
             }
         }
         else if (filter === "NOT") {
            // NEGATION ::= 'NOT :{' FILTER '}'
-           //  Log.trace("NOT FILTER IS APPLIED")
             let negate = query[filter];
             for (let filt in query[filter]){
                 return this.checkFilter(negate,filt);
@@ -113,7 +124,7 @@ export default class QueryController {
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
         for (let q in query){
             if (q === "ORDER"){
-                return key.test(query.ORDER);
+                return (key.test(query.ORDER) || query.ORDER === "" || query.ORDER === null );
             }
             else return true;
         }
@@ -127,6 +138,11 @@ export default class QueryController {
             return false;
         }
     } //checkAs
+
+    private retrieveIdFromKey(key: string): string {
+        let temp = key.indexOf("_");
+        return (key.substring(0,temp));
+    } //retrieveIdFromKey
 
     public query(query: QueryRequest): QueryResponse {
         //Log.trace('QueryController::query( ' + JSON.stringify(query) + ' )');
