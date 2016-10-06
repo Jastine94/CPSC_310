@@ -75,26 +75,28 @@ export default class QueryController {
            // MCOMPARISON ::= MCOMPARATOR ':{' key ':' number '}'
             let mcompvalue = query[filter];
             for (let val in mcompvalue){
-                let fileExists: boolean = false;
-                if (key.test(val)){
-                    let id = this.retrieveIdFromKey(val);
-                    fileExists = fs.existsSync( __dirname+"\/..\/..\/data\/"+id+".json");
-                    Log.trace("JSON File exists:" + fileExists);
-                }
-                return (key.test(val) && fileExists && numberRegex.test(mcompvalue[val]));
+                // let fileExists: boolean = false;
+                // if (key.test(val)){
+                //     let id = this.retrieveIdFromKey(val);
+                //     fileExists = fs.existsSync( __dirname+"\/..\/..\/data\/"+id+".json");
+                //     Log.trace("JSON File exists:" + fileExists);
+                // }
+                // return (key.test(val) && fileExists && numberRegex.test(mcompvalue[val]));
+                return (key.test(val) && numberRegex.test(mcompvalue[val]));
             }
         }
         else if (filter === "IS"){
             // SCOMPARISON ::= 'IS:{' key ':' [*]? string [*]? '}'
             let scompvalue = query[filter];
             for (let val in scompvalue){
-                let fileExists: boolean = false;
-                if (key.test(val)){
-                    let id = this.retrieveIdFromKey(val);
-                    fileExists = fs.existsSync( __dirname+"\/..\/..\/data\/"+id+".json");
-                    Log.trace("JSON File exists:" + fileExists);
-                }
-                return (key.test(val) && fileExists && sCompRegex.test(scompvalue[val]));
+                // let fileExists: boolean = false;
+                // if (key.test(val)){
+                //     let id = this.retrieveIdFromKey(val);
+                //     fileExists = fs.existsSync( __dirname+"\/..\/..\/data\/"+id+".json");
+                //     Log.trace("JSON File exists:" + fileExists);
+                // }
+                // return (key.test(val) && fileExists && sCompRegex.test(scompvalue[val]));
+                return (key.test(val) && sCompRegex.test(scompvalue[val]));
             }
         }
         else if (filter === "NOT") {
