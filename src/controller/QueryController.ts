@@ -273,7 +273,7 @@ export default class QueryController {
                         for (var i in itemList)
                         {
                             let tempKey : {} = {[i] : itemList[i]};
-                            if ('AND' == i)
+                            if ('AND' == i || 'OR' == i)
                             {
                                 accResult = this.queryWhere(tempKey, data, isNot);
                             }
