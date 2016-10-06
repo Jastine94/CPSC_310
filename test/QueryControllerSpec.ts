@@ -711,15 +711,6 @@ describe("QueryController", function () {
                                                       {"courses_dept": "cpsc", "courses_id" : "5"}]});
     });
 
-    it("Should be able to invalidate an invalid query", function () {
-        let query: any = null;
-        let dataset: Datasets = {};
-        let controller = new QueryController(dataset);
-        let isValid = controller.isValid(query);
-
-        expect(isValid).to.equal(false);
-    });
-
     it("ORDER should be in the GET, else not a valid query", function () {
         let query: QueryRequest = {GET: ["courses_dept"], WHERE: {"courses_avg": 90}, ORDER: 'courses_avg', AS: 'TABLE'};
         let dataset: Datasets = {};
