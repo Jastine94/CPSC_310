@@ -97,6 +97,10 @@ export default class RouteHandler {
                         if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json"))) {
                             missing_id.push(id);
                         }
+                        // let temp = RouteHandler.datasetController.getDataset(id);
+                        // if (temp === null){
+                        //     missing_id.push(id);
+                        // }
                     }
                     if (missing_id.length > 0){
                         let mids:any = {};

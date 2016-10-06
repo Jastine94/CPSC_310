@@ -43,17 +43,11 @@ export default class QueryController {
             let validWHERE: boolean;
 
             for (let filter in query.WHERE){
-                // Log.trace("WHERE STUFF:"+ filter);
                 validWHERE = this.checkFilter(query.WHERE, filter);
-                // Log.trace("THIS VAL:" + validWHERE);
                 if (validWHERE == false){
                     return false;
                 }
-                // Log.trace("WHER IS TRUE");
             }
-            // Log.trace("GET:"+validGET);
-            // Log.trace("ORDER:"+validORDER);
-            // Log.trace("validAS:"+validAS);
             return (validGET && validORDER && validAS &&validWHERE);
         }
         else return false;
@@ -65,7 +59,7 @@ export default class QueryController {
         let sCompRegex = new RegExp("[*]?[a-zA-Z0-9,_-]+[*]?");
         if (filter === "AND" || filter === "OR"){
            // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
-            Log.trace("AND/OR FILTER IS APPLIED")
+           //  Log.trace("AND/OR FILTER IS APPLIED")
             for (let filtobj in query[filter]){
                 // do recursion here
                 let filteredObj:any = filtobj;
@@ -76,7 +70,7 @@ export default class QueryController {
         }
         else if (filter === "LT" || filter === "GT" || filter === "EQ"){
            // MCOMPARISON ::= MCOMPARATOR ':{' key ':' number '}'
-            Log.trace("LT GT OR EQ IS APPLIED HERE")
+           //  Log.trace("LT GT OR EQ IS APPLIED HERE")
             let mcompvalue = query[filter];
             // Log.trace('object' + mcompvalue)
             for (let val in mcompvalue){
@@ -85,7 +79,7 @@ export default class QueryController {
         }
         else if (filter === "IS"){
             // SCOMPARISON ::= 'IS:{' key ':' [*]? string [*]? '}'
-            Log.trace("IS FILTER IS APPLIED")
+            // Log.trace("IS FILTER IS APPLIED")
             let scompvalue = query[filter];
             for (let val in scompvalue){
                 return (key.test(val) && sCompRegex.test(scompvalue[val]));
@@ -93,7 +87,7 @@ export default class QueryController {
         }
         else if (filter === "NOT") {
            // NEGATION ::= 'NOT :{' FILTER '}'
-            Log.trace("NOT FILTER IS APPLIED")
+           //  Log.trace("NOT FILTER IS APPLIED")
             let negate = query[filter];
             for (let filt in query[filter]){
                 return this.checkFilter(negate,filt);
