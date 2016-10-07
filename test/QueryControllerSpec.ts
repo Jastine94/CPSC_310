@@ -53,10 +53,9 @@ describe("QueryController", function () {
     it("Should be able to get with 2 key with and array", function() {
         let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
                                     WHERE: {
-                                            "AND": [{
-                                                "IS": {"courses_dept" : "cpsc"},
-                                                "EQ": {"courses_avg" : 95}
-                                            }]
+                                            "AND": [
+                                                {"IS": {"courses_dept" : "cpsc"}},
+                                                {"EQ": {"courses_avg" : 95}}]
                                         },
                                     ORDER: "courses_avg", AS: 'TABLE'};
 
@@ -985,10 +984,9 @@ describe("QueryController", function () {
                                     GET: ["courses_instructor"],
                                     WHERE: {
                                         AND: [{
-                                            "IS": {"courses_dept" : "cpsc"},
-                                            "NOT": {
-                                                "EQ":{"courses_avg": 75}
-                                            }}]
+                                            "IS": {"courses_dept" : "cpsc"}},
+                                            {"NOT": {
+                                                "EQ":{"courses_avg": 75}}}]
                                         },
                                     ORDER : null,
                                     AS: "TABLE"};
