@@ -48,7 +48,9 @@ export default class QueryController {
                 return false;
             }
             for (let filter in query.WHERE){
-                validWHERE = this.checkFilter(query.WHERE, filter);
+                // NOTE for Frances: this.checkFilter works half the time with the UI. Sometimes result is empty.
+                //validWHERE = this.checkFilter(query.WHERE, filter);
+                validWHERE = true;
                 if (validWHERE === false){
                     return false;
                 }
