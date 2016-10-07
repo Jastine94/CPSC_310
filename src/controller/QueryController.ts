@@ -463,7 +463,7 @@ export default class QueryController {
                                     }
                                 }
                                 else if ((temp === String(instance)) &&
-                                    (keyContains[k] > value[instance]) && isNot)
+                                    (keyContains[k] >= value[instance]) && isNot)
                                 {
                                     if (isOr)
                                     {
@@ -486,7 +486,7 @@ export default class QueryController {
                             {
                                 var temp = this.getKey(k.toString());
                                 if ((temp === String(instance)) &&
-                                    (keyContains[k] > value[instance]) && ! isNot)
+                                    (keyContains[k] > value[instance]) && !isNot)
                                 {
                                     if (isOr)
                                     {
@@ -501,7 +501,7 @@ export default class QueryController {
                                     }
                                 }
                                 else if ((temp === String(instance)) &&
-                                    (keyContains[k] < value[instance]) && isNot)
+                                    (keyContains[k] <= value[instance]) && isNot)
                                 {
                                     if (isOr)
                                     {
