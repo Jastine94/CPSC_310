@@ -87,42 +87,30 @@ export default class RouteHandler {
             let isValid = controller.isValid(query);
 
             Log.trace("Query is valid? " + isValid);
-            if (isValid) {
-                if(req.params.hasOwnProperty("GET")) {
-                    let value = req.params["GET"];
-                    let missing_id: string[] = [];
-                    for (let i = 0; i < value.length; i++) {
-                        let temp_pos = value[i].indexOf("_");
-                        let id = value[i].substring(0, temp_pos);
-                        if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json"))) {
-                            missing_id.push(id);
-                        }
-                        // let temp = RouteHandler.datasetController.getDataset(id);
-                        // if (temp === null){
-                        //     missing_id.push(id);
-                        // }
-                    }
-                    if (missing_id.length > 0){
-                        let mids:any = {};
-                        mids["missing"] = missing_id;
-                        res.json(424, mids);
-                        Log.trace("424 Missing: " + JSON.stringify(mids));
-                    }
-                    else {
-                        let result:any = controller.query(query);
-                        if (result.status === "failed"){
-                            res.json(400, {error: 'Invalid query'});
-                            Log.trace("400 Invalid query");
-                        }
-                        else {
-                            res.json(200, result);
-                            Log.trace("200 Successful");
-                        }
+            if (isValid){
+                let value = req.params["GET"];
+                let missing_id: string[] = [];
+                for (let i = 0; i < value.length; i++) {
+                    let temp_pos = value[i].indexOf("_");
+                    let id = value[i].substring(0, temp_pos);
+                    if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json"))) {
+                        missing_id.push(id);
                     }
                 }
-                else {
-                    res.json(400, {error: 'Invalid query'});
-                    Log.trace("400 Error - Invalid query");
+                if (missing_id.length > 0) {
+                    let mids: any = {};
+                    mids["missing"] = missing_id;
+                    res.json(424, mids);
+                    Log.trace("424 Missing: " + JSON.stringify(mids));
+                } else {
+                    let result: any = controller.query(query);
+                    if (result.status === "failed") {
+                        res.json(400, {error: 'Invalid query'});
+                        Log.trace("400 Invalid query");
+                    } else {
+                        res.json(200, result);
+                        Log.trace("200 Successful");
+                    }
                 }
             } else {
                 res.json(400, {error: 'Invalid query'});

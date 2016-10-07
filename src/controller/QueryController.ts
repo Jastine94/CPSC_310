@@ -53,11 +53,6 @@ export default class QueryController {
                     return false;
                 }
             }
-            Log.trace("RETURNING FROM isValid function");
-            Log.trace("GET: " + validGET)
-            Log.trace("ORDER: " + validORDER)
-            Log.trace("AS: " + validAS)
-            Log.trace("WHERE: " + validWHERE)
             return (validGET && validORDER && validAS && validWHERE);
         }
         else return false;
@@ -68,25 +63,17 @@ export default class QueryController {
         let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
         let sCompRegex = new RegExp("[*]?[a-zA-Z0-9,_-]+[*]?");
 
-        Log.trace("QUERY IS: " + JSON.stringify(query));
-
         if (filter === "AND" || filter === "OR"){
            // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
             if (query[filter].length < 2){
-                Log.trace("IT DOES NOT HAVE CORRECT LENGTH AND:" + query[filter].length);
                 return false;
             }
-
-            Log.trace("!!!!!!!!" + filter.toString() + " : " + JSON.stringify(query));
-            Log.trace(JSON.stringify(query[filter]));
 
             let isAndReturn:boolean = true;
 
             for (let filtobj in query[filter]){
                 let filteredObj:any = JSON.parse(JSON.stringify(query[filter][filtobj]));
-                Log.trace("first for loop in AND/OR:" + JSON.stringify(query[filter][filtobj]));
                 for (let filtval in filteredObj) {
-                    Log.trace("second for loop in:" + JSON.stringify(filtval))
                     if (!this.checkFilter(filteredObj, filtval)){
                         isAndReturn = false;
                     }
@@ -99,19 +86,12 @@ export default class QueryController {
             let mcompvalue = query[filter];
 
             if (Object.keys(query[filter]).length !== 1){
-                Log.trace("IT DOES NOT HAVE CORRECT LENGTH LT GT  EQ:" + Object.keys(query[filter]).length);
                 return false;
             }
 
-            Log.trace("LT GT EQ COMPARSION");
             for (let val in mcompvalue){
                 let tempkey = this.getKey(val.toString());
-                Log.trace("LT GT value:" + tempkey + ' before: ' + val)
-                Log.trace('Is temp key an valid key?' + (tempkey !== "Invalid Key"));
                 let isValidKey: boolean = (tempkey !== "Invalid Key");
-
-                Log.trace("LT VALUE: " + (key.test(val) && numberRegex.test(mcompvalue[val]) && isValidKey))
-                // return (val.toString().match(key) && isValidKey && mcompvalue[val].toString().match(numberRegex));
                 return (isValidKey && key.test(val) && numberRegex.test(mcompvalue[val]));
             }
         }
@@ -121,17 +101,9 @@ export default class QueryController {
             if (Object.keys(query[filter]).length !== 1){
                 return false;
             }
-            Log.trace("IS COMPARSION");
             for (let val in scompvalue){
                 let tempkey = this.getKey(val.toString());
-                Log.trace("IS value" + tempkey + ' before: ' + val.toString())
-                Log.trace('Is temp key an valid key?' + (tempkey !== "Invalid Key"));
                 let isValidKey: boolean = (tempkey !== "Invalid Key");
-
-                Log.trace("IS VALUE: " + (key.test(val) && sCompRegex.test(scompvalue[val]) && isValidKey))
-
-                // return (val.toString().match(key) && isValidKey && scompvalue[val].toString().match(sCompRegex));
-                // return (val.toString().match(key) && scompvalue[val].toString().match(sCompRegex));
                 return (isValidKey && key.test(val) && sCompRegex.test(scompvalue[val]));
             }
         }
@@ -182,11 +154,6 @@ export default class QueryController {
             return false;
         }
     } //checkAs
-
-    private retrieveIdFromKey(key: string): string {
-        let temp = key.indexOf("_");
-        return (key.substring(0,temp));
-    } //retrieveIdFromKey
 
     public query(query: QueryRequest): QueryResponse {
         //Log.trace('QueryController::query( ' + JSON.stringify(query) + ' )');
