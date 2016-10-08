@@ -389,7 +389,8 @@ describe("QueryControllerAND,OR", function () {
                                                 {OR :[
                                                     {"IS": {"courses_instructor":"*gregor*"}},
                                                     {"NOT" : {"GT": {"courses_avg": 94}}}
-                                                ]}
+                                                ]},
+                                                {"EQ": {"courses_pass": 100}}
                                             ]},
                                             {OR: [
                                                 {OR :[
