@@ -334,8 +334,6 @@ export default class QueryController {
                                 if ('NOT' == i || 'OR' == i || 'AND' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, resultList, isNot);
-                                    Log.trace("first one!!!" + JSON.stringify(accResult));
-
                                 }
                                 else
                                 {
@@ -352,7 +350,6 @@ export default class QueryController {
                                 if ('NOT' == i || 'AND' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, newList, isNot);
-                                    Log.trace("Not first one" + JSON.stringify(accResult));
                                 }
                                 else if ('OR' == i)
                                 {
@@ -362,8 +359,6 @@ export default class QueryController {
                                     {
                                         var result = newList[n];
                                         let valuesList = result["result"];
-                                        Log.trace("prevList" + JSON.stringify(valuesList));
-
                                         for (var values in valuesList)
                                         {
                                             var value = valuesList[values];
