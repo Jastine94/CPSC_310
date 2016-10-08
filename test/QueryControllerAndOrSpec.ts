@@ -457,7 +457,8 @@ describe("QueryControllerAND,OR", function () {
                                                 {AND :[
                                                     {"IS": {"courses_instructor":"*gregor*"}},
                                                     {"NOT" : {"GT": {"courses_avg": 94}}}
-                                                ]}
+                                                ]},
+                                                {"GT": {"courses_pass": 75}}
                                             ]},
                                             {AND: [
                                                 {AND :[
@@ -512,6 +513,77 @@ describe("QueryControllerAND,OR", function () {
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({ render: 'TABLE', result: [{"courses_instructor": "graves, gregor;zeiler, kathryn"},
+                                                        {"courses_instructor": "hi, gregor"},
+                                                        {"courses_instructor": "TT"}]});
+    });
+
+    it("Should be able to query nested OR 2 AND query with a NOT", function(){
+        let query: QueryRequest = {
+                                    GET: ["courses_instructor"],
+                                    WHERE: {
+                                        OR: [
+                                            {AND: [
+                                                {AND :[
+                                                    {"IS": {"courses_instructor":"*gregor*"}},
+                                                    {"NOT" : {"GT": {"courses_avg": 94}}}
+                                                ]},
+                                                {"NOT" : {"IS": {"courses_dept": "*cpsc*"}}}
+                                            ]},
+                                            {AND: [
+                                                {AND :[
+                                                    {"IS": {"courses_instructor":"TT"}},
+                                                    {"GT": {"courses_avg": 94}}
+                                                ]},
+                                                {"EQ": {"courses_pass": 100}}
+                                            ]},
+                                            {"EQ": {"courses_avg": 95}}
+                                        ]
+                                    },
+                                    ORDER: "courses_instructor",
+                                    AS: "TABLE"};
+                                    let dataset: Datasets = {
+                                                "courses" :
+                                                [{"result": [{
+                                                        "id" : 1,
+                                                        "Course": "40969",
+                                                        "Professor": "graves, gregor;zeiler, kathryn",
+                                                        "Avg": 84,
+                                                        "Pass" : 95,
+                                                        "Subject": "a"
+                                                    },
+                                                    {
+                                                        "id" : 2,
+                                                        "Course": "40969",
+                                                        "Professor": "gg",
+                                                        "Avg": 95,
+                                                        "Pass" : 100,
+                                                        "Subject": "apsc"
+                                                    }
+                                                ]},
+                                                {"result": [{
+                                                        "id" : 3,
+                                                        "Course": "40969",
+                                                        "Professor": "hi, gregor",
+                                                        "Avg": 84,
+                                                        "Pass" : 80,
+                                                        "Subject": "biol"
+                                                    },
+                                                    {
+                                                        "id" : 4,
+                                                        "Course": "40969",
+                                                        "Professor": "TT",
+                                                        "Avg": 95,
+                                                        "Pass" : 100,
+                                                        "Subject": "cpsc"
+                                                    }
+                                                ]}]};
+
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({ render: 'TABLE', result: [{"courses_instructor": "gg"},
+                                                       {"courses_instructor": "graves, gregor;zeiler, kathryn"},
+                                                       {"courses_instructor": "hi, gregor"},
                                                        {"courses_instructor": "TT"}]});
     });
 });

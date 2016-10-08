@@ -291,9 +291,18 @@ export default class QueryController {
                         for (var i in itemList)
                         {
                             let tempKey : {} = {[i] : itemList[i]};
-                            if ('AND' == i || 'OR' == i)
+                            if ('OR' == i || 'AND' == i)
                             {
-                                accResult = this.queryWhere(tempKey, resultList, isNot);
+                                let tempResult = this.queryWhere(tempKey, resultList, isNot);
+
+                                for (var values in tempResult)
+                                {
+                                    var value = tempResult[values];
+                                    if (!this.isDuplicate(accResult, value))
+                                    {
+                                        accResult.push(value);
+                                    }
+                                }
                             }
                             else if ('NOT' == i)
                             {
@@ -346,27 +355,22 @@ export default class QueryController {
                                 let newList: any[] = [];
                                 newList.push({"result": accResult});
                                 // handle case where not is in inside and
-                                if ('NOT' == i || 'AND' == i)
+                                if ('AND' == i || 'OR' == i)
                                 {
-                                    accResult = this.queryWhere(tempKey, newList, isNot);
+                                    let tempResult = this.queryWhere(tempKey, newList, isNot);
+                                    for (var values in tempResult)
+                                    {
+                                        var value = tempResult[values];
+                                        if (!this.isDuplicate(accResult, value))
+                                        {
+                                            accResult.push(value);
+                                        }
+                                    }
                                 }
-                                else if ('OR' == i)
+                                else if ('NOT' == i)
                                 {
                                     // get each result object
                                     accResult = this.queryWhere(tempKey, newList, isNot);
-                                    for (var n in newList)
-                                    {
-                                        var result = newList[n];
-                                        let valuesList = result["result"];
-                                        for (var values in valuesList)
-                                        {
-                                            var value = valuesList[values];
-                                            if (!this.isDuplicate(accResult, value))
-                                            {
-                                                accResult.push(value);
-                                            }
-                                        }
-                                    }
                                 }
                                 else
                                 {
