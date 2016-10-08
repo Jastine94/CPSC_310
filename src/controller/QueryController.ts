@@ -238,9 +238,8 @@ export default class QueryController {
             }
 
             return queryResponse;
-
         }
-        return {status: 'received', ts: new Date().getTime()};
+        return {status: 'failed', error: "invalid query"};
     }// query
 
     /**
@@ -309,11 +308,18 @@ export default class QueryController {
                                 let trimResult: any[] = [];
 
                                 trimResult.push({"result": accResult});
-
                                 // need to remove the not items that is in the accResult so far
                                 trimResult = this.queryWhere(tempKey, trimResult, isNot);
                                 accResult = this.queryWhere(tempKey, data, isNot);
-                                accResult.concat(trimResult);
+
+                                for (var values in trimResult)
+                                {
+                                    var value = trimResult[values];
+                                    if (!this.isDuplicate(accResult, value))
+                                    {
+                                        accResult.push(value);
+                                    }
+                                }
                             }
                             else
                             {
