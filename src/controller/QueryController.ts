@@ -49,8 +49,8 @@ export default class QueryController {
             }
             for (let filter in query.WHERE){
                 // NOTE for Frances: this.checkFilter works half the time with the UI. Sometimes result is empty.
-                //validWHERE = this.checkFilter(query.WHERE, filter);
-                validWHERE = true;
+                validWHERE = this.checkFilter(query.WHERE, filter);
+                // validWHERE = true;
                 if (validWHERE === false){
                     return false;
                 }
@@ -119,7 +119,7 @@ export default class QueryController {
                 return this.checkFilter(negate,filt);
             }
         }
-        else return true;
+        else return false;
     }
 
     private checkGet(query: QueryRequest): boolean {
@@ -241,7 +241,9 @@ export default class QueryController {
             return queryResponse;
 
         }
-        return {status: 'received', ts: new Date().getTime()};
+        // return {status: 'received', ts: new Date().getTime()};
+        // TODO: Changed this specific line to see if more tests will pass
+        return {status: 'failed', error: "invalid query"};
     }// query
 
     /**

@@ -184,7 +184,6 @@ export default class DatasetController {
                         reject(err);
                         reject(true);
                     });
-                    // reject(true); // TODO: Take out, only putting here to see if I can find out why it works for the public test
                 }).catch(function (err) {
                     //Log.trace('DatasetController::process(..) - unzip ERROR: ' + err.message);
                     reject(err);
