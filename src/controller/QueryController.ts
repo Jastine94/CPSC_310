@@ -14,7 +14,6 @@ export interface QueryRequest {
     AS: string;
 }
 
-// TODO: change result type in query response
 export interface QueryResponse {
 }
 
@@ -78,6 +77,7 @@ export default class QueryController {
                 for (let filtval in filteredObj) {
                     if (!this.checkFilter(filteredObj, filtval)){
                         isAndReturn = false;
+                        break;
                     }
                 }
             }
@@ -152,7 +152,8 @@ export default class QueryController {
     private checkAs(query: QueryRequest): boolean {
         if (query.AS === "TABLE"){
             return true;
-        }else {
+        }
+        else {
             return false;
         }
     } //checkAs
@@ -250,8 +251,6 @@ export default class QueryController {
      */
     private queryGet(key: string | string[], data: any[]): any[]
     {
-        let dataSetKey : string;
-
         return this.getValue(key, data);
     }// queryGet
 
@@ -721,7 +720,6 @@ export default class QueryController {
         }
         else
         {
-            // tempKey = key.toString();
             tempKey = "Invalid Key";
         }
 
