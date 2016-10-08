@@ -158,8 +158,6 @@ export default class QueryController {
     } //checkAs
 
     public query(query: QueryRequest): QueryResponse {
-        //Log.trace('QueryController::query( ' + JSON.stringify(query) + ' )');
-
         if (this.isValid(query))
         {
             let response : any[];
@@ -296,12 +294,14 @@ export default class QueryController {
                             let tempKey : {} = {[i] : itemList[i]};
                             if ('AND' == i || 'OR' == i)
                             {
-                                accResult = this.queryWhere(tempKey, data, isNot);
+                                accResult = this.queryWhere(tempKey, resultList, isNot);
                             }
                             else if ('NOT' == i)
                             {
                                 let trimResult: any[] = [];
+
                                 trimResult.push({"result": accResult});
+
                                 // need to remove the not items that is in the accResult so far
                                 trimResult = this.queryWhere(tempKey, trimResult, isNot);
                                 accResult = this.queryWhere(tempKey, data, isNot);
@@ -314,7 +314,6 @@ export default class QueryController {
                             }
                         }
                     }
-                    return accResult;
                 }
                 else if ('AND' == where)
                 {
@@ -334,7 +333,9 @@ export default class QueryController {
                                 firstOne = false;
                                 if ('NOT' == i || 'OR' == i || 'AND' == i)
                                 {
-                                    accResult = this.queryWhere(tempKey, data, isNot);
+                                    accResult = this.queryWhere(tempKey, resultList, isNot);
+                                    Log.trace("first one!!!" + JSON.stringify(accResult));
+
                                 }
                                 else
                                 {
@@ -348,9 +349,30 @@ export default class QueryController {
                                 let newList: any[] = [];
                                 newList.push({"result": accResult});
                                 // handle case where not is in inside and
-                                if ('NOT' == i || 'OR' == i || 'AND' == i)
+                                if ('NOT' == i || 'AND' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, newList, isNot);
+                                    Log.trace("Not first one" + JSON.stringify(accResult));
+                                }
+                                else if ('OR' == i)
+                                {
+                                    // get each result object
+                                    accResult = this.queryWhere(tempKey, newList, isNot);
+                                    for (var n in newList)
+                                    {
+                                        var result = newList[n];
+                                        let valuesList = result["result"];
+                                        Log.trace("prevList" + JSON.stringify(valuesList));
+
+                                        for (var values in valuesList)
+                                        {
+                                            var value = valuesList[values];
+                                            if (!this.isDuplicate(accResult, value))
+                                            {
+                                                accResult.push(value);
+                                            }
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -359,21 +381,18 @@ export default class QueryController {
                             }
                         }
                     }
-                    return accResult;
                 }
                 else if ('NOT' == where)
                 {
                     let getNotNot : any[] = [];
                     if (!isNot)
                     {
-                        accResult = this.queryWhere(key[where], data, true);
+                        accResult = this.queryWhere(key[where], resultList, true);
                     }
                     else
                     {
-                        accResult = this.queryWhere(key[where], data, false);
+                        accResult = this.queryWhere(key[where], resultList, false);
                     }
-                    data = [];
-                    return accResult;
                 }
                 else
                 {
