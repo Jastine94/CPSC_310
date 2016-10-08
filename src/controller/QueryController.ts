@@ -14,7 +14,6 @@ export interface QueryRequest {
     AS: string;
 }
 
-// TODO: change result type in query response
 export interface QueryResponse {
 }
 
@@ -78,6 +77,7 @@ export default class QueryController {
                 for (let filtval in filteredObj) {
                     if (!this.checkFilter(filteredObj, filtval)){
                         isAndReturn = false;
+                        break;
                     }
                 }
             }
@@ -152,14 +152,13 @@ export default class QueryController {
     private checkAs(query: QueryRequest): boolean {
         if (query.AS === "TABLE"){
             return true;
-        }else {
+        }
+        else {
             return false;
         }
     } //checkAs
 
     public query(query: QueryRequest): QueryResponse {
-        //Log.trace('QueryController::query( ' + JSON.stringify(query) + ' )');
-
         if (this.isValid(query))
         {
             let response : any[];
@@ -254,8 +253,6 @@ export default class QueryController {
      */
     private queryGet(key: string | string[], data: any[]): any[]
     {
-        let dataSetKey : string;
-
         return this.getValue(key, data);
     }// queryGet
 
@@ -296,14 +293,25 @@ export default class QueryController {
                         for (var i in itemList)
                         {
                             let tempKey : {} = {[i] : itemList[i]};
-                            if ('AND' == i || 'OR' == i)
+                            if ('OR' == i || 'AND' == i)
                             {
-                                accResult = this.queryWhere(tempKey, data, isNot);
+                                let tempResult = this.queryWhere(tempKey, resultList, isNot);
+
+                                for (var values in tempResult)
+                                {
+                                    var value = tempResult[values];
+                                    if (!this.isDuplicate(accResult, value))
+                                    {
+                                        accResult.push(value);
+                                    }
+                                }
                             }
                             else if ('NOT' == i)
                             {
                                 let trimResult: any[] = [];
+
                                 trimResult.push({"result": accResult});
+
                                 // need to remove the not items that is in the accResult so far
                                 trimResult = this.queryWhere(tempKey, trimResult, isNot);
                                 accResult = this.queryWhere(tempKey, data, isNot);
@@ -316,7 +324,6 @@ export default class QueryController {
                             }
                         }
                     }
-                    return accResult;
                 }
                 else if ('AND' == where)
                 {
@@ -336,7 +343,7 @@ export default class QueryController {
                                 firstOne = false;
                                 if ('NOT' == i || 'OR' == i || 'AND' == i)
                                 {
-                                    accResult = this.queryWhere(tempKey, data, isNot);
+                                    accResult = this.queryWhere(tempKey, resultList, isNot);
                                 }
                                 else
                                 {
@@ -350,8 +357,21 @@ export default class QueryController {
                                 let newList: any[] = [];
                                 newList.push({"result": accResult});
                                 // handle case where not is in inside and
-                                if ('NOT' == i || 'OR' == i || 'AND' == i)
+                                if ('AND' == i || 'OR' == i)
                                 {
+                                    let tempResult = this.queryWhere(tempKey, newList, isNot);
+                                    for (var values in tempResult)
+                                    {
+                                        var value = tempResult[values];
+                                        if (!this.isDuplicate(accResult, value))
+                                        {
+                                            accResult.push(value);
+                                        }
+                                    }
+                                }
+                                else if ('NOT' == i)
+                                {
+                                    // get each result object
                                     accResult = this.queryWhere(tempKey, newList, isNot);
                                 }
                                 else
@@ -361,21 +381,18 @@ export default class QueryController {
                             }
                         }
                     }
-                    return accResult;
                 }
                 else if ('NOT' == where)
                 {
                     let getNotNot : any[] = [];
                     if (!isNot)
                     {
-                        accResult = this.queryWhere(key[where], data, true);
+                        accResult = this.queryWhere(key[where], resultList, true);
                     }
                     else
                     {
-                        accResult = this.queryWhere(key[where], data, false);
+                        accResult = this.queryWhere(key[where], resultList, false);
                     }
-                    data = [];
-                    return accResult;
                 }
                 else
                 {
@@ -709,7 +726,6 @@ export default class QueryController {
         }
         else
         {
-            // tempKey = key.toString();
             tempKey = "Invalid Key";
         }
 
