@@ -311,7 +311,7 @@ export default class QueryController {
                                 trimResult.push({"result": accResult});
                                 // need to remove the not items that is in the accResult so far
                                 trimResult = this.queryWhere(tempKey, trimResult, isNot);
-                                accResult = this.queryWhere(tempKey, data, isNot);
+                                accResult = this.queryWhere(tempKey, resultList, isNot);
 
                                 for (var values in trimResult)
                                 {
