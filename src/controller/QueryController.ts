@@ -19,19 +19,10 @@ export interface QueryResponse {
 
 export default class QueryController {
     private datasets: Datasets = null;
-    private returnDatasets: Datasets = null;
 
     constructor(datasets: Datasets) {
         this.datasets = datasets;
-        this.returnDatasets = null;
     }
-
-    // public isValid(query: QueryRequest): boolean {
-    //     if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
-    //         return true;
-    //     }
-    //     return false;
-    // }
 
     public isValid(query: QueryRequest): boolean {
         if ( Object.keys(query).length === 0 || typeof query === 'undefined' || query === null){
@@ -47,9 +38,7 @@ export default class QueryController {
                 return false;
             }
             for (let filter in query.WHERE){
-                // NOTE for Frances: this.checkFilter works half the time with the UI. Sometimes result is empty.
                 validWHERE = this.checkFilter(query.WHERE, filter);
-                // validWHERE = true;
                 if (validWHERE === false){
                     return false;
                 }
@@ -66,7 +55,7 @@ export default class QueryController {
 
         if (filter === "AND" || filter === "OR"){
            // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
-            if (query[filter].length < 2){
+            if (query[filter].length < 1){
                 return false;
             }
 
@@ -346,13 +335,13 @@ export default class QueryController {
                             if (firstOne)
                             {
                                 firstOne = false;
+                                resultList = JSON.parse(JSON.stringify(myDataList));
                                 if ('NOT' == i || 'OR' == i || 'AND' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, resultList, isNot);
                                 }
                                 else
                                 {
-                                    resultList = JSON.parse(JSON.stringify(myDataList));
                                     accResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot, false);
                                 }
                             }
@@ -389,7 +378,6 @@ export default class QueryController {
                 }
                 else if ('NOT' == where)
                 {
-                    let getNotNot : any[] = [];
                     if (!isNot)
                     {
                         accResult = this.queryWhere(key[where], resultList, true);
@@ -624,7 +612,7 @@ export default class QueryController {
         }
 
         return ret;
-    }
+    } // queryWhereHelper
 
     /**
      * order the query response to based on key
@@ -671,7 +659,7 @@ export default class QueryController {
 
         queryOrderedResult = data;
         return queryOrderedResult;
-    }// queryOrder
+    } // queryOrder
 
     /**
      * display the query response to based on key
@@ -685,7 +673,7 @@ export default class QueryController {
         var obj1: any = {};
         obj1["render"] = key;
         return Object.assign(obj1, data);
-    }// queryAs
+    } // queryAs
 
     /**
      * Get the corresponsing key in the dataset
