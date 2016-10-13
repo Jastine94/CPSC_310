@@ -33,36 +33,21 @@ export default class DatasetController {
      */
     public getDataset(id: string): any {
         // TODO: this should check if the dataset is on disk in ./data if it is not already in memory.
-
         Log.trace('DatasetController::getDataset() - processing');
         let that = this;
         let data_dir: string = __dirname+"\/..\/..\/data\/";
-
-        // if(that.datasets.hasOwnProperty(id)){
-        if(that.datasets[id] !== 'undefined'){
-            //Log.trace('DatasetController::getDataset() - processed');
+        if(that.datasets[id] !== 'undefined')
+        {
             return that.datasets[id];
         }
-        else if(fs.existsSync(data_dir+id+'.json')) {
+        else if(fs.existsSync(data_dir+id+'.json'))
+        {
             that.datasets[id] = fs.readFileSync(data_dir + id + '.json');
             //Log.trace('DatasetController::getDataset() - processed');
             return that.datasets[id];
         }
-
         //Log.trace('DatasetController::getDataset() - processed');
         return null;
-        // try{
-        //     let fs = require(id);
-        //     // TODO: change to ./data folder
-        //     if (!fs.existsSync('./dataMock' + id)){
-        //         // TODO: load dataset from disk and then load
-        //     }
-        //     return this.datasets[id];
-        //     // do stuff
-        // }
-        // catch (err){
-        //     Log.error('DatasetController::getDataset() - ERROR: ' + err);
-        //     return null;
     } //getDataset
 
     /**
@@ -72,15 +57,15 @@ export default class DatasetController {
     public getDatasets(): Datasets {
         //Log.trace('DatasetController :: getDatasets is being called');
         let that = this;
-
-        if (Object.keys(that.datasets).length === 0 && that.datasets.constructor === Object){
+        if (Object.keys(that.datasets).length === 0 && that.datasets.constructor === Object)
+        {
             let data_dir: string = __dirname+"\/..\/..\/data\/";
-            //Log.trace('path for the data location is:' + data_dir);
-
             let exist_datafolder: boolean = fs.existsSync(data_dir);
-            if(exist_datafolder){
+            if(exist_datafolder)
+            {
                 let files = fs.readdirSync(data_dir);
-                files.forEach(function (file, index) {
+                files.forEach(function (file, index)
+                {
                     let id = file.replace('.json', '');
                     //Log.trace("Dataset with id: " + id + " - will be added to the dataset");
                     that.datasets[id] = fs.readFileSync(data_dir + file);
@@ -100,22 +85,27 @@ export default class DatasetController {
      */
     public deleteDataset(id:string): Promise<boolean> {
         Log.trace("DatasetController::deleteDataset() started");
-
         let that = this;
-        return new Promise(function (fulfill, reject) {
-            try {
+        return new Promise(function (fulfill, reject)
+        {
+            try
+            {
                 let data_json: string = __dirname + "\/..\/..\/data\/" + id + '.json';
                 //Log.trace('Json file to be deleted from the data folder id: ' + data_json);
-                if (fs.existsSync(data_json)) {
+                if (fs.existsSync(data_json))
+                {
                     // if (that.datasets.hasOwnProperty(id) !== null) {
-                    if (that.datasets[id] !== 'undefined') {
+                    if (that.datasets[id] !== 'undefined')
+                    {
                         that.datasets[id] = null;
-                        //Log.trace("deleted datasets have the following length: " + Object.keys(that.datasets).length);
                         fs.unlinkSync(data_json);
                         fulfill(true);
                     }
                 }
-                else reject("File does not exist on disk");
+                else
+                {
+                    reject("File does not exist on disk");
+                }
             }catch (err) {
                 //Log.trace('DatasetController::deleteDataset(..) - ERROR: ' + err.message);
                 reject(err);
@@ -139,47 +129,53 @@ export default class DatasetController {
     // although you sho uld still be tolerant to errors.
     public process(id: string, data: any): Promise<boolean> {
         Log.trace('DatasetController::process( ' + id + '... )');
-
         let that = this;
-        return new Promise(function (fulfill, reject) {
-            try {
+        return new Promise(function (fulfill, reject)
+        {
+            try
+            {
                 let myZip = new JSZip();
                 myZip.loadAsync(data, {base64: true}).then(function (zip: JSZip) {
                     //Log.trace('DatasetController::process(..) - unzipped');
-
                     let processedDataset = new Array();
+                    let empty_folder: boolean = true;
                     let promises:any[] = [];
                     /** promises is the promise that retrieves all the info from the zip file and stores it in
                      processedDataset **/
-                    let empty_folder: boolean = true;
-
-                    zip.folder(id).forEach(function (relativePath, file){
+                    zip.folder(id).forEach(function (relativePath, file)
+                    {
                         empty_folder = false;
-                        promises.push(file.async("string").then(function (data) {
+                        promises.push(file.async("string").then(function (data)
+                        {
                             let courseinfo: any;
                             courseinfo = JSON.parse(data);
                             let emptydata = '{"result":[],"rank":0}';
-                            if (data !== emptydata) {
+                            if (data !== emptydata)
+                            {
                                processedDataset.push(courseinfo);
                             }
                         })
-                            .catch(function(err){
+                            .catch(function(err)
+                            {
                             Log.trace('Fail to get the file from the zip file: ' + err);
                             reject(err);
                             reject(true);
-                        }))
-                        });
-                    Promise.all(promises).then(function (results) {
-                        if (empty_folder){
+                            }))
+                    });
+                    Promise.all(promises).then(function (results)
+                    {
+                        if (empty_folder)
+                        {
                             reject(true);
                         }
-                        else {
+                        else
+                        {
                             //Log.trace("Now will be going to save zip file into disk and memory");
                             that.save(id, processedDataset);
                             fulfill(true);
                         }
-                        // }
-                    }).catch(function (err) {
+                    }).catch(function (err)
+                    {
                         //Log.trace("Failed to iterate through all files: " + err.message);
                         reject(err);
                         reject(true);
@@ -189,7 +185,8 @@ export default class DatasetController {
                     reject(err);
                     reject(true);
                 });
-            } catch (err) {
+            } catch (err)
+            {
                 //Log.trace('DatasetController::process(..) - ERROR: ' + err);
                 reject(err);
                 reject(true);
@@ -211,31 +208,19 @@ export default class DatasetController {
         let newobj: any = {};
         newobj[id] = datastructure;
         this.datasets[id] = datastructure;
-
-        //Log.trace('DatasetController::save( ' + id + '... )');
         let  data_location: string = __dirname+"\/..\/..\/data\/";
         let data = JSON.stringify(newobj);
-        // let data = JSON.stringify(datastructure);
-        //Log.trace("Parsing the dataset into a json");
         let exist_datafolder: boolean = fs.existsSync(data_location);
-
-        if (exist_datafolder){
+        if (exist_datafolder)
+        {
             fs.writeFileSync(data_location+id+".json", data);
         }
-        else {
+        else
+        {
             fs.mkdirSync(data_location);
             fs.writeFileSync(data_location+id+".json", data);
         }
         //Log.trace('DatasetController::save completed');
-        // fs.access(data_location, fs.F_OK, function(err) {
-        //     if (!err) {
-        //         fs.writeFileSync(data_location+id+".json", data);
-        //     } else {
-        //         fs.mkdirSync(data_location);
-        //         fs.writeFileSync(data_location+id+".json", data);
-        //     }
-        //     Log.trace("saved onto disk");
-        // });
     } //save
 
     /**
@@ -246,28 +231,29 @@ export default class DatasetController {
      */
     private parseDataset(processedDataset:any):any{
         Log.trace('DatasetController::parseDataset -- processing');
-
         let finalDataset = new Array();
-        for (let i = 0; i < processedDataset.length; i++) {
+        for (let i = 0; i < processedDataset.length; i++)
+        {
             let tempresobj: any = {};
             // Log.trace('Starting the first for loop with i value of: ' + i);
             let temparr = processedDataset[i];
             let resarr = temparr.result;
-
             let tempresarr = new Array();
-            for (let j = 0; j < resarr.length; j++) {
-
+            for (let j = 0; j < resarr.length; j++)
+            {
                 let resdata = resarr[j];
                 let tempobj: any = {};
-                for (let key in resdata) {
+                for (let key in resdata)
+                {
                     // Log.trace("object value is: " + key + ':' + resdata[key]);
-                    if (key === 'id' || key === 'Subject' || key === 'Avg' || key === 'Professor' ||
-                        key === 'Title' || key === 'Pass' || key === 'Fail' || key === 'Audit') {
-
+                    if (key === 'id'    || key === 'Subject' || key === 'Avg'  || key === 'Professor' ||
+                        key === 'Title' || key === 'Pass'    || key === 'Fail' || key === 'Audit')
+                    {
                         tempobj[key] = resdata[key];
                         // Log.trace("temporary inner object has the value:" + key + ":" + tempobj[key]);
                     }
-                    else if (key === 'Course'){
+                    else if (key === 'Course')
+                    {
                         tempobj[key] = resdata[key].toString();
                     }
                 }

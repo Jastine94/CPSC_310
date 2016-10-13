@@ -24,30 +24,40 @@ export default class QueryController {
         this.datasets = datasets;
     }
 
+    /** This method will return if the query provided is valid or not */
     public isValid(query: QueryRequest): boolean {
-        if ( Object.keys(query).length === 0 || typeof query === 'undefined' || query === null){
+        if ( Object.keys(query).length === 0 || typeof query === 'undefined' || query === null)
+        {
             return false;
         }
-        else if (query.hasOwnProperty("GET") && query.hasOwnProperty("WHERE") && query.hasOwnProperty("AS")){
+        else if (query.hasOwnProperty("GET") && query.hasOwnProperty("WHERE") && query.hasOwnProperty("AS"))
+        {
             let validGET:boolean = this.checkGet(query);
             let validORDER:boolean = this.checkOrder(query);
             let validAS:boolean = this.checkAs(query);
             let validWHERE: boolean;
 
-            if (Object.keys(query.WHERE).length === 0){
+            if (Object.keys(query.WHERE).length === 0)
+            {
                 return false;
             }
-            for (let filter in query.WHERE){
+            for (let filter in query.WHERE)
+            {
                 validWHERE = this.checkFilter(query.WHERE, filter);
-                if (validWHERE === false){
+                if (validWHERE === false)
+                {
                     return false;
                 }
             }
             return (validGET && validORDER && validAS && validWHERE);
         }
-        else return false;
+        else
+        {
+            return false;
+        }
     }
 
+    /** Returns whether or not the WHERE clause is valid */
     private checkFilter(query: any, filter: any):boolean{
         let numberRegex = new RegExp("[1-9]*[0-9]+(.[0-9]+)?");
         let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
@@ -55,16 +65,18 @@ export default class QueryController {
 
         if (filter === "AND" || filter === "OR"){
            // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
-            if (query[filter].length < 1){
+            if (query[filter].length < 1)
+            {
                 return false;
             }
-
             let isAndReturn:boolean = true;
-
-            for (let filtobj in query[filter]){
+            for (let filtobj in query[filter])
+            {
                 let filteredObj:any = JSON.parse(JSON.stringify(query[filter][filtobj]));
-                for (let filtval in filteredObj) {
-                    if (!this.checkFilter(filteredObj, filtval)){
+                for (let filtval in filteredObj)
+                {
+                    if (!this.checkFilter(filteredObj, filtval))
+                    {
                         isAndReturn = false;
                         break;
                     }
@@ -72,77 +84,100 @@ export default class QueryController {
             }
             return isAndReturn;
         }
-        else if (filter === "LT" || filter === "GT" || filter === "EQ"){
+        else if (filter === "LT" || filter === "GT" || filter === "EQ")
+        {
            // MCOMPARISON ::= MCOMPARATOR ':{' key ':' number '}'
             let mcompvalue = query[filter];
-
-            if (Object.keys(query[filter]).length !== 1){
+            if (Object.keys(query[filter]).length !== 1)
+            {
                 return false;
             }
-
-            for (let val in mcompvalue){
+            for (let val in mcompvalue)
+            {
                 let tempkey = this.getKey(val.toString());
                 let isValidKey: boolean = (tempkey !== "Invalid Key");
                 return (isValidKey && key.test(val) && numberRegex.test(mcompvalue[val]));
             }
         }
-        else if (filter === "IS"){
+        else if (filter === "IS")
+        {
             // SCOMPARISON ::= 'IS:{' key ':' [*]? string [*]? '}'
             let scompvalue = query[filter];
-            if (Object.keys(query[filter]).length !== 1){
+            if (Object.keys(query[filter]).length !== 1)
+            {
                 return false;
             }
-            for (let val in scompvalue){
+            for (let val in scompvalue)
+            {
                 let tempkey = this.getKey(val.toString());
                 let isValidKey: boolean = (tempkey !== "Invalid Key");
                 return (isValidKey && key.test(val) && sCompRegex.test(scompvalue[val]));
             }
         }
-        else if (filter === "NOT") {
+        else if (filter === "NOT")
+        {
            // NEGATION ::= 'NOT :{' FILTER '}'
             let negate = query[filter];
-            if (Object.keys(query[filter]).length !== 1){
+            if (Object.keys(query[filter]).length !== 1)
+            {
                 return false;
             }
-            for (let filt in query[filter]){
+            for (let filt in query[filter])
+            {
                 return this.checkFilter(negate,filt);
             }
         }
-        else return false;
+        else
+        {
+            return false;
+        }
     }
 
+    /** Returns whether GET part of the query is valid */
     private checkGet(query: QueryRequest): boolean {
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
         let getVals = query["GET"];
         let validGET: boolean = true;
-        if (getVals.length === 0){
+        if (getVals.length === 0)
+        {
             return false;
         }
-        for (let i = 0; i < getVals.length; i++){
+        for (let i = 0; i < getVals.length; i++)
+        {
             let validKey:boolean = key.test(getVals[i]);
-            if (!validKey){
+            if (!validKey)
+            {
                 validGET = false;
             }
         }
         return validGET;
     } //checkGet
 
+    /** Returns whether ORDER part of the query is valid */
     private checkOrder(query: QueryRequest): boolean{
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
-        for (let q in query){
-            if (q === "ORDER"){
+        for (let q in query)
+        {
+            if (q === "ORDER")
+            {
                 return (key.test(query.ORDER) || query.ORDER === "" || query.ORDER === null );
             }
-            else return true;
+            else
+            {
+                return true;
+            }
         }
         return true;
     } //checkOrder
 
+    /** Returns whether AS part of the query is valid */
     private checkAs(query: QueryRequest): boolean {
-        if (query.AS === "TABLE"){
+        if (query.AS === "TABLE")
+        {
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     } //checkAs
