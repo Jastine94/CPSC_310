@@ -39,7 +39,7 @@ export default class QueryController {
 
             if (Object.keys(query.WHERE).length === 0)
             {
-                return false;
+                return true; //updated this value so that you can have an empty obj in there WHERE clause
             }
             for (let filter in query.WHERE)
             {

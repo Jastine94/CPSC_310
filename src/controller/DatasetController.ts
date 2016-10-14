@@ -94,7 +94,6 @@ export default class DatasetController {
                 //Log.trace('Json file to be deleted from the data folder id: ' + data_json);
                 if (fs.existsSync(data_json))
                 {
-                    // if (that.datasets.hasOwnProperty(id) !== null) {
                     if (that.datasets[id] !== 'undefined')
                     {
                         that.datasets[id] = null;

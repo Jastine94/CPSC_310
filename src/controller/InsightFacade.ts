@@ -89,7 +89,7 @@ export default class InsightFacade implements IInsightFacade {
                             reject({code: 400, body: {error: "Invalid query"}});
                         }
                         else {
-                            fulfill({code: 200, body: {success: "200 Successful"}});
+                            fulfill({code: 200, body: {success: result}});
                         }
                     }
                 }
