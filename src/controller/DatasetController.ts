@@ -144,6 +144,7 @@ export default class DatasetController {
                      processedDataset **/
                     zip.folder(id).forEach(function (relativePath, file)
                     {
+
                         empty_folder = false;
                         promises.push(file.async("string").then(function (data)
                         {
@@ -158,7 +159,7 @@ export default class DatasetController {
                             .catch(function(err)
                             {
                             Log.trace('Fail to get the file from the zip file: ' + err);
-                            reject(err);
+                            // reject(err);
                             reject(true);
                             }))
                     });
@@ -170,7 +171,7 @@ export default class DatasetController {
                         }
                         else
                         {
-                            //Log.trace("Now will be going to save zip file into disk and memory");
+                            Log.trace("Now will be going to save zip file into disk and memory");
                             that.save(id, processedDataset);
                             fulfill(true);
                         }
@@ -203,7 +204,7 @@ export default class DatasetController {
      */
     private save(id: string, processedDataset: any) {
         // TODO: actually write to disk in the ./data directory
-        //Log.trace('DatasetController::save -- processing');
+        Log.trace('DatasetController::save -- processing');
         let datastructure: any = this.parseDataset(processedDataset);
         let newobj: any = {};
         newobj[id] = datastructure;

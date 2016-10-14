@@ -24,7 +24,7 @@
     "configure": "npm install; typings install --global;",
     "configurewin": "npm install & typings install --global",
     "build": "tsc",
-    "test": "mocha -c -R mochawesome",
+    "test": "mocha -c -R mochawesome --timeout 4000",
     "cover": "istanbul cover _mocha",
     "coverwin": "istanbul cover node_modules/mocha/bin/_mocha",
     "start": "node src/App.js"

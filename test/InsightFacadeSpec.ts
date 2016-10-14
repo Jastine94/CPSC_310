@@ -19,7 +19,9 @@ describe("InsightFacade", function () {
         try {
             // what you delete here is going to depend on your impl, just make sure
             // all of your temporary files and directories are deleted
-            fs.unlinkSync('./id.json');
+            // fs.unlinkSync('./id.json');
+            fs.unlinkSync('..\/data\/courses.json');
+            // fs.rmdirSync(__dirname+"\/..\/data\/");
         } catch (err) {
             // silently fail, but don't crash; this is fine
             Log.warn('InsightController::before() - id.json not removed (probably not present)');
@@ -60,4 +62,17 @@ describe("InsightFacade", function () {
             expect(response.code).to.equal(400);
         });
     });
+
+
+    it("Should be able to delete an existing dataset", function () {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        return facade.removeDataset('courses').then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+
 });
