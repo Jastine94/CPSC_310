@@ -35,7 +35,7 @@ export default class InsightFacade implements IInsightFacade {
                             reject({code: 400, body: {error: "Add dataset unsuccessful"}});
                         }
                     }
-                ).catch(function (error: Error) {
+                ).catch(function (error) {
                     reject({code: 400, body: {error: "Add dataset unsuccessful"}});
                 });
 
@@ -51,7 +51,7 @@ export default class InsightFacade implements IInsightFacade {
                 let controller = InsightFacade.datasetController;
                 controller.deleteDataset(id).then(function (result) {
                     Log.trace('InsightFacde ::deleteDataset(..) - processed');
-                    fulfill({code: 204, body: {error: "Successfully deleted"}});
+                    fulfill({code: 204, body: {success: "Successfully deleted"}});
                 }).catch(function (error: Error) {
                     reject({code: 404, body: {error: "Delete dataset unsuccessful"}});
                 });
@@ -89,7 +89,7 @@ export default class InsightFacade implements IInsightFacade {
                             reject({code: 400, body: {error: "Invalid query"}});
                         }
                         else {
-                            fulfill({code: 200, body: {success: result}});
+                            fulfill({code: 200, body: result});
                         }
                     }
                 }

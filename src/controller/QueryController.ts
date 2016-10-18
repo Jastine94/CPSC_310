@@ -37,6 +37,11 @@ export default class QueryController {
             let validAS:boolean = this.checkAs(query);
             let validWHERE: boolean;
 
+            // TODO: implement the valid group, apply, and sort
+            let validGROUP:boolean;
+            let validAPPLY:boolean;
+            let validSORT:boolean;
+
             if (Object.keys(query.WHERE).length === 0)
             {
                 return true; //updated this value so that you can have an empty obj in there WHERE clause
@@ -56,6 +61,65 @@ export default class QueryController {
             return false;
         }
     }
+
+    // private checkApply(query: QueryRequest):boolean{
+    //     let getVals = query["APPLY"];
+    //     let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
+    //
+    //     if (getVals.length === 0)
+    //     {
+    //         return true;
+    //     }
+    //     else
+    //     {
+    //         for (let i = 0; i < getVals; i++)
+    //         {
+    //             // {string: {APPLYTOKEN: key}}
+    //             for (let val in getVals[i])
+    //             {
+    //                 let validString = (typeof val === 'string');
+    //                 if (validString === false)
+    //                 {
+    //                     return false;
+    //                 }
+    //                 for (let stringVal in getVals[i][val]){
+    //                     let validAPPTOKEN = this.validApplyToken(stringVal);
+    //                     let validKEY = key.test(getVals[i][val][stringVal]);
+    //                     if (validAPPTOKEN === false || validKEY === false)
+    //                     {
+    //                         return false;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return true;
+    // } //checkAPPLY
+    //
+    // private validApplyToken(token: string):boolean {
+    //     return (token === 'MAX' || token === 'MIN' || token === 'AVG' || token === 'COUNT');
+    // } //validApplyToken
+    //
+    // private checkGroup(query: QueryRequest): boolean{
+    //     let getVals = query["GROUP"];
+    //     let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
+    //     if (getVals.length === 0)
+    //     {
+    //         return false;
+    //     }
+    //     else
+    //     {
+    //         for (let gVal in getVals)
+    //         {
+    //             let vKey = key.test(gVal);
+    //             if (vKey === false)
+    //             {
+    //                 return false;
+    //             }
+    //         }
+    //     }
+    //     return true;
+    // } //checkGroup
 
     /** Returns whether or not the WHERE clause is valid */
     private checkFilter(query: any, filter: any):boolean{
@@ -131,11 +195,12 @@ export default class QueryController {
         {
             return false;
         }
-    }
+    } //checkFilter
 
     /** Returns whether GET part of the query is valid */
     private checkGet(query: QueryRequest): boolean {
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
+        // TODO: changed the value to a string instead of key for D2
         let getVals = query["GET"];
         let validGET: boolean = true;
         if (getVals.length === 0)
@@ -144,7 +209,8 @@ export default class QueryController {
         }
         for (let i = 0; i < getVals.length; i++)
         {
-            let validKey:boolean = key.test(getVals[i]);
+            // let validKey:boolean = key.test(getVals[i]);
+            let validKey:boolean = (typeof getVals[i] === 'string');
             if (!validKey)
             {
                 validGET = false;
@@ -155,12 +221,53 @@ export default class QueryController {
 
     /** Returns whether ORDER part of the query is valid */
     private checkOrder(query: QueryRequest): boolean{
+
+        // TODO: Add additional usage -- make sure that it takes care of those values
+        // SORT ::= 'ORDER: { dir:'  DIRECTION ', keys  : [ ' string (',' string)* ']},'    /* new */
+        // DIRECTION ::= 'UP' | 'DOWN'                                                      /* new */
+
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
         for (let q in query)
         {
             if (q === "ORDER")
             {
-                return (key.test(query.ORDER) || query.ORDER === "" || query.ORDER === null );
+                let getVals = query["ORDER"];
+                if (typeof getVals === 'string')  //only one value for order
+                {
+                    return (key.test(query.ORDER) || query.ORDER === "" || query.ORDER === null );
+                }
+                // else
+                // {
+                //     //{ dir:'  DIRECTION ', keys  : [ ' string (',' string)* ']}
+                //     for (let orderVal in getVals)
+                //     {
+                //         if (orderVal === 'dir')
+                //         {
+                //             // just check the dir value
+                //             let dirVal = this.checkDirection(getVals[orderVal]);
+                //             if (dirVal === false)
+                //             {
+                //                 return false;
+                //             }
+                //         }
+                //         else if (orderVal === 'keys')
+                //         {
+                //             // iteration on the array
+                //             if (getVals[orderVal].length === 0)
+                //             {
+                //                 return false;
+                //             }
+                //             for (let keysArrVal in getVals[orderVal])
+                //             {
+                //                 let stringVal = (typeof keysArrVal === 'string');
+                //                 if (stringVal === false)
+                //                 {
+                //                     return false;
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
             }
             else
             {
@@ -169,6 +276,13 @@ export default class QueryController {
         }
         return true;
     } //checkOrder
+
+
+    private checkDirection(direction: string): boolean{
+        return (direction === 'UP' || direction === 'DOWN');
+    } //checkDirection
+
+
 
     /** Returns whether AS part of the query is valid */
     private checkAs(query: QueryRequest): boolean {
