@@ -765,31 +765,54 @@ export default class QueryController {
      * @param data, QueryResponse that is being ordered
      * @returns {QueryResponse}
      */
-    private queryOrder(key: string | {}, data: any[]): any[]
+    private queryOrder(key: string | any, data: any[]): any[]
     {
+        let that = this;
+
         if (typeof key === 'string')  //only one value for order
         {
+            data.sort(function (a, b) {
+                let aString = String(a[key]).toUpperCase();
+                let bString = String(b[key]).toUpperCase();
+                /*
+                 if (a[key] > b[key]) {
+                 return 1;
+                 }
+                 if (a[key] < b[key]) {
+                 return -1;
+                 }
+                 // a must be equal to b
+                 return 0;
+                 */
+                return that.compareObject(aString, bString);
+            });
+            /*
             // ordering for number
             if (key == "courses_avg" || key == "courses_pass" ||
                 key == "courses_fail"|| key == "courses_audit")
             {
                 data.sort(function (a, b) {
-                    if (a[key] > b[key]) {
-                        return 1;
-                    }
-                    if (a[key] < b[key]) {
-                        return -1;
-                    }
-                    // a must be equal to b
-                    return 0;
+                    let aString = String(a[key]).toUpperCase();
+                    let bString = String(b[key]).toUpperCase();
+                    /*
+                     if (a[key] > b[key]) {
+                     return 1;
+                     }
+                     if (a[key] < b[key]) {
+                     return -1;
+                     }
+                     // a must be equal to b
+                     return 0;
+
+                    return that.compareObject(aString, bString);
                 });
             }
             else // key is a string
             {
                 data.sort(function (a, b) {
+
                     let aString = String(a[key]).toUpperCase();
                     let bString = String(b[key]).toUpperCase();
-
                     if (aString > bString) {
                         return 1;
                     }
@@ -800,10 +823,101 @@ export default class QueryController {
                     return 0;
                 });
             }
+            */
         }
-        
+        else
+        {
+            // it is an object with direction
+            let direction : String;
+            let keys : any[] = [];
+            for (let k in key)
+            {
+                if ('dir' === k)
+                {
+                    direction = String(key[k]);
+                }
+                else if ('keys' === k )
+                {
+                    keys = key[k];
+                }
+            }
+
+            data.sort(function (a, b) {
+                /*
+                let tempKey :String;
+                for (var i = 1; i < keys.length; ++i)
+                {
+                    tempKey = keys[i];
+                    break;
+                }
+                */
+                let aString = String(a[keys[0]]).toUpperCase();
+                let bString = String(b[keys[0]]).toUpperCase();
+                let result: number = that.compareObject(aString, bString);
+                if (0 !== result) {
+                    if ('UP' == direction)
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        // DOWN
+                        return result * -1;
+                    }
+                }
+                else
+                {
+                    // it is a tie
+                    for (var i = 1; i < keys.length; ++i)
+                    {
+                        aString = String(a[keys[i]]).toUpperCase();
+                        bString = String(b[keys[i]]).toUpperCase();
+
+                        let result: number = that.compareObject(aString, bString);
+                        while (0 === result)
+                        {
+                            continue;
+                        }
+
+                        if ('UP' == direction)
+                        {
+                            return result;
+                        }
+                        else
+                        {
+                            // DOWN
+                            return result * -1;
+                        }
+                    }
+
+                    return 0;
+                }
+            });
+        }
+
         return data;
     } // queryOrder
+
+    /**
+     * helper for comparing objects
+     *
+     * @param a, b
+     * @returns the value of comparison
+     */
+    private compareObject(a : String, b : String) : number
+    {
+        if ( a > b ) {
+            return 1;
+        }
+        else if (a < b) {
+            return -1;
+        }
+        else
+        {
+            return 0;
+        }
+    } // compareObject
+
 
     /**
      * display the query response to based on key
@@ -820,7 +934,7 @@ export default class QueryController {
     } // queryAs
 
     /**
-     * Get the corresponsing key in the dataset
+     * Get the corresponding key in the dataset
      *
      * @param key
      * @returns string
