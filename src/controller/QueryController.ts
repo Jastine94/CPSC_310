@@ -6,6 +6,7 @@ import {Datasets} from "./DatasetController";
 import Log from "../Util";
 
 import fs = require('fs');
+import get = Reflect.get;
 
 export interface QueryRequest {
     GET: string|string[];
@@ -26,7 +27,7 @@ export default class QueryController {
         this.datasets = datasets;
     }
 
-    /** This method will return if the query provided is valid or not */
+     // This method will return if the query provided is valid or not
     public isValid(query: QueryRequest): boolean {
         if ( Object.keys(query).length === 0 || typeof query === 'undefined' || query === null)
         {
@@ -40,6 +41,7 @@ export default class QueryController {
             let validWHERE: boolean;
             let validGROUP:boolean = true;
             let validAPPLY:boolean = true;
+            let validGETGROUPAPPLY: boolean = true;
             if (Object.keys(query.WHERE).length === 0)
             {
                 return true; //updated this value so that you can have an empty obj in there WHERE clause
@@ -52,8 +54,11 @@ export default class QueryController {
                     return false;
                 }
             }
+            // Log.trace(typeof (query["GROUP"]) + "!!!!!!!" + typeof (query["APPLY"]))
+            Log.trace( "!!!!!!!" )
             if (typeof (query["GROUP"]) != 'undefined' && typeof (query["APPLY"]) != 'undefined')
             {
+                validGETGROUPAPPLY = this.checkGetApplyGroupKeys(query);
                 validGROUP = this.checkGroup(query);
                 validAPPLY = this.checkApply(query);
             }
@@ -62,7 +67,14 @@ export default class QueryController {
             {
                 return false;
             }
-            return (validGET && validORDER && validAS && validWHERE && validGROUP && validAPPLY);
+            Log.trace("!!!!" + validGET);
+            Log.trace("!!!!" + validORDER);
+            Log.trace("!!!!" + validAS);
+            Log.trace("!!!!" + validWHERE);
+            Log.trace("!!!!" + validGROUP);
+            Log.trace("!!!!" + validAPPLY);
+            Log.trace("!!!!" + validGETGROUPAPPLY);
+            return (validGET && validORDER && validAS && validWHERE && validGROUP && validAPPLY && validGETGROUPAPPLY);
         }
         else
         {
@@ -129,7 +141,7 @@ export default class QueryController {
         return true;
     } //checkGroup
 
-    /** Returns whether or not the WHERE clause is valid */
+    //  Returns whether or not the WHERE clause is valid
     private checkFilter(query: any, filter: any):boolean{
         let numberRegex = new RegExp("[1-9]*[0-9]+(.[0-9]+)?");
         let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
@@ -205,7 +217,7 @@ export default class QueryController {
         }
     } //checkFilter
 
-    /** Returns whether GET part of the query is valid */
+    // Returns whether GET part of the query is valid
     private checkGet(query: QueryRequest): boolean {
         // let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
         // TODO: changed the value to a string instead of key for D2
@@ -227,7 +239,7 @@ export default class QueryController {
         return validGET;
     } //checkGet
 
-    /** Returns whether ORDER part of the query is valid */
+    // Returns whether ORDER part of the query is valid
     private checkOrder(query: QueryRequest): boolean{
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
         for (let q in query)
@@ -287,7 +299,7 @@ export default class QueryController {
         return (direction === 'UP' || direction === 'DOWN');
     } //checkDirection
 
-    /** Returns whether AS part of the query is valid */
+    //  Returns whether AS part of the query is valid
     private checkAs(query: QueryRequest): boolean {
         if (query.AS === "TABLE")
         {
@@ -298,6 +310,69 @@ export default class QueryController {
             return false;
         }
     } //checkAs
+
+    private checkGetApplyGroupKeys(query: QueryRequest): boolean {
+        let getValues = query["GET"];
+        let groupValues = query["GROUP"];
+        let applyValues = query["APPLY"];
+
+        // // TODO: ask if this is a valid way to check
+        let groupApplyLen: number = groupValues.length + applyValues.length;
+        if (groupApplyLen !== getValues.length)
+        {
+            return false;
+        }
+
+        // let vApplyKeys: string[] = [];
+        // let vGroupKeys: string[] = [];
+        //
+        // for (let m = 0; m < getValues.length; m ++)
+        // {
+        //     let val = getValues[m];
+        //     if (val.includes("_"))
+        //     {
+        //         vGroupKeys.push(val)
+        //     }
+        //     else
+        //     {
+        //         vApplyKeys.push(val);
+        //     }
+        // }
+        // if (vApplyKeys.length != applyValues.length && vGroupKeys.length != groupValues.length)
+        // {
+        //     return false;
+        // }
+
+        for (let i in groupValues)
+        {
+            let groupVal = groupValues[i];
+            Log.trace(groupVal);
+            let containedGG = getValues.includes(groupVal);
+            if (containedGG === false)
+            {
+                return false;
+            }
+        }
+        if (applyValues.length != 0) {
+            for (let applyVal in applyValues)
+            {
+                let applyObj: any = applyValues[applyVal];
+                for (let applyKey in applyObj) {
+                    Log.trace(applyKey);
+                    let inGroup = groupValues.includes(applyKey);
+                    let containedGA = getValues.includes(applyKey);
+                    if (containedGA === false || inGroup === true) {
+                        return false;
+                    }
+                }
+            }
+        }
+        // Kwyjibo: All keys in GET should be in either GROUP or APPLY -- keep a counter
+        // Laguna: If a key appears in GROUP or in APPLY, it cannot appear in the other one.
+        // Lorax: All keys in GET that are not separated by an underscore should appear in APPLY
+        return true;
+    }
+
 
     public query(query: QueryRequest): QueryResponse {
         if (this.isValid(query))
