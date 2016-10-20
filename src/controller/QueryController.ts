@@ -12,8 +12,9 @@ export interface QueryRequest {
     WHERE: {};
     ORDER: string;
     AS: string;
-    APPLY? : any[]
-    ;
+    APPLY? : any[];
+    GROUP? : any[];
+    SORT? : {ORDER :string};
 }
 
 export interface QueryResponse {
@@ -103,26 +104,26 @@ export default class QueryController {
         return (token === 'MAX' || token === 'MIN' || token === 'AVG' || token === 'COUNT');
     } //validApplyToken
 
-    // private checkGroup(query: QueryRequest): boolean{
-    //     let getVals = query["GROUP"];
-    //     let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
-    //     if (getVals.length === 0)
-    //     {
-    //         return false;
-    //     }
-    //     else
-    //     {
-    //         for (let gVal in getVals)
-    //         {
-    //             let vKey = key.test(gVal);
-    //             if (vKey === false)
-    //             {
-    //                 return false;
-    //             }
-    //         }
-    //     }
-    //     return true;
-    // } //checkGroup
+    private checkGroup(query: QueryRequest): boolean{
+        let getVals = query["GROUP"];
+        let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
+        if (getVals.length === 0)
+        {
+            return false;
+        }
+        else
+        {
+            for (let gVal in getVals)
+            {
+                let vKey = key.test(gVal);
+                if (vKey === false)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    } //checkGroup
 
     /** Returns whether or not the WHERE clause is valid */
     private checkFilter(query: any, filter: any):boolean{
