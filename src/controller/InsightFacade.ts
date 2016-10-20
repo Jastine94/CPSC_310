@@ -72,12 +72,20 @@ export default class InsightFacade implements IInsightFacade {
                     let value = query["GET"];
                     let missing_id: string[] = [];
                     for (let i = 0; i < value.length; i++) {
-                        let temp_pos = value[i].indexOf("_");
-                        let id = value[i].substring(0, temp_pos);
-                        if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json"))) {
-                            missing_id.push(id);
+                        let is_Key = value[i].includes("_");
+                        if (is_Key) {
+                            let temp_pos = value[i].indexOf("_");
+                            let id = value[i].substring(0, temp_pos);
+                            if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json"))) {
+                                missing_id.push(id);
+                            }
                         }
                     }
+                    // if (typeof (query["ORDER"]) != 'undefined' && typeof  (query["ORDER"]) === 'object')
+                    // {
+                    //     let key_vals:any = query["ORDER"]["keys"];
+                    //     // iterate through all the values in order
+                    // }
                     if (missing_id.length > 0) {
                         let mids: any = {};
                         mids["missing"] = missing_id;
@@ -103,4 +111,21 @@ export default class InsightFacade implements IInsightFacade {
             }
         })
     } // performQuery
+
+    // TODO: make this work, not sure why it doesn't
+    private returnInvalidKeys(queryInfo: string[]): string[]{
+        let missing_id: string[] = [];
+        for (let i = 0; i < queryInfo.length; i++) {
+            let is_Key = queryInfo[i].includes("_");
+            if (is_Key) {
+                let temp_pos = queryInfo[i].indexOf("_");
+                let id = queryInfo[i].substring(0, temp_pos);
+                if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json"))) {
+                    missing_id.push(id);
+                }
+            }
+        }
+        return missing_id;
+    } //returnInvalidKeys
+
 }

@@ -38,12 +38,8 @@ export default class QueryController {
             let validORDER:boolean = this.checkOrder(query);
             let validAS:boolean = this.checkAs(query);
             let validWHERE: boolean;
-
-            // TODO: implement the valid group, apply, and sort
-            let validGROUP:boolean;
-            let validAPPLY:boolean;
-            let validSORT:boolean;
-
+            let validGROUP:boolean = true;
+            let validAPPLY:boolean = true;
             if (Object.keys(query.WHERE).length === 0)
             {
                 return true; //updated this value so that you can have an empty obj in there WHERE clause
@@ -56,18 +52,25 @@ export default class QueryController {
                     return false;
                 }
             }
-            return (validGET && validORDER && validAS && validWHERE);
+            if (typeof (query["GROUP"]) != 'undefined')
+            {
+                validGROUP = this.checkGroup(query);
+            }
+            if (typeof (query["APPLY"]) != 'undefined')
+            {
+                validAPPLY = this.checkApply(query);
+            }
+            return (validGET && validORDER && validAS && validWHERE && validGROUP && validAPPLY);
         }
         else
         {
             return false;
         }
-    }
+    } //isValid
 
     private checkApply(query: QueryRequest):boolean{
         let getVals = query["APPLY"];
         let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
-
         if (getVals.length === 0)
         {
             return true;
@@ -114,7 +117,7 @@ export default class QueryController {
         {
             for (let gVal in getVals)
             {
-                let vKey = key.test(gVal);
+                let vKey = key.test(getVals[gVal]);
                 if (vKey === false)
                 {
                     return false;
@@ -202,7 +205,7 @@ export default class QueryController {
 
     /** Returns whether GET part of the query is valid */
     private checkGet(query: QueryRequest): boolean {
-        let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
+        // let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
         // TODO: changed the value to a string instead of key for D2
         let getVals = query["GET"];
         let validGET: boolean = true;
@@ -224,53 +227,51 @@ export default class QueryController {
 
     /** Returns whether ORDER part of the query is valid */
     private checkOrder(query: QueryRequest): boolean{
-
-        // TODO: Add additional usage -- make sure that it takes care of those values
-        // SORT ::= 'ORDER: { dir:'  DIRECTION ', keys  : [ ' string (',' string)* ']},'    /* new */
-        // DIRECTION ::= 'UP' | 'DOWN'                                                      /* new */
-
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
         for (let q in query)
         {
             if (q === "ORDER")
             {
-                let getVals = query["ORDER"];
+                let getVals:any = query["ORDER"];
                 if (typeof getVals === 'string')  //only one value for order
                 {
                     return (key.test(getVals) || query.ORDER === "" || query.ORDER === null );
                 }
-                // else
-                // {
-                //     //{ dir:'  DIRECTION ', keys  : [ ' string (',' string)* ']}
-                //     for (let orderVal in getVals)
-                //     {
-                //         if (orderVal === 'dir')
-                //         {
-                //             // just check the dir value
-                //             let dirVal = this.checkDirection(getVals[orderVal]);
-                //             if (dirVal === false)
-                //             {
-                //                 return false;
-                //             }
-                //         }
-                //         else if (orderVal === 'keys')
-                //         {
-                //             // iteration on the array
-                //             if (getVals[orderVal].length === 0)
-                //             {
-                //                 return false;
-                //             }
-                //             for (let keysArrVal in getVals[orderVal])
-                //             {
-                //                 let stringVal = (typeof keysArrVal === 'string');
-                //                 if (stringVal === false)
-                //                 {
-                //                     return false;
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
+                else
+                {
+                    //{ dir:'  DIRECTION ', keys  : [ ' string (',' string)* ']}
+                    for (let orderVal in getVals)
+                    {
+                        if (orderVal === 'dir')
+                        {
+                            // just check the dir value
+                            let dirVal = this.checkDirection(getVals[orderVal]);
+                            if (dirVal === false)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (orderVal === 'keys')
+                        {
+                            if (getVals[orderVal].length === 0)
+                            {
+                                return false;
+                            }
+                            for (let keysArrVal in getVals[orderVal])
+                            {
+                                let stringVal = (typeof keysArrVal === 'string');
+                                if (stringVal === false)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                        else
+                        { // key inside of the {dir...} was not dir or keys
+                            return false;
+                        }
+                    }
+                }
             }
             else
             {
@@ -280,11 +281,9 @@ export default class QueryController {
         return true;
     } //checkOrder
 
-
     private checkDirection(direction: string): boolean{
         return (direction === 'UP' || direction === 'DOWN');
     } //checkDirection
-
 
     /** Returns whether AS part of the query is valid */
     private checkAs(query: QueryRequest): boolean {
