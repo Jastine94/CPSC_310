@@ -22,6 +22,8 @@ export interface QueryResponse {
 
 export default class QueryController {
     private datasets: Datasets = null;
+    private whereEmpty : boolean = false;
+    private applyEmpty : boolean = false;
 
     constructor(datasets: Datasets) {
         this.datasets = datasets;
@@ -44,6 +46,7 @@ export default class QueryController {
             let validGETGROUPAPPLY: boolean = true;
             if (Object.keys(query.WHERE).length === 0)
             {
+                this.whereEmpty = true;
                 return true; //updated this value so that you can have an empty obj in there WHERE clause
             }
             for (let filter in query.WHERE)
@@ -87,6 +90,7 @@ export default class QueryController {
         let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
         if (getVals.length === 0)
         {
+            this.applyEmpty = true;
             return true;
         }
         else
@@ -388,7 +392,44 @@ export default class QueryController {
             if (query.hasOwnProperty("WHERE"))
             {
                 wherePresent = true;
-                response = this.queryWhere(query.WHERE, response, false);
+                if (this.whereEmpty)
+                {
+                    response = [];
+                    for (var myCurrentDataSet in this.datasets) {
+                        var myDataList = this.datasets[myCurrentDataSet];
+                        var resultList = JSON.parse(JSON.stringify(myDataList));
+                        for (var keys in resultList)
+                        {
+                            var result = resultList[keys];
+                            let valuesList = result["result"];
+
+                            for (var values in valuesList)
+                            {
+                                var value = valuesList[values];
+                                response.push(value);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    response = this.queryWhere(query.WHERE, response, false);
+                }
+            }
+
+            if (query.hasOwnProperty("GROUP"))
+            {
+                // TODO: do something
+                groupPresent = true;
+                response = this.queryGroup(query.GROUP, response);
+            }
+
+            if (query.hasOwnProperty("APPLY"))
+            {
+                // TODO: do something
+                applyPresent = true;
+                //response = this.queryApply(query.APPLY, response);
+
             }
 
             if (query.hasOwnProperty("GET"))
@@ -399,9 +440,9 @@ export default class QueryController {
 
             if (query.hasOwnProperty("ORDER"))
             {
-                let found : boolean = false;
+                let found : boolean = true;
                 orderPresent = true;
-
+                /*
                 if (query.ORDER == "" || query.ORDER == null)
                 {
                     found = true;
@@ -418,6 +459,7 @@ export default class QueryController {
                         }
                     }
                 }
+                */
 
                 if (!found)
                 {
@@ -425,18 +467,6 @@ export default class QueryController {
                 }
 
                 response = this.queryOrder(query.ORDER, response);
-            }
-
-            if (query.hasOwnProperty("GROUP"))
-            {
-                // TODO: do something
-                groupPresent = true;
-            }
-
-            if (query.hasOwnProperty("APPLY"))
-            {
-                // TODO: do something
-                applyPresent = true;
             }
 
             if (query.hasOwnProperty("AS"))
@@ -453,7 +483,7 @@ export default class QueryController {
     }// query
 
     /**
-     * Trim the dataset to based on the key
+     * Trim the Dataset to based on the key
      *
      * @param key
      * @returns {QueryResponse}
@@ -462,6 +492,66 @@ export default class QueryController {
     {
         return this.getValue(key, data);
     }// queryGet
+
+    /**
+     * Group result together based on key
+     *
+     * @param key
+     * @param data to group
+     * @returns any[]
+     */
+    private queryGroup(key: string[], data: any[]): any[]
+    {
+        let groups : any[] = [];
+
+        for(let i = 0; i < data.length; ++i)
+        {
+            let obj = data[i];
+            if(groups.length === 0)
+            {
+                groups.push([obj]);
+            }
+            else
+            {
+                Log.trace("Groups" + JSON.stringify((groups)));
+                let equalGroup = false;
+                for(var j = 0; j < groups.length; ++j){
+                    var group = groups[j];
+                    var equal = true;
+                    let firstElement = group[0];
+                    let that = this;
+                    key.forEach(function(property){
+                        let tempKey = that.getKey(String(property));
+                        if(firstElement[tempKey] !== obj[tempKey]){
+                            equal = false;
+                        }
+                    });
+
+                    if (equal)
+                    {
+                        group.push(obj);
+                        groups[j] = group;
+                        equalGroup = true;
+                    }
+                }
+                if (!equalGroup)
+                {
+                    groups.push([obj]);
+                }
+            }
+        }
+
+        let results : any[] = [];
+        for(var i = 0; i < groups.length; ++i){
+            for (var j = 0 ; j < groups[i].length; ++j)
+            {
+                results.push(groups[i][j]);
+            }
+        }
+
+        Log.trace("Results is: " +  JSON.stringify(results));
+        return results;
+    }// queryGroup
 
     /**
      * filter the dataset to based on the where option
@@ -614,7 +704,6 @@ export default class QueryController {
             }
         }
 
-        data = [];
         return accResult;
     }// queryWhere
 
