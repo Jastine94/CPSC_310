@@ -58,7 +58,6 @@ export default class QueryController {
                 }
             }
             // Log.trace(typeof (query["GROUP"]) + "!!!!!!!" + typeof (query["APPLY"]))
-            Log.trace( "!!!!!!!" )
             if (typeof (query["GROUP"]) != 'undefined' && typeof (query["APPLY"]) != 'undefined')
             {
                 validGETGROUPAPPLY = this.checkGetApplyGroupKeys(query);
@@ -70,13 +69,7 @@ export default class QueryController {
             {
                 return false;
             }
-            Log.trace("!!!!" + validGET);
-            Log.trace("!!!!" + validORDER);
-            Log.trace("!!!!" + validAS);
-            Log.trace("!!!!" + validWHERE);
-            Log.trace("!!!!" + validGROUP);
-            Log.trace("!!!!" + validAPPLY);
-            Log.trace("!!!!" + validGETGROUPAPPLY);
+
             return (validGET && validORDER && validAS && validWHERE && validGROUP && validAPPLY && validGETGROUPAPPLY);
         }
         else
