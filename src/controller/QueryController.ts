@@ -52,13 +52,15 @@ export default class QueryController {
                     return false;
                 }
             }
-            if (typeof (query["GROUP"]) != 'undefined')
+            if (typeof (query["GROUP"]) != 'undefined' && typeof (query["APPLY"]) != 'undefined')
             {
                 validGROUP = this.checkGroup(query);
-            }
-            if (typeof (query["APPLY"]) != 'undefined')
-            {
                 validAPPLY = this.checkApply(query);
+            }
+            else if ((typeof (query["GROUP"]) === 'undefined' && typeof (query["APPLY"]) != 'undefined') ||
+                (typeof (query["GROUP"]) != 'undefined' && typeof (query["APPLY"]) === 'undefined'))
+            {
+                return false;
             }
             return (validGET && validORDER && validAS && validWHERE && validGROUP && validAPPLY);
         }
