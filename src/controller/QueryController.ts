@@ -995,6 +995,7 @@ export default class QueryController {
                 else if ('keys' === k )
                 {
                     keys = key[k];
+                    break;
                 }
             }
 
@@ -1011,7 +1012,7 @@ export default class QueryController {
                 let bString = String(b[keys[0]]).toUpperCase();
                 let result: number = that.compareObject(aString, bString);
                 if (0 !== result) {
-                    if ('UP' == direction)
+                    if ('UP' === direction)
                     {
                         return result;
                     }
@@ -1023,26 +1024,33 @@ export default class QueryController {
                 }
                 else
                 {
+                    /*
+                    if (key.length === 1)
+                    {
+                        return 0;
+                    }
+                    */
+
                     // it is a tie
+                    Log.trace("checking here");
                     for (var i = 1; i < keys.length; ++i)
                     {
                         aString = String(a[keys[i]]).toUpperCase();
                         bString = String(b[keys[i]]).toUpperCase();
 
                         let result: number = that.compareObject(aString, bString);
-                        while (0 === result)
+                        if (0 !== result)
                         {
-                            continue;
-                        }
-
-                        if ('UP' == direction)
-                        {
-                            return result;
-                        }
-                        else
-                        {
-                            // DOWN
-                            return result * -1;
+                            Log.trace("continue");
+                            if ('UP' === direction)
+                            {
+                                return result;
+                            }
+                            else
+                            {
+                                // DOWN
+                                return result * -1;
+                            }
                         }
                     }
 
