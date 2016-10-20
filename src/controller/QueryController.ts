@@ -12,6 +12,8 @@ export interface QueryRequest {
     WHERE: {};
     ORDER: string;
     AS: string;
+    APPLY? : any[]
+    ;
 }
 
 export interface QueryResponse {
@@ -62,44 +64,45 @@ export default class QueryController {
         }
     }
 
-    // private checkApply(query: QueryRequest):boolean{
-    //     let getVals = query["APPLY"];
-    //     let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
-    //
-    //     if (getVals.length === 0)
-    //     {
-    //         return true;
-    //     }
-    //     else
-    //     {
-    //         for (let i = 0; i < getVals; i++)
-    //         {
-    //             // {string: {APPLYTOKEN: key}}
-    //             for (let val in getVals[i])
-    //             {
-    //                 let validString = (typeof val === 'string');
-    //                 if (validString === false)
-    //                 {
-    //                     return false;
-    //                 }
-    //                 for (let stringVal in getVals[i][val]){
-    //                     let validAPPTOKEN = this.validApplyToken(stringVal);
-    //                     let validKEY = key.test(getVals[i][val][stringVal]);
-    //                     if (validAPPTOKEN === false || validKEY === false)
-    //                     {
-    //                         return false;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return true;
-    // } //checkAPPLY
-    //
-    // private validApplyToken(token: string):boolean {
-    //     return (token === 'MAX' || token === 'MIN' || token === 'AVG' || token === 'COUNT');
-    // } //validApplyToken
-    //
+    private checkApply(query: QueryRequest):boolean{
+        let getVals = query["APPLY"];
+        let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
+
+        if (getVals.length === 0)
+        {
+            return true;
+        }
+        else
+        {
+            for (let i = 0; i < getVals.length; i++)
+            {
+                // {string: {APPLYTOKEN: key}}
+                for (let val in getVals[i])
+                {
+                    let validString = (typeof val === 'string');
+                    if (validString === false)
+                    {
+                        return false;
+                    }
+                    for (let stringVal in getVals[i][val]){
+                        let validAPPTOKEN = this.validApplyToken(stringVal);
+                        let validKEY = key.test(getVals[i][val][stringVal]);
+                        if (validAPPTOKEN === false || validKEY === false)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    } //checkAPPLY
+
+
+    private validApplyToken(token: string):boolean {
+        return (token === 'MAX' || token === 'MIN' || token === 'AVG' || token === 'COUNT');
+    } //validApplyToken
+
     // private checkGroup(query: QueryRequest): boolean{
     //     let getVals = query["GROUP"];
     //     let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
