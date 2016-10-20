@@ -21,9 +21,11 @@ describe("QueryController GROUP", function () {
             GET: ["courses_id"],
             WHERE: {},
             GROUP: ["courses_id"],
+            APPLY: [],
             ORDER: "courses_id",
             AS: "TABLE"
         };
+
         let dataset: Datasets = {
             "courses": [{
                 "result": [{
@@ -78,6 +80,7 @@ describe("QueryController GROUP", function () {
             GET: ["courses_id", "courses_avg"],
             WHERE: {},
             GROUP: ["courses_id", "courses_avg"],
+            APPLY: [],
             ORDER: "courses_id",
             AS: "TABLE"
         };
@@ -135,6 +138,7 @@ describe("QueryController GROUP", function () {
             GET: ["courses_id", "courses_avg"],
             WHERE: {},
             GROUP: ["courses_avg", "courses_id"],
+            APPLY: [],
             ORDER: "courses_id",
             AS: "TABLE"
         };
@@ -193,6 +197,7 @@ describe("QueryController GROUP", function () {
             GET: ["courses_id", "courses_avg"],
             WHERE: {},
             GROUP: ["courses_id", "courses_avg"],
+            APPLY: [],
             ORDER: {"dir" : "UP", "keys": ["courses_id", "courses_avg"]},
             AS: "TABLE"
         };
@@ -250,6 +255,7 @@ describe("QueryController GROUP", function () {
             GET: ["courses_id", "courses_avg"],
             WHERE: {},
             GROUP: ["courses_id", "courses_avg"],
+            APPLY: [],
             ORDER: {"dir" : "UP", "keys": ["courses_avg", "courses_id"]},
             AS: "TABLE"
         };
@@ -307,6 +313,7 @@ describe("QueryController GROUP", function () {
             GET: ["courses_id", "courses_avg"],
             WHERE: {},
             GROUP: ["courses_id", "courses_avg"],
+            APPLY: [],
             ORDER: {"dir" : "DOWN", "keys": ["courses_id", "courses_avg"]},
             AS: "TABLE"
         };

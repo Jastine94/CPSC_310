@@ -47,7 +47,7 @@ export default class QueryController {
             if (Object.keys(query.WHERE).length === 0)
             {
                 this.whereEmpty = true;
-                return true; //updated this value so that you can have an empty obj in there WHERE clause
+                validWHERE = true; //updated this value so that you can have an empty obj in there WHERE clause
             }
             for (let filter in query.WHERE)
             {
@@ -58,19 +58,19 @@ export default class QueryController {
                 }
             }
             // Log.trace(typeof (query["GROUP"]) + "!!!!!!!" + typeof (query["APPLY"]))
-            if (typeof (query["GROUP"]) != 'undefined' && typeof (query["APPLY"]) != 'undefined')
+            if (typeof (query["GROUP"]) !== "undefined" && typeof (query["APPLY"]) !== 'undefined')
             {
                 validGETGROUPAPPLY = this.checkGetApplyGroupKeys(query);
                 validGROUP = this.checkGroup(query);
                 validAPPLY = this.checkApply(query);
             }
-            else if ((typeof (query["GROUP"]) === 'undefined' && typeof (query["APPLY"]) != 'undefined') ||
-                (typeof (query["GROUP"]) != 'undefined' && typeof (query["APPLY"]) === 'undefined'))
+            else if ((typeof (query["GROUP"]) === 'undefined' && typeof (query["APPLY"]) !== 'undefined') ||
+                (typeof (query["GROUP"]) !== 'undefined' && typeof (query["APPLY"]) === 'undefined'))
             {
                 return false;
             }
 
-            return (validGET && validORDER && validAS && validWHERE && validGROUP && validAPPLY && validGETGROUPAPPLY);
+            return (validGET && validWHERE && validORDER && validAS && validWHERE && validGROUP && validAPPLY && validGETGROUPAPPLY);
         }
         else
         {
@@ -506,7 +506,6 @@ export default class QueryController {
             }
             else
             {
-                Log.trace("Groups" + JSON.stringify((groups)));
                 let equalGroup = false;
                 for(var j = 0; j < groups.length; ++j){
                     var group = groups[j];
@@ -542,7 +541,6 @@ export default class QueryController {
             }
         }
 
-        Log.trace("Results is: " +  JSON.stringify(results));
         return results;
     }// queryGroup
 
