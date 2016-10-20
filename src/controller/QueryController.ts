@@ -10,11 +10,10 @@ import fs = require('fs');
 export interface QueryRequest {
     GET: string|string[];
     WHERE: {};
-    ORDER: string;
+    ORDER: string | {};
     AS: string;
     APPLY? : any[];
     GROUP? : any[];
-    SORT? : {ORDER :string};
 }
 
 export interface QueryResponse {
@@ -238,7 +237,7 @@ export default class QueryController {
                 let getVals = query["ORDER"];
                 if (typeof getVals === 'string')  //only one value for order
                 {
-                    return (key.test(query.ORDER) || query.ORDER === "" || query.ORDER === null );
+                    return (key.test(getVals) || query.ORDER === "" || query.ORDER === null );
                 }
                 // else
                 // {
@@ -287,7 +286,6 @@ export default class QueryController {
     } //checkDirection
 
 
-
     /** Returns whether AS part of the query is valid */
     private checkAs(query: QueryRequest): boolean {
         if (query.AS === "TABLE")
@@ -308,75 +306,68 @@ export default class QueryController {
             let getPresent: boolean = false;
             let wherePresent: boolean = false;
             let orderPresent:boolean = false;
-            for (var q in query)
-            {
-                if (q == 'GET')
-                {
-                    getPresent = true;
-                }
-                else if (q == 'WHERE')
-                {
-                    wherePresent = true;
-                }
-                else if (q == 'ORDER')
-                {
-                    // continue only if order is in GET else not a valid query
-                    // check if GET is of type string
-                    let found : boolean = false;
-                    orderPresent = true;
+            let groupPresent:boolean = false;
+            let applyPresent:boolean = false;
 
-                    if (query.ORDER == "" || query.ORDER == null)
+            if (query.hasOwnProperty("WHERE"))
+            {
+                wherePresent = true;
+                response = this.queryWhere(query.WHERE, response, false);
+            }
+
+            if (query.hasOwnProperty("GET"))
+            {
+                getPresent = true;
+                response = this.queryGet(query.GET, response);
+            }
+
+            if (query.hasOwnProperty("ORDER"))
+            {
+                let found : boolean = false;
+                orderPresent = true;
+
+                if (query.ORDER == "" || query.ORDER == null)
+                {
+                    found = true;
+                }
+                else
+                {
+                    // GET is of type string[]
+                    for (var i = 0; i < query.GET.length; ++i)
                     {
-                        found = true;
-                    }
-                    else if (typeof query.GET === 'string' ||
-                        query.GET instanceof String)
-                    {
-                        if (query.ORDER == query.GET)
+                        if (query.ORDER == query.GET[i])
                         {
                             found = true;
+                            break;
                         }
-                    }
-                    else
-                    {
-                        // GET is of type string[]
-                        for (var i = 0; i < query.GET.length; ++i)
-                        {
-                            if (query.ORDER == query.GET[i])
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!found)
-                    {
-                        return {status: 'failed', error: "invalid query"};
                     }
                 }
-                else if (q == 'AS')
+
+                if (!found)
                 {
-                    if (wherePresent && getPresent)
-                    {
-                        // note that where must be done before get
-                        response = this.queryWhere(query.WHERE, response, false);
-                        response = this.queryGet(query.GET, response);
-
-                        queryResponse = response;
-                        if (orderPresent)
-                        {
-                            queryResponse = this.queryOrder(query.ORDER, response);
-                        }
-                        else
-                        {
-                            queryResponse = response;
-                        }
-                    }
-
-                    queryResponse = {result : queryResponse};
-                    queryResponse = this.queryAs(query.AS, queryResponse);
+                    return {status: 'failed', error: "invalid query"};
                 }
+
+                response = this.queryOrder(query.ORDER, response);
+            }
+
+            if (query.hasOwnProperty("GROUP"))
+            {
+                // TODO: do something
+                groupPresent = true;
+            }
+
+            if (query.hasOwnProperty("APPLY"))
+            {
+                // TODO: do something
+                applyPresent = true;
+            }
+
+            if (query.hasOwnProperty("AS"))
+            {
+                queryResponse = response;
+                queryResponse = {result: queryResponse};
+                queryResponse = this.queryAs(query.AS, queryResponse);
             }
 
             return queryResponse;
@@ -774,44 +765,44 @@ export default class QueryController {
      * @param data, QueryResponse that is being ordered
      * @returns {QueryResponse}
      */
-    private queryOrder(key: string, data: any[]): QueryResponse
+    private queryOrder(key: string | {}, data: any[]): any[]
     {
-        // ordering for number
-        if (key == "courses_avg" || key == "courses_pass" ||
-            key == "courses_fail"|| key == "courses_audit")
+        if (typeof key === 'string')  //only one value for order
         {
-            data.sort(function (a, b) {
-                  if (a[key] > b[key]) {
-                    return 1;
-                  }
-                  if (a[key] < b[key]) {
-                    return -1;
-                  }
-                  // a must be equal to b
-                  return 0;
-              });
+            // ordering for number
+            if (key == "courses_avg" || key == "courses_pass" ||
+                key == "courses_fail"|| key == "courses_audit")
+            {
+                data.sort(function (a, b) {
+                    if (a[key] > b[key]) {
+                        return 1;
+                    }
+                    if (a[key] < b[key]) {
+                        return -1;
+                    }
+                    // a must be equal to b
+                    return 0;
+                });
+            }
+            else // key is a string
+            {
+                data.sort(function (a, b) {
+                    let aString = String(a[key]).toUpperCase();
+                    let bString = String(b[key]).toUpperCase();
+
+                    if (aString > bString) {
+                        return 1;
+                    }
+                    if (aString < bString) {
+                        return -1;
+                    }
+                    // a must be equal to b
+                    return 0;
+                });
+            }
         }
-        else // key is a string
-        {
-            data.sort(function (a, b) {
-                let aString = String(a[key]).toUpperCase();
-                let bString = String(b[key]).toUpperCase();
-
-                  if (aString > bString) {
-                    return 1;
-                  }
-                  if (aString < bString) {
-                    return -1;
-                  }
-                  // a must be equal to b
-                  return 0;
-              });
-        }
-
-        let queryOrderedResult :QueryResponse = [];
-
-        queryOrderedResult = data;
-        return queryOrderedResult;
+        
+        return data;
     } // queryOrder
 
     /**
@@ -870,6 +861,10 @@ export default class QueryController {
         {
             tempKey = "Audit";
         }
+        else if ("courses_uuid" == key)
+        {
+            tempKey = "id";
+        }
         else
         {
             tempKey = "Invalid Key";
@@ -879,7 +874,7 @@ export default class QueryController {
     } //getKey
 
     /**
-     * Get the corresponsing values based on the key in the dataset
+     * Get the corresponding values based on the key in the dataset
      *
      * @param key
      * @returns string []

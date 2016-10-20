@@ -202,7 +202,6 @@ export default class DatasetController {
      * @param processedDataset
      */
     private save(id: string, processedDataset: any) {
-        // TODO: actually write to disk in the ./data directory
         Log.trace('DatasetController::save -- processing');
         let datastructure: any = this.parseDataset(processedDataset);
         let newobj: any = {};
@@ -220,7 +219,7 @@ export default class DatasetController {
             fs.mkdirSync(data_location);
             fs.writeFileSync(data_location+id+".json", data);
         }
-        //Log.trace('DatasetController::save completed');
+        Log.trace('DatasetController::save completed');
     } //save
 
     /**
@@ -235,7 +234,6 @@ export default class DatasetController {
         for (let i = 0; i < processedDataset.length; i++)
         {
             let tempresobj: any = {};
-            // Log.trace('Starting the first for loop with i value of: ' + i);
             let temparr = processedDataset[i];
             let resarr = temparr.result;
             let tempresarr = new Array();
@@ -246,13 +244,12 @@ export default class DatasetController {
                 for (let key in resdata)
                 {
                     // Log.trace("object value is: " + key + ':' + resdata[key]);
-                    if (key === 'id'    || key === 'Subject' || key === 'Avg'  || key === 'Professor' ||
+                    if (key === 'Subject' || key === 'Avg'  || key === 'Professor' ||
                         key === 'Title' || key === 'Pass'    || key === 'Fail' || key === 'Audit')
                     {
                         tempobj[key] = resdata[key];
-                        // Log.trace("temporary inner object has the value:" + key + ":" + tempobj[key]);
                     }
-                    else if (key === 'Course')
+                    else if (key === 'Course' || key === 'id')
                     {
                         tempobj[key] = resdata[key].toString();
                     }
