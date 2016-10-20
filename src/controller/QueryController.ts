@@ -22,6 +22,7 @@ export interface QueryResponse {
 export default class QueryController {
     private datasets: Datasets = null;
     private whereEmpty : boolean = false;
+    private applyEmpty : boolean = false;
 
     constructor(datasets: Datasets) {
         this.datasets = datasets;
@@ -77,6 +78,7 @@ export default class QueryController {
         let key = new RegExp('[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+');
         if (getVals.length === 0)
         {
+            this.applyEmpty = true;
             return true;
         }
         else
@@ -363,9 +365,9 @@ export default class QueryController {
 
             if (query.hasOwnProperty("ORDER"))
             {
-                let found : boolean = false;
+                let found : boolean = true;
                 orderPresent = true;
-
+                /*
                 if (query.ORDER == "" || query.ORDER == null)
                 {
                     found = true;
@@ -382,6 +384,7 @@ export default class QueryController {
                         }
                     }
                 }
+                */
 
                 if (!found)
                 {
