@@ -60,7 +60,7 @@ export default class QueryController {
             Log.trace(typeof (query["GROUP"]) + "!!!!!!!" + typeof (query["APPLY"]))
             if (typeof (query["GROUP"]) !== "undefined" && typeof (query["APPLY"]) !== 'undefined')
             {
-                validGETGROUPAPPLY = this.checkGetApplyGroupKeys(query);
+                validGETGROUPAPPLY =  this.checkGetApplyGroupKeys(query);
                 validGROUP = this.checkGroup(query);
                 validAPPLY = this.checkApply(query);
             }
@@ -616,9 +616,11 @@ export default class QueryController {
                     for (let instance in data[i][values]) {
                         let tempKey = this.getKey(id.toString());
                         if (tempKey === String(instance)) {
+                            JSON.stringify("max" + max  + "to Compare" + String(data[i][values][instance]));
                             if (first)
                             {
                                 max = data[i][values][instance];
+                                first = false;
                             }
                             else
                             {
@@ -668,6 +670,7 @@ export default class QueryController {
                             if (first)
                             {
                                 min = data[i][values][instance];
+                                first = false;
                             }
                             else
                             {
@@ -747,9 +750,10 @@ export default class QueryController {
      */
     private queryApplyCount(key: any, data: any[], name:string): any[]
     {
-        let count = 0;
         for (let i = 0 ; i < data.length; ++i)
         {
+            let count : any[] = [];
+
             for (let token in key)
             {
                 let id = String(key[token]);
@@ -757,7 +761,7 @@ export default class QueryController {
                     for (let instance in data[i][values]) {
                         let tempKey = this.getKey(id.toString());
                         if (tempKey === String(instance)) {
-                            count++;
+                            count.push(instance);
                         }
                     }
                 }
@@ -765,10 +769,8 @@ export default class QueryController {
 
             for (let values in data[i])
             {
-                data[i][values][name] = count;
+                data[i][values][name] = count.length;
             }
-
-            count = 0;
         }
 
         return data;
