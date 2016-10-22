@@ -18,10 +18,10 @@ describe("QueryController GROUP", function () {
 
     it("Should be able to apply avg", function() {
         let query: QueryRequest = {
-            "GET": ["courses_id", "courseAverage"],
+            "GET": ["courses_id", "courseAverage", "maxPass"],
             "WHERE": {} ,
             "GROUP": [ "courses_id" ],
-            "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}} ],
+            "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}}, {"maxPass" : {"MAX": "courses_pass"}}],
             "ORDER": {"dir" : "UP", "keys": ["courseAverage"]},
             "AS":"TABLE"
         };
@@ -71,8 +71,8 @@ describe("QueryController GROUP", function () {
             let ret = controller.query(query);
             Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
             expect(ret).to.eql({
-                render: 'TABLE', result: [{"courses_id": "310", "courseAverage" : 84.00},
-                    {"courses_id": "210", "courseAverage" : 95.00}]});
+                render: 'TABLE', result: [{"courses_id": "310", "courseAverage" : 84.00, "maxPass" : 95},
+                    {"courses_id": "210", "courseAverage" : 95.00, "maxPass" : 100}]});
         });
 
 
