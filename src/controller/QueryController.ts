@@ -412,16 +412,14 @@ export default class QueryController {
 
             if (query.hasOwnProperty("GROUP"))
             {
-                // TODO: do something
                 groupPresent = true;
                 response = this.queryGroup(query.GROUP, response);
             }
 
             if (query.hasOwnProperty("APPLY"))
             {
-                // TODO: do something
                 applyPresent = true;
-                //response = this.queryApply(query.APPLY, response);
+                response = this.queryApply(query.APPLY, response);
 
             }
 
@@ -543,6 +541,108 @@ export default class QueryController {
 
         return results;
     }// queryGroup
+
+    /**
+     * apply token to each object in grouped array
+     *
+     * @param key
+     * @param data to group
+     * @returns any[]
+     */
+    private queryApply(key: any[], data: any[]): any[]
+    {
+        let result : any[] = [];
+
+        for(let i = 0; i < key.length; ++i)
+        {
+            // TODO: may need a helper function for apply that takes in a data and an key[i]
+            let tempKey = key[i];
+
+            for (let token in tempKey)
+            {
+                let applyToken = tempKey[token];
+
+                for (let to in applyToken)
+                {
+                    if ("MAX" == to)
+                    {
+                        result = this.queryApplyMax(applyToken, data, token.toString());
+                        console.log("MAX");
+                    }
+                    else if ("COUNT" == to)
+                    {
+                        console.log("COUNT");
+                    }
+                    else if ("MIN" == to)
+                    {
+                        console.log("MIN");
+                    }
+                    else if ("AVG" == to)
+                    {
+                        console.log("AVG");
+                    }
+
+
+                }
+
+            }
+        }
+
+        return result;
+    } // queryApply
+
+    /**
+     * get the max of each group based on key
+     *
+     * @param key
+     * @param data to apply token to
+     * @param name to call the result from apply as
+     * @returns any[]
+     */
+    private queryApplyMax(key: {}, data: any[], name:string): any[]
+    {
+        return data;
+    } // queryApplyMax
+
+    /**
+     * get the min of each group based on key
+     *
+     * @param key
+     * @param data to apply token to
+     * @param name to call the result from apply as
+     * @returns any[]
+     */
+    private queryApplyMin(key: {}, data: any[], name:string): any[]
+    {
+        return data;
+    } // queryApplyMin
+
+    /**
+     * get the avg of each group based on key
+     *
+     * @param key
+     * @param data to apply token to
+     * @param name to call the result from apply as
+     * @returns any[]
+     */
+    private queryApplyAvg(key: {}, data: any[], name:string): any[]
+    {
+        return data;
+    } // queryApplyAvg
+
+
+    /**
+     * get the count of each group based on key
+     *
+     * @param key
+     * @param data to apply token to
+     * @param name to call the result from apply as
+     * @returns any[]
+     */
+    private queryApplyCount(key: {}, data: any[], name:string): any[]
+    {
+        return data;
+    } // queryApplyCount
 
     /**
      * filter the dataset to based on the where option
