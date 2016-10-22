@@ -36,7 +36,7 @@ export default class DatasetController {
         Log.trace('DatasetController::getDataset() - processing');
         let that = this;
         let data_dir: string = __dirname+"\/..\/..\/data\/";
-        if(that.datasets[id] !== 'undefined')
+        if(typeof (that.datasets[id]) !== 'undefined')
         {
             return that.datasets[id];
         }
@@ -47,7 +47,10 @@ export default class DatasetController {
             return that.datasets[id];
         }
         //Log.trace('DatasetController::getDataset() - processed');
-        return null;
+        else
+        {
+            return null;
+        }
     } //getDataset
 
     /**
@@ -57,7 +60,7 @@ export default class DatasetController {
     public getDatasets(): Datasets {
         //Log.trace('DatasetController :: getDatasets is being called');
         let that = this;
-        if (Object.keys(that.datasets).length === 0 && that.datasets.constructor === Object)
+        if (Object.keys(that.datasets).length === 0)
         {
             let data_dir: string = __dirname+"\/..\/..\/data\/";
             let exist_datafolder: boolean = fs.existsSync(data_dir);
