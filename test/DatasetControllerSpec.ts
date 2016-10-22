@@ -42,10 +42,7 @@ describe("DatasetController", function () {
         Log.test("starting 310sampe.zip test")
         var data = fs.readFileSync("test\/310sampe.zip");
         let controller = new DatasetController();
-        // return controller.process('courses', data).then(function(result){
-        //     Log.test("310 sample json created!! It's " +  result);
-        // })
-        let datasets = controller.getDataset('');
+        let datasets = controller.getDataset('courses');
         Log.test('Info inside the dataset is: ' + datasets);
     });
 
@@ -73,13 +70,35 @@ describe("DatasetController", function () {
         });
     });
 
-    // it("Should be able to retrieve everything in /data file using getDatasets())", function(){
-    //     Log.test("Create new Datacontroller");
-    //     let controller = new DatasetController();
-    //     let alldatasets = controller.getDatasets();
-    //     // if (alldatasets != null)
-    //     return alldatasets;
-    // });
+    it("Should be able to retrieve a dataset that was previously saved onto disk", function(){
+        Log.test("Start to unzip second_data.zip and load onto disk");
+        let controller = new DatasetController();
+        let result = controller.getDataset('courses');
+        expect(result).not.to.be.empty;
+        // return controller.process('courses',file).then(function (result){
+        //     Log.test('SECOND DATA RESULTS: ' + result);
+        //     let retrieved_datasets = controller.getDataset('courses');
+        //     expect(retrieved_datasets).not.to.be.empty;
+        // });
+    });
+
+    it("Should not be able to retrieve a dataset that is not on disk", function(){
+        Log.test("Start to unzip second_data.zip and load onto disk");
+        let controller = new DatasetController();
+        let result = controller.getDataset('bells');
+        expect(result).to.be.null;
+    });
+
+
+
+    it("Should be able to retrieve everything in /data file using getDatasets())", function(){
+        Log.test("Create new Datacontroller");
+        let controller = new DatasetController();
+        let alldatasets = controller.getDatasets();
+        // if (alldatasets != null)
+        expect(alldatasets).not.to.be.empty;
+        return alldatasets;
+    });
 
 
 

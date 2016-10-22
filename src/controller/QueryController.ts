@@ -57,7 +57,6 @@ export default class QueryController {
                     return false;
                 }
             }
-            Log.trace(typeof (query["GROUP"]) + "!!!!!!!" + typeof (query["APPLY"]))
             if (typeof (query["GROUP"]) !== "undefined" && typeof (query["APPLY"]) !== 'undefined')
             {
                 validGETGROUPAPPLY =  this.checkGetApplyGroupKeys(query);
@@ -215,8 +214,6 @@ export default class QueryController {
 
     // Returns whether GET part of the query is valid
     private checkGet(query: QueryRequest): boolean {
-        // let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
-        // TODO: changed the value to a string instead of key for D2
         let getVals = query["GET"];
         let validGET: boolean = true;
         if (getVals.length === 0)
@@ -225,7 +222,6 @@ export default class QueryController {
         }
         for (let i = 0; i < getVals.length; i++)
         {
-            // let validKey:boolean = key.test(getVals[i]);
             let validKey:boolean = (typeof getVals[i] === 'string');
             if (!validKey)
             {
@@ -236,61 +232,54 @@ export default class QueryController {
     } //checkGet
 
     // Returns whether ORDER part of the query is valid
-    // TODO: Make sure that all the values in order appear in get
     private checkOrder(query: QueryRequest): boolean{
+        let orderVals:any = query["ORDER"];
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
-        for (let q in query)
+        if (typeof orderVals === 'undefined')
         {
-            if (q === "ORDER")
+            return true;
+        }
+        else if (typeof orderVals === 'string')
+        {
+            return (key.test(orderVals) || query.ORDER === "" || query.ORDER === null );
+        }
+        else
+        {
+            let orderKeysInGet: boolean = true;
+            let getVals:any = query["GET"];
+            //{ dir:'  DIRECTION ', keys  : [ ' string (',' string)* ']}
+            for (let orderVal in orderVals)
             {
-                let getVals:any = query["ORDER"];
-                if (typeof getVals === 'string')  //only one value for order
-                {
-                    return (key.test(getVals) || query.ORDER === "" || query.ORDER === null );
-                }
-                else
-                {
-                    let orderKeysInGet: boolean = true;
-                    let getVals:any = query["GET"];
-                    //{ dir:'  DIRECTION ', keys  : [ ' string (',' string)* ']}
-                    for (let orderVal in getVals)
+                // Log.trace("ORDER VAL IS" + orderVal)
+                if (orderVal === 'dir')
+                {   // just check the dir value
+                    let dirVal = this.checkDirection(orderVals[orderVal]);
+                    if (dirVal === false)
                     {
-                        if (orderVal === 'dir')
+                        return false;
+                    }
+                }
+                else if (orderVal === 'keys')
+                {
+                    if (orderVals[orderVal].length === 0)
+                    {
+                        return false;
+                    }
+                    let keysArray = orderVals[orderVal];
+                    for (let keysArrVal in keysArray)
+                    {
+                        let stringVal = (typeof keysArray[keysArrVal] === 'string');
+                        orderKeysInGet = getVals.includes(keysArray[keysArrVal]);
+                        if (stringVal === false || orderKeysInGet === false)
                         {
-                            // just check the dir value
-                            let dirVal = this.checkDirection(getVals[orderVal]);
-                            if (dirVal === false)
-                            {
-                                return false;
-                            }
-                        }
-                        else if (orderVal === 'keys')
-                        {
-                            if (getVals[orderVal].length === 0)
-                            {
-                                return false;
-                            }
-                            for (let keysArrVal in getVals[orderVal])
-                            {
-                                Log.trace("ORDER KEY VALUE: " + keysArrVal);
-                                let stringVal = (typeof keysArrVal === 'string');
-                                orderKeysInGet = getVals.includes(keysArrVal);
-                                if (stringVal === false || orderKeysInGet === false)
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-                        else
-                        { // key inside of the {dir...} was not dir or keys
                             return false;
                         }
                     }
                 }
-            }
-            else
-            {
-                return true;
+                else
+                { // key inside of the {dir...} was not dir or keys
+                    return false;
+                }
             }
         }
         return true;
@@ -325,7 +314,7 @@ export default class QueryController {
         for (let i in groupValues)
         {
             let groupVal = groupValues[i];
-            Log.trace(groupVal);
+            // Log.trace(groupVal);
             let containedGG = getValues.includes(groupVal);
             if (containedGG === false)
             {

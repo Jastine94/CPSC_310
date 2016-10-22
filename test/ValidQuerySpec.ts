@@ -95,13 +95,13 @@ describe("QueryController", function () {
             WHERE: {"IS": {"courses_dept": "cpsc"}} ,
             GROUP: [ "courses_id" ],
             APPLY: [],
-            ORDER: { "dir": "UP", "keys": ["courseAverage", "courses_id"]},
+            ORDER: { "dir": "UP", "keys": ["courses_id"]},
             AS:"TABLE"
         };
         let dataset: Datasets = {};
         let controller = new QueryController(dataset);
-        let invalidQ = controller.isValid(query);
-        expect(invalidQ).to.be.true;
+        let validQ = controller.isValid(query);
+        expect(validQ).to.be.true;
     })
 
     it("Should not work with APPLY missing, but GROUP present", function(){
@@ -218,6 +218,112 @@ describe("QueryController", function () {
             GROUP: [ "courses_avg", "courses_id", "courses_dept" ],
             APPLY: [{"numSections": {"COUNT": "courses_uuid"}},{"courseAverage": {"AVG": "courses_avg"}}, {"numSections": {"MAX": "courses_fail"}} ],
             ORDER: { "dir": "UP", "keys": ["courseAverage", "maxFail", "courses_dept", "courses_id"]},
+            AS:"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })
+
+    it("Should be valid with valid ORDER values", function(){
+        let query: QueryRequest ={
+            GET: ["courses_dept", "courses_id", "numSections"],
+            WHERE: {},
+            GROUP: [ "courses_dept", "courses_id" ],
+            APPLY: [ {"numSections": {"COUNT": "courses_uuid"}} ],
+            ORDER: { "dir": "UP", "keys": ["numSections", "courses_dept", "courses_id"]},
+            AS:"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let validQ = controller.isValid(query);
+        expect(validQ).to.be.true;
+    })
+
+    it("Should not be valid, no GET value", function(){
+        let query: QueryRequest ={
+            GET: [],
+            WHERE: {},
+            GROUP: [ "courses_dept", "courses_id" ],
+            APPLY: [ {"numSections": {"COUNT": "courses_uuid"}} ],
+            ORDER: { "dir": "UP", "keys": ["numSections", "courses_dept", "courses_id"]},
+            AS:"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })
+
+    it("Should not be valid, value in get is not a string", function(){
+        let query: any ={
+            GET: [3333],
+            WHERE: {},
+            GROUP: [ "courses_dept", "courses_id" ],
+            APPLY: [ {"numSections": {"COUNT": "courses_uuid"}} ],
+            ORDER: { "dir": "UP", "keys": ["numSections", "courses_dept", "courses_id"]},
+            AS:"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })
+
+
+    it("Should be valid with valid no ORDER field", function(){
+        let query: any ={
+            GET: ["courses_dept", "courses_id", "numSections"],
+            WHERE: {},
+            GROUP: [ "courses_dept", "courses_id" ],
+            APPLY: [ {"numSections": {"COUNT": "courses_uuid"}} ],
+            AS:"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let validQ = controller.isValid(query);
+        expect(validQ).to.be.true;
+    })
+
+
+    it("Should not be valid with invalid direction", function(){
+        let query: QueryRequest ={
+            GET: ["courses_dept", "courses_id", "numSections"],
+            WHERE: {},
+            GROUP: [ "courses_dept", "courses_id" ],
+            APPLY: [ {"numSections": {"COUNT": "courses_uuid"}} ],
+            ORDER: { "dir": "LEFT", "keys": ["numSections", "courses_dept", "courses_id"]},
+            AS:"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })
+
+    it("Should not be valid with no keys in ORDER", function(){
+        let query: QueryRequest ={
+            GET: ["courses_dept", "courses_id", "numSections"],
+            WHERE: {},
+            GROUP: [ "courses_dept", "courses_id" ],
+            APPLY: [ {"numSections": {"COUNT": "courses_uuid"}} ],
+            ORDER: { "dir": "LEFT", "keys": []},
+            AS:"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })
+
+    it("Should not be valid with object key of values instead of dir or keys in ORDER", function(){
+        let query: QueryRequest ={
+            GET: ["courses_dept", "courses_id", "numSections"],
+            WHERE: {},
+            GROUP: [ "courses_dept", "courses_id" ],
+            APPLY: [ {"numSections": {"COUNT": "courses_uuid"}} ],
+            ORDER: { "dir": "LEFT", "values" : [], "keys": []},
             AS:"TABLE"
         };
         let dataset: Datasets = {};
