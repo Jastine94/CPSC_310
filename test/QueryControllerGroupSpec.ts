@@ -16,6 +16,66 @@ describe("QueryController GROUP", function () {
     afterEach(function () {
     });
 
+    it("Should be able to apply avg", function() {
+        let query: QueryRequest = {
+            "GET": ["courses_id", "courseAverage"],
+            "WHERE": {} ,
+            "GROUP": [ "courses_id" ],
+            "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}} ],
+            "ORDER": {"dir" : "UP", "keys": ["courseAverage"]},
+            "AS":"TABLE"
+        };
+
+        let dataset : Datasets = {
+            "courses": [{
+                            "result": [{
+                                "id": 1,
+                                "Course": "310",
+                                "Professor": "graves, gregor;zeiler, kathryn",
+                                "Avg": 84,
+                                "Pass": 95,
+                                "Subject": "a"
+                            },
+                                {
+                                    "id": 2,
+                                    "Course": "210",
+                                    "Professor": "gg",
+                                    "Avg": 95,
+                                    "Pass": 100,
+                                    "Subject": "apsc"
+                                }
+                            ]
+                        },
+                            {
+                                "result": [{
+                                    "id": 3,
+                                    "Course": "310",
+                                    "Professor": "hi, gregor",
+                                    "Avg": 84,
+                                    "Pass": 80,
+                                    "Subject": "biol"
+                                },
+                                    {
+                                        "id": 4,
+                                        "Course": "210",
+                                        "Professor": "TT",
+                                        "Avg": 95,
+                                        "Pass": 100,
+                                        "Subject": "cpsc"
+                                    }
+                                ]
+                            }]
+                    };
+
+        let controller = new QueryController(dataset);
+            let ret = controller.query(query);
+            Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+            expect(ret).to.eql({
+                render: 'TABLE', result: [{"courses_id": "310", "courseAverage" : 84.00},
+                    {"courses_id": "210", "courseAverage" : 95.00}]});
+        });
+
+
     it("Should be able to group by a key", function() {
         let query: QueryRequest = {
             GET: ["courses_id"],
@@ -71,9 +131,9 @@ describe("QueryController GROUP", function () {
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({
             render: 'TABLE', result: [{"courses_id": "210"},
-                                      {"courses_id": "210"},
-                                      {"courses_id": "310"}, {"courses_id": "310"}]});
+                                      {"courses_id": "310"}]});
     });
+
 
     it("Should be able to group by 2 keys", function() {
         let query: QueryRequest = {
@@ -129,7 +189,6 @@ describe("QueryController GROUP", function () {
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({
             render: 'TABLE', result: [{"courses_id": "210", "courses_avg" : 95},
-                {"courses_id": "210", "courses_avg" : 95},
                 {"courses_id": "310", "courses_avg" : 84}, {"courses_id": "310", "courses_avg" : 85}]});
     });
 
@@ -187,7 +246,6 @@ describe("QueryController GROUP", function () {
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({
             render: 'TABLE', result: [{"courses_avg": 95, "courses_id" : "210"},
-                                      {"courses_avg": 95, "courses_id" : "210"},
                                       {"courses_avg": 84, "courses_id" : "310"},
                                       {"courses_avg": 85, "courses_id" : "310"}]});
     });
