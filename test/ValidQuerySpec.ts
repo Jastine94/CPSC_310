@@ -24,7 +24,7 @@ describe("QueryController", function () {
     afterEach(function () {
     });
 
-    it("Query should be valid", function() {
+    it("Query should be valid from D1", function() {
         let query: QueryRequest = { GET: ["courses_dept", "courses_avg"],
             WHERE: {
                 "NOT": {
@@ -110,7 +110,7 @@ describe("QueryController", function () {
             GET: ["courses_id"],
             WHERE: {"IS": {"courses_dept": "cpsc"}} ,
             GROUP: [ "courses_id" ],
-            ORDER: { "dir": "UP", "keys": ["courseAverage", "courses_id"]},
+            ORDER: { "dir": "UP", "keys": ["courses_id"]},
             AS:"TABLE"
         };
         let dataset: Datasets = {};
@@ -165,4 +165,52 @@ describe("QueryController", function () {
         let invalidQ = controller.isValid(query);
         expect(invalidQ).to.be.false;
     })
+
+    it("Should be invalid with empty WHERE and no APPLY", function(){
+        let query: QueryRequest =
+        {
+            GET: ["courses_id"],
+            WHERE: {} ,
+            GROUP: [ "courses_id" ],
+            ORDER: { "dir": "UP", "keys": ["courses_id"]},
+            AS:"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })
+
+    it("Should be invalid with ORDER keys not in GET", function(){
+        let query: QueryRequest =
+        {
+            GET: ["courses_id"],
+            WHERE: {"IS": {"courses_dept": "cpsc"}} ,
+            GROUP: [ "courses_id" ],
+            ORDER: { "dir": "UP", "keys": ["courses_dept"]},
+            AS:"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })
+
+    it("Should be invalid with ORDER keys not in GET", function(){
+        let query: QueryRequest ={
+            GET: ["courses_id", "courses_avg", "courseAverage", "maxFail", "courses_uuid"],
+            WHERE: {},
+            GROUP: [ "courses_avg", "courses_id" ],
+            APPLY: [{"numSections": {"COUNT": "courses_uuid"}}, {"maxFail": {"MAX": "courses_fail"}} ],
+            ORDER: { "dir": "UP", "keys": ["courseAverage", "maxFail", "courses_dept", "courses_id"]},
+            AS:"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })
+
+
+
 })

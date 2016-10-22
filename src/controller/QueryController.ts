@@ -237,6 +237,7 @@ export default class QueryController {
     } //checkGet
 
     // Returns whether ORDER part of the query is valid
+    // TODO: Make sure that all the values in order appear in get
     private checkOrder(query: QueryRequest): boolean{
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
         for (let q in query)
@@ -250,6 +251,8 @@ export default class QueryController {
                 }
                 else
                 {
+                    let orderKeysInGet: boolean = true;
+                    let getVals:any = query["GET"];
                     //{ dir:'  DIRECTION ', keys  : [ ' string (',' string)* ']}
                     for (let orderVal in getVals)
                     {
@@ -270,8 +273,10 @@ export default class QueryController {
                             }
                             for (let keysArrVal in getVals[orderVal])
                             {
+                                Log.trace("ORDER KEY VALUE: " + keysArrVal);
                                 let stringVal = (typeof keysArrVal === 'string');
-                                if (stringVal === false)
+                                orderKeysInGet = getVals.includes(keysArrVal);
+                                if (stringVal === false || orderKeysInGet === false)
                                 {
                                     return false;
                                 }
@@ -312,11 +317,8 @@ export default class QueryController {
         let getValues = query["GET"];
         let groupValues = query["GROUP"];
         let applyValues = query["APPLY"];
-
-        // // TODO: ask if this is a valid way to check
         let groupApplyLen: number = groupValues.length + applyValues.length;
-        if (groupApplyLen !== getValues.length)
-        {
+        if (groupApplyLen !== getValues.length) {
             return false;
         }
 
@@ -340,19 +342,16 @@ export default class QueryController {
         //     return false;
         // }
 
-        for (let i in groupValues)
-        {
+        for (let i in groupValues) {
             let groupVal = groupValues[i];
             Log.trace(groupVal);
             let containedGG = getValues.includes(groupVal);
-            if (containedGG === false)
-            {
+            if (containedGG === false) {
                 return false;
             }
         }
         if (applyValues.length != 0) {
-            for (let applyVal in applyValues)
-            {
+            for (let applyVal in applyValues) {
                 let applyObj: any = applyValues[applyVal];
                 for (let applyKey in applyObj) {
                     Log.trace(applyKey);
@@ -364,11 +363,8 @@ export default class QueryController {
                 }
             }
         }
-        // Kwyjibo: All keys in GET should be in either GROUP or APPLY -- keep a counter
-        // Laguna: If a key appears in GROUP or in APPLY, it cannot appear in the other one.
-        // Lorax: All keys in GET that are not separated by an underscore should appear in APPLY
         return true;
-    }
+    } //checkGetApplyGroupKeys
 
 
     public query(query: QueryRequest): QueryResponse {
