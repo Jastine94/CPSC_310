@@ -415,8 +415,10 @@ export default class QueryController {
             if (query.hasOwnProperty("APPLY"))
             {
                 applyPresent = true;
-                response = this.queryApply(query.APPLY, response);
-
+                if (!this.applyEmpty)
+                {
+                    response = this.queryApply(query.APPLY, response);
+                }
             }
 
             if (query.hasOwnProperty("GET"))
@@ -528,11 +530,20 @@ export default class QueryController {
         }
 
         let results : any[] = [];
-        for(var i = 0; i < groups.length; ++i){
-            for (var j = 0 ; j < groups[i].length; ++j)
-            {
-                results.push(groups[i][j]);
+
+        if (this.applyEmpty)
+        {
+            for(var i = 0; i < groups.length; ++i){
+                for (var j = 0 ; j < groups[i].length; ++j)
+                {
+                    results.push(groups[i][j]);
+                    break;
+                }
             }
+        }
+        else
+        {
+            results = groups;
         }
 
         return results;
@@ -551,7 +562,6 @@ export default class QueryController {
 
         for(let i = 0; i < key.length; ++i)
         {
-            // TODO: may need a helper function for apply that takes in a data and an key[i]
             let tempKey = key[i];
 
             for (let token in tempKey)
@@ -567,24 +577,34 @@ export default class QueryController {
                     }
                     else if ("COUNT" == to)
                     {
+                        result = this.queryApplyCount(applyToken, data, token.toString());
                         console.log("COUNT");
                     }
                     else if ("MIN" == to)
                     {
+                        result = this.queryApplyMin(applyToken, data, token.toString());
                         console.log("MIN");
                     }
                     else if ("AVG" == to)
                     {
+                        result = this.queryApplyAvg(applyToken, data, token.toString());
                         console.log("AVG");
                     }
-
-
                 }
 
             }
         }
 
-        return result;
+        // get only the first result
+        let results : any[] = [];
+        for(var i = 0; i < result.length; ++i) {
+            for (var j = 0; j < result[i].length; ++j) {
+                results.push(result[i][j]);
+                break;
+            }
+        }
+
+        return results;
     } // queryApply
 
     /**
@@ -595,8 +615,45 @@ export default class QueryController {
      * @param name to call the result from apply as
      * @returns any[]
      */
-    private queryApplyMax(key: {}, data: any[], name:string): any[]
+    private queryApplyMax(key: any, data: any[], name:string): any[]
     {
+        let max = 0;
+        let first = true;
+        for (let i = 0 ; i < data.length; ++i)
+        {
+            for (let token in key)
+            {
+                let id = String(key[token]);
+                for (let values in data[i]) {
+                    //Log.trace("JSon" + JSON.stringify(data[i][values]));
+                    for (let instance in data[i][values]) {
+                        let tempKey = this.getKey(id.toString());
+                        if (tempKey === String(instance)) {
+                            if (first)
+                            {
+                                max = data[i][values][instance];
+                            }
+                            else
+                            {
+                                if (max < data[i][values][instance])
+                                {
+                                    max = data[i][values][instance];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (let values in data[i])
+            {
+                data[i][values][name] = Number(max);
+            }
+
+            max = 0;
+            first = true;
+        }
+
         return data;
     } // queryApplyMax
 
@@ -608,8 +665,46 @@ export default class QueryController {
      * @param name to call the result from apply as
      * @returns any[]
      */
-    private queryApplyMin(key: {}, data: any[], name:string): any[]
+    private queryApplyMin(key: any, data: any[], name:string): any[]
     {
+        let min = 0;
+        let first = true;
+        for (let i = 0 ; i < data.length; ++i)
+        {
+            for (let token in key)
+            {
+                let id = String(key[token]);
+                for (let values in data[i]) {
+                    Log.trace("JSon" + JSON.stringify(data[i][values]));
+                    for (let instance in data[i][values]) {
+                        let tempKey = this.getKey(id.toString());
+                        if (tempKey === String(instance)) {
+                            if (first)
+                            {
+                                min = data[i][values][instance];
+                            }
+                            else
+                            {
+                                if (min > data[i][values][instance])
+                                {
+                                    min = data[i][values][instance];
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            for (let values in data[i])
+            {
+                data[i][values][name] = Number(min);
+            }
+
+            min = 0;
+            first = true;
+        }
+
         return data;
     } // queryApplyMin
 
@@ -621,8 +716,37 @@ export default class QueryController {
      * @param name to call the result from apply as
      * @returns any[]
      */
-    private queryApplyAvg(key: {}, data: any[], name:string): any[]
+    private queryApplyAvg(key: any, data: any[], name:string): any[]
     {
+        let total = 0;
+        let n = 0;
+        for (let i = 0 ; i < data.length; ++i)
+        {
+            for (let token in key)
+            {
+                let id = String(key[token]);
+                for (let values in data[i]) {
+                    for (let instance in data[i][values]) {
+                        let tempKey = this.getKey(id.toString());
+                        if (tempKey === String(instance)) {
+                            n++;
+                            total += data[i][values][instance];
+                        }
+                    }
+                }
+            }
+
+            let average : number = Number((total / n).toFixed(2));
+
+            for (let values in data[i])
+            {
+                data[i][values][name] = average;
+            }
+
+            n = 0;
+            total = 0;
+        }
+
         return data;
     } // queryApplyAvg
 
@@ -635,8 +759,32 @@ export default class QueryController {
      * @param name to call the result from apply as
      * @returns any[]
      */
-    private queryApplyCount(key: {}, data: any[], name:string): any[]
+    private queryApplyCount(key: any, data: any[], name:string): any[]
     {
+        let count = 0;
+        for (let i = 0 ; i < data.length; ++i)
+        {
+            for (let token in key)
+            {
+                let id = String(key[token]);
+                for (let values in data[i]) {
+                    for (let instance in data[i][values]) {
+                        let tempKey = this.getKey(id.toString());
+                        if (tempKey === String(instance)) {
+                            count++;
+                        }
+                    }
+                }
+            }
+
+            for (let values in data[i])
+            {
+                data[i][values][name] = Number(count);
+            }
+
+            count = 0;
+        }
+
         return data;
     } // queryApplyCount
 
@@ -1020,62 +1168,26 @@ export default class QueryController {
     private queryOrder(key: string | any, data: any[]): any[]
     {
         let that = this;
+        let numberRegex = new RegExp("[1-9]*[0-9]+(.[0-9]+)?");
 
         if (typeof key === 'string')  //only one value for order
         {
             data.sort(function (a, b) {
-                let aString = String(a[key]).toUpperCase();
-                let bString = String(b[key]).toUpperCase();
-                /*
-                 if (a[key] > b[key]) {
-                 return 1;
-                 }
-                 if (a[key] < b[key]) {
-                 return -1;
-                 }
-                 // a must be equal to b
-                 return 0;
-                 */
+                let aString : any;
+                let bString : any;
+                if (numberRegex.test(a[key]) && numberRegex.test(b[key]))
+                {
+                    aString = a[key];
+                    bString = b[key];
+                }
+                else
+                {
+                    aString = String(a[key]).toUpperCase();
+                    bString = String(b[key]).toUpperCase();
+                }
+
                 return that.compareObject(aString, bString);
             });
-            /*
-            // ordering for number
-            if (key == "courses_avg" || key == "courses_pass" ||
-                key == "courses_fail"|| key == "courses_audit")
-            {
-                data.sort(function (a, b) {
-                    let aString = String(a[key]).toUpperCase();
-                    let bString = String(b[key]).toUpperCase();
-                    /*
-                     if (a[key] > b[key]) {
-                     return 1;
-                     }
-                     if (a[key] < b[key]) {
-                     return -1;
-                     }
-                     // a must be equal to b
-                     return 0;
-
-                    return that.compareObject(aString, bString);
-                });
-            }
-            else // key is a string
-            {
-                data.sort(function (a, b) {
-
-                    let aString = String(a[key]).toUpperCase();
-                    let bString = String(b[key]).toUpperCase();
-                    if (aString > bString) {
-                        return 1;
-                    }
-                    if (aString < bString) {
-                        return -1;
-                    }
-                    // a must be equal to b
-                    return 0;
-                });
-            }
-            */
         }
         else
         {
@@ -1096,16 +1208,19 @@ export default class QueryController {
             }
 
             data.sort(function (a, b) {
-                /*
-                let tempKey :String;
-                for (var i = 1; i < keys.length; ++i)
+                let aString : any;
+                let bString : any ;
+                if (numberRegex.test(a[keys[0]]) && numberRegex.test(b[keys[0]]))
                 {
-                    tempKey = keys[i];
-                    break;
+                    aString = a[keys[0]];
+                    bString = b[keys[0]];
                 }
-                */
-                let aString = String(a[keys[0]]).toUpperCase();
-                let bString = String(b[keys[0]]).toUpperCase();
+                else
+                {
+                    aString = String(a[keys[0]]).toUpperCase();
+                    bString = String(b[keys[0]]).toUpperCase();
+                }
+
                 let result: number = that.compareObject(aString, bString);
                 if (0 !== result) {
                     if ('UP' === direction)
@@ -1120,13 +1235,6 @@ export default class QueryController {
                 }
                 else
                 {
-                    /*
-                    if (key.length === 1)
-                    {
-                        return 0;
-                    }
-                    */
-
                     // it is a tie
                     Log.trace("checking here");
                     for (var i = 1; i < keys.length; ++i)
@@ -1267,6 +1375,12 @@ export default class QueryController {
                 for (var instance in value)
                 {
                     if (temp === String(instance))
+                    {
+                        let tempObj : {} = {[key[i]] : value[instance]};
+                        Object.assign(obj, tempObj);
+                        gotData = true;
+                    }
+                    else if (key[i].toString() == String(instance))
                     {
                         let tempObj : {} = {[key[i]] : value[instance]};
                         Object.assign(obj, tempObj);
