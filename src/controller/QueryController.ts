@@ -605,7 +605,7 @@ export default class QueryController {
      */
     private queryApplyMax(key: any, data: any[], name:string): any[]
     {
-        let max = 0;
+        let max : any;
         let first = true;
         for (let i = 0 ; i < data.length; ++i)
         {
@@ -613,7 +613,6 @@ export default class QueryController {
             {
                 let id = String(key[token]);
                 for (let values in data[i]) {
-                    //Log.trace("JSon" + JSON.stringify(data[i][values]));
                     for (let instance in data[i][values]) {
                         let tempKey = this.getKey(id.toString());
                         if (tempKey === String(instance)) {
@@ -635,7 +634,7 @@ export default class QueryController {
 
             for (let values in data[i])
             {
-                data[i][values][name] = Number(max);
+                data[i][values][name] = max;
             }
 
             max = 0;
@@ -655,7 +654,7 @@ export default class QueryController {
      */
     private queryApplyMin(key: any, data: any[], name:string): any[]
     {
-        let min = 0;
+        let min : any;
         let first = true;
         for (let i = 0 ; i < data.length; ++i)
         {
@@ -663,7 +662,6 @@ export default class QueryController {
             {
                 let id = String(key[token]);
                 for (let values in data[i]) {
-                    Log.trace("JSon" + JSON.stringify(data[i][values]));
                     for (let instance in data[i][values]) {
                         let tempKey = this.getKey(id.toString());
                         if (tempKey === String(instance)) {
@@ -686,7 +684,7 @@ export default class QueryController {
 
             for (let values in data[i])
             {
-                data[i][values][name] = Number(min);
+                data[i][values][name] = min;
             }
 
             min = 0;
@@ -767,7 +765,7 @@ export default class QueryController {
 
             for (let values in data[i])
             {
-                data[i][values][name] = Number(count);
+                data[i][values][name] = count;
             }
 
             count = 0;
