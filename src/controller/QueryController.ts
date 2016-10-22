@@ -761,7 +761,10 @@ export default class QueryController {
                     for (let instance in data[i][values]) {
                         let tempKey = this.getKey(id.toString());
                         if (tempKey === String(instance)) {
-                            count.push(instance);
+                            if (!this.checkArrayForCount(count, data[i][values][instance]))
+                            {
+                                count.push(data[i][values][instance]);
+                            }
                         }
                     }
                 }
@@ -775,6 +778,23 @@ export default class QueryController {
 
         return data;
     } // queryApplyCount
+
+    private checkArrayForCount(currentCount : any [], itemToAdd : any) : boolean
+    {
+        let isDuplicate : boolean = false;
+
+        for (var i = 0 ; i < currentCount.length; ++i)
+        {
+            if (currentCount[i] === itemToAdd)
+            {
+                isDuplicate = true;
+                break;
+            }
+        }
+
+        return isDuplicate;
+    }
+
 
     /**
      * filter the dataset to based on the where option
@@ -1224,7 +1244,6 @@ export default class QueryController {
                 else
                 {
                     // it is a tie
-                    Log.trace("checking here");
                     for (var i = 1; i < keys.length; ++i)
                     {
                         aString = String(a[keys[i]]).toUpperCase();
@@ -1233,7 +1252,6 @@ export default class QueryController {
                         let result: number = that.compareObject(aString, bString);
                         if (0 !== result)
                         {
-                            Log.trace("continue");
                             if ('UP' === direction)
                             {
                                 return result;
