@@ -57,7 +57,7 @@ export default class QueryController {
                     return false;
                 }
             }
-            // Log.trace(typeof (query["GROUP"]) + "!!!!!!!" + typeof (query["APPLY"]))
+            Log.trace(typeof (query["GROUP"]) + "!!!!!!!" + typeof (query["APPLY"]))
             if (typeof (query["GROUP"]) !== "undefined" && typeof (query["APPLY"]) !== 'undefined')
             {
                 validGETGROUPAPPLY = this.checkGetApplyGroupKeys(query);
@@ -69,7 +69,6 @@ export default class QueryController {
             {
                 return false;
             }
-
             return (validGET && validWHERE && validORDER && validAS && validWHERE && validGROUP && validAPPLY && validGETGROUPAPPLY);
         }
         else
@@ -318,48 +317,37 @@ export default class QueryController {
         let groupValues = query["GROUP"];
         let applyValues = query["APPLY"];
         let groupApplyLen: number = groupValues.length + applyValues.length;
-        if (groupApplyLen !== getValues.length) {
+        let allApplyKeys: string[] = [];
+        if (groupApplyLen !== getValues.length)
+        {
             return false;
         }
-
-        // let vApplyKeys: string[] = [];
-        // let vGroupKeys: string[] = [];
-        //
-        // for (let m = 0; m < getValues.length; m ++)
-        // {
-        //     let val = getValues[m];
-        //     if (val.includes("_"))
-        //     {
-        //         vGroupKeys.push(val)
-        //     }
-        //     else
-        //     {
-        //         vApplyKeys.push(val);
-        //     }
-        // }
-        // if (vApplyKeys.length != applyValues.length && vGroupKeys.length != groupValues.length)
-        // {
-        //     return false;
-        // }
-
-        for (let i in groupValues) {
+        for (let i in groupValues)
+        {
             let groupVal = groupValues[i];
             Log.trace(groupVal);
             let containedGG = getValues.includes(groupVal);
-            if (containedGG === false) {
+            if (containedGG === false)
+            {
                 return false;
             }
         }
-        if (applyValues.length != 0) {
-            for (let applyVal in applyValues) {
+        if (applyValues.length != 0)
+        {
+            for (let applyVal in applyValues)
+            {
                 let applyObj: any = applyValues[applyVal];
-                for (let applyKey in applyObj) {
-                    Log.trace(applyKey);
+                for (let applyKey in applyObj)
+                {
+                    // Log.trace(applyKey);
+                    let duplicate: boolean = allApplyKeys.includes(applyKey);
                     let inGroup = groupValues.includes(applyKey);
                     let containedGA = getValues.includes(applyKey);
-                    if (containedGA === false || inGroup === true) {
+                    if (containedGA === false || inGroup === true || duplicate === true)
+                    {
                         return false;
                     }
+                    allApplyKeys.push(applyKey);
                 }
             }
         }

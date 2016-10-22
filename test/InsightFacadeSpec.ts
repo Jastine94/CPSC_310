@@ -37,6 +37,27 @@ describe("InsightFacade", function () {
         facade = new InsightFacade();
     });
 
+    // DELETEDATSET
+    it("Should be able to delete an existing dataset", function () {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        return facade.removeDataset('courses').then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should not be able to delete a dataset that does not exist", function () {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        return facade.removeDataset('courses').then(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(404);
+        });
+    });
+
     // ADDDATASET
     it("Should be able to add a add a new dataset (204)", function () {
         var that = this;
@@ -155,8 +176,7 @@ describe("InsightFacade", function () {
             expect.fail('Should not happen');
         }).catch(function (response: InsightResponse) {
             expect(response.code).to.equal(424);
-            expect(response.body).to.equal({ error: { missing: [ 'courss' ] } });
-            // todo: find out why it is failing -- shouldn't be failing
+            expect(response.body).to.deep.equal({ error: { missing: [ 'courss' ] } });
         });
     });
 
@@ -247,25 +267,4 @@ describe("InsightFacade", function () {
         });
     });
 */
-    // DELETEDATSET
-    it("Should be able to delete an existing dataset", function () {
-        var that = this;
-        Log.trace("Starting test: " + that.test.title);
-        return facade.removeDataset('courses').then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
-        }).catch(function (response: InsightResponse) {
-            expect.fail('Should not happen');
-        });
-    });
-
-    it("Should not be able to delete a dataset that does not exist", function () {
-        var that = this;
-        Log.trace("Starting test: " + that.test.title);
-        return facade.removeDataset('courses').then(function (response: InsightResponse) {
-            expect.fail('Should not happen');
-        }).catch(function (response: InsightResponse) {
-            expect(response.code).to.equal(404);
-        });
-    });
-
 });

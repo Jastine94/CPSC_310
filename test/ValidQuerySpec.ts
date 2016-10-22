@@ -211,6 +211,20 @@ describe("QueryController", function () {
         expect(invalidQ).to.be.false;
     })
 
+    it("Should be invalid with duplicate key in APPLY", function(){
+        let query: QueryRequest ={
+            GET: ["courses_id", "courses_avg", "courses_dept", "courseAverage", "numSections", "courses_uuid"],
+            WHERE: {},
+            GROUP: [ "courses_avg", "courses_id", "courses_dept" ],
+            APPLY: [{"numSections": {"COUNT": "courses_uuid"}},{"courseAverage": {"AVG": "courses_avg"}}, {"numSections": {"MAX": "courses_fail"}} ],
+            ORDER: { "dir": "UP", "keys": ["courseAverage", "maxFail", "courses_dept", "courses_id"]},
+            AS:"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })
 
 
 })
