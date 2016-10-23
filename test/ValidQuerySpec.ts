@@ -269,7 +269,6 @@ describe("QueryController", function () {
         expect(invalidQ).to.be.false;
     })
 
-
     it("Should be valid with valid no ORDER field", function(){
         let query: any ={
             GET: ["courses_dept", "courses_id", "numSections"],
@@ -283,7 +282,6 @@ describe("QueryController", function () {
         let validQ = controller.isValid(query);
         expect(validQ).to.be.true;
     })
-
 
     it("Should not be valid with invalid direction", function(){
         let query: QueryRequest ={
@@ -475,6 +473,5 @@ describe("QueryController", function () {
         let invalidQ = controller.isValid(query);
         expect(invalidQ).to.be.false;
     })
-
 
 })

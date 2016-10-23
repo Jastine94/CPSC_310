@@ -370,7 +370,6 @@ export default class QueryController {
             {
                 response = this.queryWhere(query.WHERE, response, false);
             }
-        // }
 
         if (query.hasOwnProperty("GROUP"))
         {

@@ -84,6 +84,7 @@ describe("InsightFacade", function () {
             expect.fail('Should not happen');
         }).catch(function (response: InsightResponse) {
             expect(response.code).to.equal(400);
+            Log.error("This should happen -- 400 for invalid dataset")
         });
     });
 
