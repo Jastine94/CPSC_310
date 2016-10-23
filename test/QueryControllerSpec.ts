@@ -714,9 +714,12 @@ describe("QueryController", function () {
         let query: QueryRequest = {GET: ["courses_dept"], WHERE: {"courses_avg": 90}, ORDER: 'courses_avg', AS: 'TABLE'};
         let dataset: Datasets = {};
         let controller = new QueryController(dataset);
-        let ret = controller.query(query);
-        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
-        expect(ret).to.eql({status: 'failed', error: "invalid query"});
+        let validQuery: boolean = controller.isValid(query);
+        // let ret = controller.query(query);
+        // Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        // expect(ret).to.eql({status: 'failed', error: "invalid query"});
+        Log.test('In: ' + JSON.stringify(query) + ', out: is valid? ' + validQuery);
+        expect(validQuery).to.be.false;
     });
 
     it("Should be able to query, although the answer will be empty", function () {

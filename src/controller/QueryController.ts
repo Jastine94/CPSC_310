@@ -91,11 +91,11 @@ export default class QueryController {
                 // {string: {APPLYTOKEN: key}}
                 for (let val in getVals[i])
                 {
-                    let validString = (typeof val === 'string');
-                    if (validString === false)
-                    {
-                        return false;
-                    }
+                    // let validString = (typeof val === 'string');
+                    // if (validString === false)
+                    // {
+                    //     return false;
+                    // }
                     for (let stringVal in getVals[i][val]){
                         let validAPPTOKEN = this.validApplyToken(stringVal);
                         let validKEY = key.test(getVals[i][val][stringVal]);
@@ -241,7 +241,7 @@ export default class QueryController {
         }
         else if (typeof orderVals === 'string')
         {
-            return (key.test(orderVals) || query.ORDER === "" || query.ORDER === null );
+            return (key.test(orderVals) || query.ORDER === "" /*|| query.ORDER === null*/ );
         }
         else
         {
@@ -345,19 +345,19 @@ export default class QueryController {
 
 
     public query(query: QueryRequest): QueryResponse {
-        if (this.isValid(query))
-        {
+        // if (this.isValid(query))
+        // {
             let response : any[];
             let queryResponse : QueryResponse = {};
-            let getPresent: boolean = false;
-            let wherePresent: boolean = false;
-            let orderPresent:boolean = false;
-            let groupPresent:boolean = false;
-            let applyPresent:boolean = false;
+            // let getPresent: boolean = false;
+            // let wherePresent: boolean = false;
+            // let orderPresent:boolean = false;
+            // let groupPresent:boolean = false;
+            // let applyPresent:boolean = false;
 
-            if (query.hasOwnProperty("WHERE"))
-            {
-                wherePresent = true;
+            // if (query.hasOwnProperty("WHERE"))
+            // {
+                // wherePresent = true;
                 if (this.whereEmpty)
                 {
                     response = [];
@@ -381,33 +381,33 @@ export default class QueryController {
                 {
                     response = this.queryWhere(query.WHERE, response, false);
                 }
-            }
+            // }
 
             if (query.hasOwnProperty("GROUP"))
             {
-                groupPresent = true;
+                // groupPresent = true;
                 response = this.queryGroup(query.GROUP, response);
             }
 
             if (query.hasOwnProperty("APPLY"))
             {
-                applyPresent = true;
+                // applyPresent = true;
                 if (!this.applyEmpty)
                 {
                     response = this.queryApply(query.APPLY, response);
                 }
             }
 
-            if (query.hasOwnProperty("GET"))
-            {
-                getPresent = true;
+            // if (query.hasOwnProperty("GET"))
+            // {
+                // getPresent = true;
                 response = this.queryGet(query.GET, response);
-            }
+            // }
 
-            if (query.hasOwnProperty("ORDER"))
-            {
-                let found : boolean = true;
-                orderPresent = true;
+            // if (query.hasOwnProperty("ORDER"))
+            // {
+            //     let found : boolean = true;
+                // orderPresent = true;
                 /*
                 if (query.ORDER == "" || query.ORDER == null)
                 {
@@ -427,25 +427,25 @@ export default class QueryController {
                 }
                 */
 
-                if (!found)
-                {
-                    return {status: 'failed', error: "invalid query"};
-                }
+                // if (!found)
+                // {
+                //     return {status: 'failed', error: "invalid query"};
+                // }
 
                 response = this.queryOrder(query.ORDER, response);
-            }
+            // }
 
-            if (query.hasOwnProperty("AS"))
-            {
+            // if (query.hasOwnProperty("AS"))
+            // {
                 queryResponse = response;
                 queryResponse = {result: queryResponse};
                 queryResponse = this.queryAs(query.AS, queryResponse);
-            }
+            // }
 
             return queryResponse;
-        }
-
-        return {status: 'failed', error: "invalid query"};
+        // }
+        //
+        // return {status: 'failed', error: "invalid query"};
     }// query
 
     /**

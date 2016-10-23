@@ -332,21 +332,6 @@ describe("QueryController", function () {
         expect(invalidQ).to.be.false;
     })
 
-    it("Should not be valid with non-string value in apply instead of dir or keys in ORDER", function(){
-        let query: QueryRequest ={
-            GET: ["courses_dept", "courses_id", "numSections"],
-            WHERE: {},
-            GROUP: [ "courses_dept", "courses_id" ],
-            APPLY: [ {555: {"COUNT": "courses_uuid"}} ],
-            ORDER: { "dir": "UP", "keys": ["courses_dept"]},
-            AS:"TABLE"
-        };
-        let dataset: Datasets = {};
-        let controller = new QueryController(dataset);
-        let invalidQ = controller.isValid(query);
-        expect(invalidQ).to.be.false;
-    })
-
     it("Should not be valid with invalid apply value", function(){
         let query: QueryRequest =
         {
@@ -464,6 +449,28 @@ describe("QueryController", function () {
             "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}}, {"maxFail": {"MAX": "courses_fail"}} ],
             "ORDER": { "dir": "UP", "keys": []},
             "AS":"TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })
+
+    it("Should not be valid with no key/value pair for IS", function(){
+        let query: any =
+        {
+            "GET": ["courses_dept", "courses_id", "courses_avg"],
+            "WHERE": {
+                "OR": [
+                    {"AND": [
+                        {"GT": {"courses_avg": 70}},
+                        {"IS": {}}
+                    ]},
+                    {"EQ": {"courses_avg": 90}}
+                ]
+            },
+            "ORDER": "courses_avg",
+            "AS": "TABLE"
         };
         let dataset: Datasets = {};
         let controller = new QueryController(dataset);

@@ -68,6 +68,7 @@ describe("QueryController GROUP", function () {
                     };
 
         let controller = new QueryController(dataset);
+        controller.isValid(query);
             let ret = controller.query(query);
             Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
             expect(ret).to.eql({
@@ -127,6 +128,7 @@ describe("QueryController GROUP", function () {
                 }]
         };
         let controller = new QueryController(dataset);
+        controller.isValid(query);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({
@@ -185,6 +187,7 @@ describe("QueryController GROUP", function () {
                 }]
         };
         let controller = new QueryController(dataset);
+        controller.isValid(query);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({
@@ -242,6 +245,7 @@ describe("QueryController GROUP", function () {
                 }]
         };
         let controller = new QueryController(dataset);
+        controller.isValid(query);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({
@@ -300,6 +304,7 @@ describe("QueryController GROUP", function () {
                 }]
         };
         let controller = new QueryController(dataset);
+        controller.isValid(query);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({
@@ -358,6 +363,7 @@ describe("QueryController GROUP", function () {
                 }]
         };
         let controller = new QueryController(dataset);
+        controller.isValid(query);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({
@@ -416,6 +422,7 @@ describe("QueryController GROUP", function () {
                 }]
         };
         let controller = new QueryController(dataset);
+        controller.isValid(query);
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({
