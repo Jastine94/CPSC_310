@@ -59,9 +59,9 @@ export default class QueryController {
             }
             if (typeof (query["GROUP"]) !== "undefined" && typeof (query["APPLY"]) !== 'undefined')
             {
-                validGETGROUPAPPLY =  this.checkGetApplyGroupKeys(query);
                 validGROUP = this.checkGroup(query);
                 validAPPLY = this.checkApply(query);
+                validGETGROUPAPPLY =  this.checkGetApplyGroupKeys(query);
             }
             else if ((typeof (query["GROUP"]) === 'undefined' && typeof (query["APPLY"]) !== 'undefined') ||
                 (typeof (query["GROUP"]) !== 'undefined' && typeof (query["APPLY"]) === 'undefined'))

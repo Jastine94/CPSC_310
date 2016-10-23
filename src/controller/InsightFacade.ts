@@ -81,30 +81,6 @@ export default class InsightFacade implements IInsightFacade {
                             }
                         }
                     }
-                    // if (typeof (query["ORDER"]) != 'undefined' && typeof  (query["ORDER"]) === 'object')
-                    // {
-                    //     let order_query:any = query["ORDER"];
-                    //     for (let o_Key in order_query)
-                    //     {
-                    //         if (o_Key === 'keys')
-                    //         {
-                    //             // check the array
-                    //             let key_vals: any = order_query[o_Key];
-                    //             for (let i = 0; i < key_vals.length; i++)
-                    //             {
-                    //                 let is_Key = key_vals[i].includes("_");
-                    //                 if (is_Key) {
-                    //                     let temp_pos = key_vals[i].indexOf("_");
-                    //                     let id = key_vals[i].substring(0, temp_pos);
-                    //                     if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json"))) {
-                    //                         missing_id.push(id);
-                    //                     }
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                    //     // iterate through all the values in order
-                    // }
                     if (missing_id.length > 0) {
                         let mids: any = {};
                         mids["missing"] = missing_id;
@@ -131,20 +107,5 @@ export default class InsightFacade implements IInsightFacade {
         })
     } // performQuery
 
-    // TODO: make this work, not sure why it doesn't
-    // private returnInvalidKeys(queryInfo: any[]): string[]{
-    //     let missing_id: string[] = [];
-    //     for (let i = 0; i < queryInfo.length; i++) {
-    //         let is_Key = queryInfo[i].includes("_");
-    //         if (is_Key) {
-    //             let temp_pos = queryInfo[i].indexOf("_");
-    //             let id = queryInfo[i].substring(0, temp_pos);
-    //             if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json"))) {
-    //                 missing_id.push(id);
-    //             }
-    //         }
-    //     }
-    //     return missing_id;
-    // } //returnInvalidKeys
 
 }
