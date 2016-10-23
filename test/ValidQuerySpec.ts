@@ -2,11 +2,9 @@
  * Created by rtholmes on 2016-09-03.
  */
 
-import DatasetController from "../src/controller/DatasetController";
 import {Datasets} from "../src/controller/DatasetController";
 import QueryController from "../src/controller/QueryController";
 import {QueryRequest} from "../src/controller/QueryController";
-import Log from "../src/Util";
 
 import JSZip = require('jszip');
 import {expect} from 'chai';

@@ -21,8 +21,6 @@ describe("InsightFacade", function () {
         emptyZip = new Buffer(fs.readFileSync('.\/test\/empty.zip')).toString('base64');
         invalidDataZip = new Buffer(fs.readFileSync('.\/test\/baddata.zip')).toString('base64');
         try {
-            // what you delete here is going to depend on your impl, just make sure
-            // all of your temporary files and directories are deleted
             // fs.unlinkSync('./id.json');
             fs.unlinkSync('..\/data\/courses.json');
             // fs.rmdirSync(__dirname+"\/..\/data\/");
@@ -206,8 +204,6 @@ describe("InsightFacade", function () {
     });
 
     it("Should be able to perform query and find the average for all cpsc courses (200)", function(){
-        // this query will fail for not because no implementation of group & apply
-        // Find the average for all cpsc courses
         var that = this;
         var validQuery: any = {
             "GET": ["courses_id", "courseAverage"],
@@ -224,10 +220,8 @@ describe("InsightFacade", function () {
             expect.fail('Should not happen');
         });
     });
-/*
+
     it("Should be able to perform query and find the avg for all courses in university (200)", function(){
-        // this query will fail for not because no implementation of group & apply
-        // Find the average for all courses in the university, sort up (hardest to easiest)
         var that = this;
         var validQuery: any =
         {
@@ -235,7 +229,7 @@ describe("InsightFacade", function () {
             "WHERE": {},
             "GROUP": [ "courses_dept", "courses_id" ],
             "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}}, {"maxFail": {"MAX": "courses_fail"}} ],
-            "ORDER": { "dir": "UP", "keys": ["courseAverage", "maxFail", "course_dept", "courses_id"]},
+            "ORDER": { "dir": "UP", "keys": ["courseAverage", "maxFail", "courses_dept", "courses_id"]},
             "AS":"TABLE"
         };
         Log.trace("Starting test: " + that.test.title);
@@ -247,8 +241,6 @@ describe("InsightFacade", function () {
     });
 
     it("Should be able to perform query and find the courses offered the most times", function(){
-        // this query will fail for not because no implementation of group & apply
-        // Find the courses offered the most times
         var that = this;
         var validQuery: any =
         {
@@ -266,5 +258,5 @@ describe("InsightFacade", function () {
             expect.fail('Should not happen');
         });
     });
-*/
+
 });

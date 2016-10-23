@@ -13,6 +13,15 @@ import fs = require('fs');
 
 describe("DatasetController", function () {
 
+    before(function() {
+        try {
+            fs.unlinkSync('..\/data\/');
+        } catch (err) {
+            // silently fail, but don't crash; this is fine
+            Log.warn('DatasetController::before() - data folder not removed (probably not present)');
+        }
+    });
+
     beforeEach(function () {
     });
 
@@ -44,7 +53,6 @@ describe("DatasetController", function () {
         var file = fs.readFileSync("test\/second_data.zip");
         let controller = new DatasetController();
         return controller.process('courses',file).then(function (result){
-            Log.test('SECOND DATA RESULTS: ' + result);
             let retrieved_datasets = controller.getDataset('courses');
             expect(retrieved_datasets).not.to.be.empty;
         });
@@ -68,7 +76,6 @@ describe("DatasetController", function () {
         Log.test("Create new Datacontroller");
         let controller = new DatasetController();
         let alldatasets = controller.getDatasets();
-        // if (alldatasets != null)
         expect(alldatasets).not.to.be.empty;
         return alldatasets;
     });
