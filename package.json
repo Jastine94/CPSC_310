@@ -25,7 +25,7 @@
     "configurewin": "npm install & typings install --global",
     "build": "tsc",
     "test": "mocha -c -R mochawesome --timeout 50000",
-    "cover": "istanbul cover _mocha",
+    "cover": "istanbul cover _mocha -- --timeout 10000",
     "coverwin": "istanbul cover node_modules/mocha/bin/_mocha -- --timeout 10000",
     "start": "node src/App.js"
   },

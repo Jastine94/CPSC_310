@@ -345,107 +345,64 @@ export default class QueryController {
 
 
     public query(query: QueryRequest): QueryResponse {
-        // if (this.isValid(query))
-        // {
-            let response : any[];
-            let queryResponse : QueryResponse = {};
-            // let getPresent: boolean = false;
-            // let wherePresent: boolean = false;
-            // let orderPresent:boolean = false;
-            // let groupPresent:boolean = false;
-            // let applyPresent:boolean = false;
-
-            // if (query.hasOwnProperty("WHERE"))
-            // {
-                // wherePresent = true;
-                if (this.whereEmpty)
-                {
-                    response = [];
-                    for (var myCurrentDataSet in this.datasets) {
-                        var myDataList = this.datasets[myCurrentDataSet];
-                        var resultList = JSON.parse(JSON.stringify(myDataList));
-                        for (var keys in resultList)
-                        {
-                            var result = resultList[keys];
-                            let valuesList = result["result"];
-
-                            for (var values in valuesList)
-                            {
-                                var value = valuesList[values];
-                                response.push(value);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    response = this.queryWhere(query.WHERE, response, false);
-                }
-            // }
-
-            if (query.hasOwnProperty("GROUP"))
+        let response : any[];
+        let queryResponse : QueryResponse = {};
+            if (this.whereEmpty)
             {
-                // groupPresent = true;
-                response = this.queryGroup(query.GROUP, response);
-            }
-
-            if (query.hasOwnProperty("APPLY"))
-            {
-                // applyPresent = true;
-                if (!this.applyEmpty)
-                {
-                    response = this.queryApply(query.APPLY, response);
-                }
-            }
-
-            // if (query.hasOwnProperty("GET"))
-            // {
-                // getPresent = true;
-                response = this.queryGet(query.GET, response);
-            // }
-
-            // if (query.hasOwnProperty("ORDER"))
-            // {
-            //     let found : boolean = true;
-                // orderPresent = true;
-                /*
-                if (query.ORDER == "" || query.ORDER == null)
-                {
-                    found = true;
-                }
-                else
-                {
-                    // GET is of type string[]
-                    for (var i = 0; i < query.GET.length; ++i)
+                response = [];
+                for (var myCurrentDataSet in this.datasets) {
+                    var myDataList = this.datasets[myCurrentDataSet];
+                    var resultList = JSON.parse(JSON.stringify(myDataList));
+                    for (var keys in resultList)
                     {
-                        if (query.ORDER == query.GET[i])
+                        var result = resultList[keys];
+                        let valuesList = result["result"];
+
+                        for (var values in valuesList)
                         {
-                            found = true;
-                            break;
+                            var value = valuesList[values];
+                            response.push(value);
                         }
                     }
                 }
-                */
-
-                // if (!found)
-                // {
-                //     return {status: 'failed', error: "invalid query"};
-                // }
-
-                response = this.queryOrder(query.ORDER, response);
-            // }
-
-            // if (query.hasOwnProperty("AS"))
-            // {
-                queryResponse = response;
-                queryResponse = {result: queryResponse};
-                queryResponse = this.queryAs(query.AS, queryResponse);
-            // }
-
-            return queryResponse;
+            }
+            else
+            {
+                response = this.queryWhere(query.WHERE, response, false);
+            }
         // }
-        //
-        // return {status: 'failed', error: "invalid query"};
+
+        if (query.hasOwnProperty("GROUP"))
+        {
+            response = this.queryGroup(query.GROUP, response);
+        }
+
+        if (query.hasOwnProperty("APPLY"))
+        {
+            if (!this.applyEmpty)
+            {
+                response = this.queryApply(query.APPLY, response);
+            }
+        }
+
+        if (query.hasOwnProperty("GET"))
+        {
+            response = this.queryGet(query.GET, response);
+        }
+
+        if (query.hasOwnProperty("ORDER"))
+        {
+            response = this.queryOrder(query.ORDER, response);
+        }
+
+        if (query.hasOwnProperty("AS"))
+        {
+            queryResponse = response;
+            queryResponse = {result: queryResponse};
+            queryResponse = this.queryAs(query.AS, queryResponse);
+        }
+
+        return queryResponse;
     }// query
 
     /**
@@ -1417,7 +1374,6 @@ export default class QueryController {
                 // there is no valid primary key
                 break;
             }
-
         }
 
         return isDuplicate;
