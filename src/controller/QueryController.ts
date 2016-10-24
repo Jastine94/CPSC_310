@@ -852,9 +852,31 @@ export default class QueryController {
                                 let newList: any[] = [];
                                 newList.push({"result": accResult});
                                 // handle case where not is in inside and
-                                if ('AND' == i || 'OR' == i)
+                                if ('AND' == i)
                                 {
                                     let tempResult = this.queryWhere(tempKey, newList, isNot);
+                                    for (var values in tempResult)
+                                    {
+                                        var value = tempResult[values];
+                                        if (!this.isDuplicate(accResult, value))
+                                        {
+                                            accResult.push(value);
+                                        }
+                                    }
+                                }
+                                else if ('OR' == i)
+                                {
+                                    let tempResult = this.queryWhere(tempKey, newList, isNot);
+                                    for (var values in tempResult)
+                                    {
+                                        var value = tempResult[values];
+                                        if (!this.isDuplicate(accResult, value))
+                                        {
+                                            accResult.push(value);
+                                        }
+                                    }
+                                    tempResult = this.queryWhere(tempKey, resultList, isNot);
+
                                     for (var values in tempResult)
                                     {
                                         var value = tempResult[values];
