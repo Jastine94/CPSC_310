@@ -71,11 +71,25 @@ export default class InsightFacade implements IInsightFacade {
                 if (isValid) {
                     let value = query["GET"];
                     let missing_id: string[] = [];
+                    // TODO: make sure that the where values get checked
+                    // let dir = __dirname + "\/..\/..\/data\/";
+                    // let files = fs.readdirSync(dir);
+                    // let fileList: any[] = [];
+                    //
+                    // for(var i in files){
+                    //     if (!files.hasOwnProperty(i)) continue;
+                    //     var name = files[i];
+                    //     Log.trace("!!!!" + name);
+                    //     fileList.push(name);
+                    // }
                     for (let i = 0; i < value.length; i++) {
                         let is_Key = value[i].includes("_");
                         if (is_Key) {
                             let temp_pos = value[i].indexOf("_");
                             let id = value[i].substring(0, temp_pos);
+                            // if (!fileList.includes(id+".json")) {
+                            //     missing_id.push(id);
+                            // }
                             if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json"))) {
                                 missing_id.push(id);
                             }
@@ -88,12 +102,7 @@ export default class InsightFacade implements IInsightFacade {
                     }
                     else {
                         let result: any = controller.query(query);
-                        // if (result.status === "failed") {
-                        //     reject({code: 400, body: {error: "Invalid query"}});
-                        // }
-                        // else {
-                            fulfill({code: 200, body: result});
-                        // }
+                        fulfill({code: 200, body: result});
                     }
                 }
                 else {
@@ -106,6 +115,5 @@ export default class InsightFacade implements IInsightFacade {
             }
         })
     } // performQuery
-
 
 }

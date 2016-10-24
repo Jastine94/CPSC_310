@@ -234,18 +234,18 @@ export default class QueryController {
     // Returns whether ORDER part of the query is valid
     private checkOrder(query: QueryRequest): boolean{
         let orderVals:any = query["ORDER"];
-        let getVals:any = query["GET"];
         let key = new RegExp("[a-zA-Z0-9,_-]+_[a-zA-Z0-9,_-]+");
+        let getVals:any = query["GET"];
         if (typeof orderVals === 'undefined')
         {
             return true;
         }
         else if (typeof orderVals === 'string')
         {
-            let validKey: boolean = (this.getKey(orderVals) !== "Invalid Key");
-            let inGET: boolean = getVals.includes(orderVals);
+            let validKey = (this.getKey(orderVals) !== "Invalid Key");
+            let inGET = getVals.includes(orderVals);
             return ((validKey && inGET && key.test(orderVals)) ||
-                    query.ORDER === "" || query.ORDER === null );
+                    query.ORDER === "" /*|| query.ORDER === null*/ );
             // return (key.test(orderVals) || query.ORDER === "" /*|| query.ORDER === null*/ );
         }
         else
