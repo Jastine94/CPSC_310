@@ -49,12 +49,12 @@ export default class QueryController {
                 this.whereEmpty = true;
                 // validWHERE = true; //updated this value so that you can have an empty obj in there WHERE clause
             }
-            for (let filter in query.WHERE)
-            {
-                validWHERE = this.checkFilter(query.WHERE, filter);
-                if (validWHERE === false)
-                {
-                    return false;
+            else {
+                for (let filter in query.WHERE) {
+                    validWHERE = this.checkFilter(query.WHERE, filter);
+                    if (validWHERE === false) {
+                        return false;
+                    }
                 }
             }
             if (typeof (query["GROUP"]) !== "undefined" && typeof (query["APPLY"]) !== 'undefined')
@@ -69,7 +69,6 @@ export default class QueryController {
                 return false;
             }
 
-            // validWHERE = true;
             return (validGET && validWHERE && validORDER && validAS && validWHERE && validGROUP && validAPPLY && validGETGROUPAPPLY);
         }
         else
