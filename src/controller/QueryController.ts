@@ -554,7 +554,7 @@ export default class QueryController {
      */
     private queryApplyMax(key: any, data: any[], name:string): any[]
     {
-        let max : any;
+        let max : number = 0;
         let first = true;
         for (let i = 0 ; i < data.length; ++i)
         {
@@ -568,14 +568,14 @@ export default class QueryController {
                             JSON.stringify("max" + max  + "to Compare" + String(data[i][values][instance]));
                             if (first)
                             {
-                                max = data[i][values][instance];
+                                max = Number(data[i][values][instance]);
                                 first = false;
                             }
                             else
                             {
-                                if (max < data[i][values][instance])
+                                if (max < Number(data[i][values][instance]))
                                 {
-                                    max = data[i][values][instance];
+                                    max = Number(data[i][values][instance]);
                                 }
                             }
                         }
@@ -605,7 +605,7 @@ export default class QueryController {
      */
     private queryApplyMin(key: any, data: any[], name:string): any[]
     {
-        let min : any;
+        let min : number = Infinity;
         let first = true;
         for (let i = 0 ; i < data.length; ++i)
         {
@@ -618,14 +618,14 @@ export default class QueryController {
                         if (tempKey === String(instance)) {
                             if (first)
                             {
-                                min = data[i][values][instance];
+                                min = Number(data[i][values][instance]);
                                 first = false;
                             }
                             else
                             {
-                                if (min > data[i][values][instance])
+                                if (min > Number(data[i][values][instance]))
                                 {
-                                    min = data[i][values][instance];
+                                    min = Number(data[i][values][instance]);
                                 }
                             }
 
@@ -639,7 +639,7 @@ export default class QueryController {
                 data[i][values][name] = min;
             }
 
-            min = 0;
+            min = Infinity;
             first = true;
         }
 
@@ -1368,17 +1368,6 @@ export default class QueryController {
                 isDuplicate = true;
                 break;
             }
-            /*
-            if (resultList[i]["id"] !== undefined && instance["id"] !== undefined)
-            {
-
-            }
-            else
-            {
-                // there is no valid primary key
-                break;
-            }
-            */
         }
 
         return isDuplicate;
