@@ -40,14 +40,14 @@ export default class QueryController {
             let validGET:boolean = this.checkGet(query);
             let validORDER:boolean = this.checkOrder(query);
             let validAS:boolean = this.checkAs(query);
-            let validWHERE: boolean;
+            let validWHERE: boolean = true;
             let validGROUP:boolean = true;
             let validAPPLY:boolean = true;
             let validGETGROUPAPPLY: boolean = true;
             if (Object.keys(query.WHERE).length === 0)
             {
                 this.whereEmpty = true;
-                validWHERE = true; //updated this value so that you can have an empty obj in there WHERE clause
+                // validWHERE = true; //updated this value so that you can have an empty obj in there WHERE clause
             }
             for (let filter in query.WHERE)
             {
@@ -69,7 +69,7 @@ export default class QueryController {
                 return false;
             }
 
-            validWHERE = true;
+            // validWHERE = true;
             return (validGET && validWHERE && validORDER && validAS && validWHERE && validGROUP && validAPPLY && validGETGROUPAPPLY);
         }
         else
