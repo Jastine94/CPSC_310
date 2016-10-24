@@ -241,10 +241,10 @@ export default class QueryController {
         }
         else if (typeof orderVals === 'string')
         {
-            let validKey = this.getKey(orderVals);
-            return (((validKey !== 'Invalid Key') && key.test(orderVals)) ||
-                    query.ORDER === "" /*|| query.ORDER === null*/ );
-            // return (key.test(orderVals) || query.ORDER === "" /*|| query.ORDER === null*/ );
+            // let validKey = this.getKey(orderVals);
+            // return (((validKey !== 'Invalid Key') && key.test(orderVals)) ||
+            //         query.ORDER === "" /*|| query.ORDER === null*/ );
+            return (key.test(orderVals) || query.ORDER === "" /*|| query.ORDER === null*/ );
         }
         else
         {
