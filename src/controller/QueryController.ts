@@ -68,6 +68,8 @@ export default class QueryController {
             {
                 return false;
             }
+
+            validWHERE = true;
             return (validGET && validWHERE && validORDER && validAS && validWHERE && validGROUP && validAPPLY && validGETGROUPAPPLY);
         }
         else
