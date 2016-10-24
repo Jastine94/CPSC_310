@@ -555,7 +555,6 @@ export default class QueryController {
     private queryApplyMax(key: any, data: any[], name:string): any[]
     {
         let max : number = 0;
-        let first = true;
         for (let i = 0 ; i < data.length; ++i)
         {
             for (let token in key)
@@ -565,18 +564,10 @@ export default class QueryController {
                     for (let instance in data[i][values]) {
                         let tempKey = this.getKey(id.toString());
                         if (tempKey === String(instance)) {
-                            JSON.stringify("max" + max  + "to Compare" + String(data[i][values][instance]));
-                            if (first)
+                            //JSON.stringify("max" + max  + "to Compare" + String(data[i][values][instance]));
+                            if (max < Number(data[i][values][instance]))
                             {
                                 max = Number(data[i][values][instance]);
-                                first = false;
-                            }
-                            else
-                            {
-                                if (max < Number(data[i][values][instance]))
-                                {
-                                    max = Number(data[i][values][instance]);
-                                }
                             }
                         }
                     }
@@ -589,7 +580,6 @@ export default class QueryController {
             }
 
             max = 0;
-            first = true;
         }
 
         return data;
@@ -605,8 +595,7 @@ export default class QueryController {
      */
     private queryApplyMin(key: any, data: any[], name:string): any[]
     {
-        let min : number = Infinity;
-        let first = true;
+        let min : number = Number.MAX_VALUE;
         for (let i = 0 ; i < data.length; ++i)
         {
             for (let token in key)
@@ -616,19 +605,10 @@ export default class QueryController {
                     for (let instance in data[i][values]) {
                         let tempKey = this.getKey(id.toString());
                         if (tempKey === String(instance)) {
-                            if (first)
+                            if (min > Number(data[i][values][instance]))
                             {
                                 min = Number(data[i][values][instance]);
-                                first = false;
                             }
-                            else
-                            {
-                                if (min > Number(data[i][values][instance]))
-                                {
-                                    min = Number(data[i][values][instance]);
-                                }
-                            }
-
                         }
                     }
                 }
@@ -639,8 +619,7 @@ export default class QueryController {
                 data[i][values][name] = min;
             }
 
-            min = Infinity;
-            first = true;
+            min = Number.MAX_VALUE;
         }
 
         return data;
