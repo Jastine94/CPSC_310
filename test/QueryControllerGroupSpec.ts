@@ -76,6 +76,74 @@ describe("QueryController GROUP", function () {
                     {"courses_id": "210", "courseAverage" : 95.00, "maxPass" : 100}]});
         });
 
+    it("Should be able to apply min and max", function() {
+        let query: QueryRequest = {
+            "GET": ["courses_id", "courses_title", "minPass", "maxAudit"],
+            "WHERE": {} ,
+            "GROUP": [ "courses_id", "courses_title"],
+            "APPLY": [{"maxAudit": {"MAX": "courses_audit"}},
+                      {"minPass" : {"MIN": "courses_pass"}}],
+            "ORDER": {"dir" : "UP", "keys": ["courses_audit"]},
+            "AS":"TABLE"
+        };
+
+        let dataset : Datasets = {
+            "courses": [{
+                "result": [{
+                    "id": 1,
+                    "Course": "310",
+                    "Title" : "t1",
+                    "Professor": "graves, gregor;zeiler, kathryn",
+                    "Avg": 84,
+                    "Pass": 95,
+                    "Audit" : 5,
+                    "Subject": "a"
+                },
+                    {
+                        "id": 2,
+                        "Course": "210",
+                        "Title" : "t1",
+                        "Professor": "gg",
+                        "Avg": 95,
+                        "Pass": 100,
+                        "Audit" : 6,
+                        "Subject": "apsc"
+                    }
+                ]
+            },
+                {
+                    "result": [{
+                        "id": 3,
+                        "Course": "310",
+                        "Title" : "t1",
+                        "Professor": "hi, gregor",
+                        "Avg": 84,
+                        "Pass": 80,
+                        "Audit" : 10,
+                        "Subject": "biol"
+                    },
+                        {
+                            "id": 4,
+                            "Course": "210",
+                            "Title" : "t1",
+                            "Professor": "TT",
+                            "Avg": 95,
+                            "Pass": 50,
+                            "Audit" : 5,
+                            "Subject": "cpsc"
+                        }
+                    ]
+                }]
+        };
+
+        let controller = new QueryController(dataset);
+        controller.isValid(query);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({
+            render: 'TABLE', result: [{"courses_id": "310", "courses_title" : "t1", "minPass" : 80, "maxAudit" : 10},
+                {"courses_id": "210", "courses_title" : "t1", "minPass" : 50, "maxAudit" : 6}]});
+    });
 
     it("Should be able to group by a key", function() {
         let query: QueryRequest = {

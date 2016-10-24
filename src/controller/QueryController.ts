@@ -773,7 +773,6 @@ export default class QueryController {
                 if ('OR' == where)
                 {
                     let keyContains = key[where];
-                    let firstOne: boolean = true;
                     for (var it in keyContains)
                     {
                         let item = keyContains[it];
@@ -1364,19 +1363,22 @@ export default class QueryController {
 
         for (var i = 0 ; i < resultList.length; ++i)
         {
+            if (resultList[i]["id"] == instance["id"])
+            {
+                isDuplicate = true;
+                break;
+            }
+            /*
             if (resultList[i]["id"] !== undefined && instance["id"] !== undefined)
             {
-                if (resultList[i]["id"] == instance["id"])
-                {
-                    isDuplicate = true;
-                    break;
-                }
+
             }
             else
             {
                 // there is no valid primary key
                 break;
             }
+            */
         }
 
         return isDuplicate;
