@@ -245,7 +245,7 @@ export default class QueryController {
             let validKey: boolean = (this.getKey(orderVals) !== "Invalid Key");
             let inGET: boolean = getVals.includes(orderVals);
             return ((validKey && inGET && key.test(orderVals)) ||
-                    query.ORDER === "" /*|| query.ORDER === null*/ );
+                    query.ORDER === "" || query.ORDER === null );
             // return (key.test(orderVals) || query.ORDER === "" /*|| query.ORDER === null*/ );
         }
         else
