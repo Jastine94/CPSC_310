@@ -47,7 +47,6 @@ export default class QueryController {
             if (Object.keys(query.WHERE).length === 0)
             {
                 this.whereEmpty = true;
-                // validWHERE = true; //updated this value so that you can have an empty obj in there WHERE clause
             }
             else {
                 for (let filter in query.WHERE) {
