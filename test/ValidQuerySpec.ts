@@ -5,11 +5,8 @@
 import {Datasets} from "../src/controller/DatasetController";
 import QueryController from "../src/controller/QueryController";
 import {QueryRequest} from "../src/controller/QueryController";
-
 import JSZip = require('jszip');
 import {expect} from 'chai';
-
-//
 import fs = require('fs');
 
 describe("QueryController", function () {
@@ -361,8 +358,7 @@ describe("QueryController", function () {
     })
 
     it("Should not be valid with invalid AS", function(){
-        let query: QueryRequest =
-        {
+        let query: QueryRequest = {
             "GET": ["courses_dept", "courses_id", "numSections"],
             "WHERE": {},
             "GROUP": [ "courses_dept", "courses_id" ],

@@ -23,7 +23,6 @@ describe("InsightFacade", function () {
         try {
             // fs.unlinkSync('./id.json');
             fs.unlinkSync('..\/data\/courses.json');
-            // fs.rmdirSync(__dirname+"\/..\/data\/");
         } catch (err) {
             // silently fail, but don't crash; this is fine
             Log.warn('InsightController::before() - id.json not removed (probably not present)');
@@ -107,8 +106,6 @@ describe("InsightFacade", function () {
             expect(response.code).to.equal(400);
         });
     });
-
-    // TODO: add tests for performQuery
 
     // PERFORMQUERY
     it("Should not be able to performQuery on empty query", function () {
