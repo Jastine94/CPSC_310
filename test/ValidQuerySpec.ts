@@ -35,6 +35,23 @@ describe("QueryController", function () {
         expect(validQ).to.be.true;
     });
 
+    it("Should not be valid from D1 with ORDER value not in GET", function() {
+        let query: QueryRequest = {
+            "GET": ["courses_dept", "courses_avg"],
+                "WHERE": {
+                "GT": {
+                    "courses_avg": 90
+                }
+            },
+            "ORDER": "courses_id",
+                "AS": "TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    });
+
     it("Should be validate that the ORDER and APPLY works", function(){
         let query: QueryRequest =
         {
