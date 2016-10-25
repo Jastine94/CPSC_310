@@ -14,6 +14,7 @@ import fs = require('fs');
 export default class InsightFacade implements IInsightFacade {
 
     private static datasetController = new DatasetController();
+    private whereKeys: string[] = [];
 
     public addDataset(id: string, content: string): Promise<InsightResponse> {
         return new Promise(function (fulfill, reject) {
@@ -71,17 +72,37 @@ export default class InsightFacade implements IInsightFacade {
                 if (isValid) {
                     let value = query["GET"];
                     let missing_id: string[] = [];
+                    let dir = __dirname + "\/..\/..\/data\/";
+                    /*
+                    let files = fs.readdirSync(dir);
+                    let fileList: any[] = [];
                     // TODO: make sure that the where values get checked
-                    // let dir = __dirname + "\/..\/..\/data\/";
-                    // let files = fs.readdirSync(dir);
-                    // let fileList: any[] = [];
-                    //
-                    // for(var i in files){
-                    //     if (!files.hasOwnProperty(i)) continue;
-                    //     var name = files[i];
-                    //     Log.trace("!!!!" + name);
-                    //     fileList.push(name);
-                    // }
+                    if (Object.keys(query.WHERE).length === 0)
+                    {
+                        Log.trace("No values in where");
+                    }
+                    else {
+                        Log.trace(this.whereKeys.length)
+                        Log.trace("!!!!!")
+                        for (let filter in query.WHERE) {
+                            Log.trace(JSON.stringify(query.WHERE))
+                            Log.trace("FILTER VALUE IS: " + filter)
+                            this.grabWHEREKeys(query.WHERE, filter);
+                        }
+                    }
+
+                     for (let i in this.whereKeys)
+                     {
+                     Log.trace(this.whereKeys[i]);
+                     }
+
+                    for(var i in files){
+                        if (!files.hasOwnProperty(i)) continue;
+                        var name = files[i];
+                        fileList.push(name);
+                    }*/
+
+
                     for (let i = 0; i < value.length; i++) {
                         let is_Key = value[i].includes("_");
                         if (is_Key) {
@@ -116,4 +137,58 @@ export default class InsightFacade implements IInsightFacade {
         })
     } // performQuery
 
+
+    // // TODO: work in progress for D1
+    // public grabWHEREKeys(query: any, filter: string): void{
+    //     Log.trace("HERERRERERRERERRE");
+    //     if (filter === "AND" || filter === "OR") {
+    //         // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
+    //         for (let filtobj in query[filter]) {
+    //             let filteredObj: any = JSON.parse(JSON.stringify(query[filter][filtobj]));
+    //             for (let filtval in filteredObj) {
+    //                 Log.trace("AND/OR " + filtval)
+    //                 this.grabWHEREKeys(filteredObj, filtval);
+    //             }
+    //         }
+    //         return;
+    //     }
+    //     else if (filter === "LT" || filter === "GT" || filter === "EQ")
+    //     {
+    //         // MCOMPARISON ::= MCOMPARATOR ':{' key ':' number '}'
+    //         let mcompvalue = query[filter];
+    //         for (let val in mcompvalue)
+    //         {
+    //             let temp_pos = val.indexOf("_");
+    //             let id = val.substring(0, temp_pos);
+    //             if (!this.whereKeys.includes(id+".json"))
+    //             {
+    //                 this.whereKeys.push(id +".json");
+    //             }
+    //         }
+    //         Log.trace(this.whereKeys[0] + this.whereKeys.length)
+    //         return;
+    //     }
+    //     else if (filter === "IS")
+    //     {
+    //         // SCOMPARISON ::= 'IS:{' key ':' [*]? string [*]? '}'
+    //         let scompvalue = query[filter];
+    //         for (let val in scompvalue)
+    //         {
+    //             let temp_pos = val.indexOf("_");
+    //             let id = val.substring(0, temp_pos);
+    //             if (!this.whereKeys.includes(id+".json"))
+    //             {
+    //                 this.whereKeys.push(id +".json");
+    //             }
+    //         }
+    //         return;
+    //     }
+    //     else if (filter === "NOT") {
+    //         // NEGATION ::= 'NOT :{' FILTER '}'
+    //         let negate = query[filter];
+    //         for (let filt in query[filter]) {
+    //             this.grabWHEREKeys(negate, filt);
+    //         }
+    //     }
+    // }
 }

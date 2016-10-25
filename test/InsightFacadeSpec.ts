@@ -7,6 +7,7 @@ import Log from "../src/Util";
 import {expect} from 'chai';
 import InsightFacade from "../src/controller/InsightFacade";
 import {InsightResponse} from "../src/controller/IInsightFacade";
+import {QueryRequest} from "../src/controller/QueryController";
 
 describe("InsightFacade", function () {
 
@@ -176,10 +177,11 @@ describe("InsightFacade", function () {
         });
     });
 
+
     it("Should be able to perform query with valid query", function(){
         // this query takes around 22-27s to execute
         var that = this;
-        var validQuery: any = {
+        var validQuery: QueryRequest = {
             "GET": ["courses_dept", "courses_id", "courses_avg"],
             "WHERE": {
                 "OR": [

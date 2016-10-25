@@ -176,6 +176,7 @@ export default class QueryController {
                 let tempkey = this.getKey(val.toString());
                 let isValidKey: boolean = (tempkey !== "Invalid Key");
                 return (isValidKey && key.test(val) && numberRegex.test(mcompvalue[val]));
+                // return (/*isValidKey && */key.test(val) && numberRegex.test(mcompvalue[val]));
             }
         }
         else if (filter === "IS")
@@ -191,6 +192,7 @@ export default class QueryController {
                 let tempkey = this.getKey(val.toString());
                 let isValidKey: boolean = (tempkey !== "Invalid Key");
                 return (isValidKey && key.test(val) && sCompRegex.test(scompvalue[val]));
+                // return (/*isValidKey &&*/ key.test(val) && sCompRegex.test(scompvalue[val]));
             }
         }
         else if (filter === "NOT")
