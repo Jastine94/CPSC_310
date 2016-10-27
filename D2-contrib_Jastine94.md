@@ -17,7 +17,7 @@ https://github.com/CS310-2016Fall/cpsc310project_team17/commit/27658439ff0c959d1
 
 https://github.com/CS310-2016Fall/cpsc310project_team17/commit/0204becb218a9b62020364bd704a77fb2ae41195 fixed a bug that occurs when where is empty.
 
-https://github.com/CS310-2016Fall/cpsc310project_team17/commit/0204becb218a9b62020364bd704a77fb2ae41195 apply implementation
+https://github.com/CS310-2016Fall/cpsc310project_team17/commit/a570e533248d39b304d2838b5cd58df281af051c apply implementation
 
 https://github.com/CS310-2016Fall/cpsc310project_team17/commit/6cc9ddb0e512fbf7b4441f6b7759148aa57ad2c3 tests for apply
 https://github.com/CS310-2016Fall/cpsc310project_team17/commit/93ddbef78a9b0ca277e032a75afaf9a6aab1505f
