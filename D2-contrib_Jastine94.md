@@ -1,3 +1,7 @@
+D2 Autotest Pass: 97.1 % 34/35 (77.68/80)
+Test Coverage: 96.1% + 5% for (20/20)
+Total: 97.68/100
+
 I add support for the new course_uuid. I implemented the new EBNF queries for deliverable 2. I added implemention to support grouping, new ordering and
 apply(min, max, avg, count). I added some tests to make sure the codes are working as expected and some integration tests
 to make sure that the previous functionality are still supported. I did some minor refactoring too.
