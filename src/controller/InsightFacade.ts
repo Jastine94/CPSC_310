@@ -126,13 +126,13 @@ export default class InsightFacade implements IInsightFacade {
                 }
                 else
                     {
-                    reject({code: 400, body: {error: "Invalid query"}});
+                    reject({code: 400, error: "Invalid query"});
                     }
             }
             catch (error)
             {
                 //Log.error('RouteHandler::postQuery(..) - ERROR: '  + error);
-                reject({code: 400, body: {error: "Invalid query"}});
+                reject({code: 400, error: "Invalid query"});
             }
         })
     } // performQuery

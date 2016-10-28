@@ -104,8 +104,21 @@ export default class RouteHandler {
 
             }).catch(function (error)
             {
-                // res.json(error.code, error[1]);
-                res.json(error);
+                // res.json(error.code, error.body);
+                Log.trace(error.code)
+                Log.trace(error.error)
+                Log.trace(error.missing)
+                let error_body: any;
+                if (typeof(error.error) === 'undefined')
+                {
+                    error_body = {missing: error.missing};
+                }
+                else if (typeof (error.missing) === 'undefined')
+                {
+                    error_body = {error: error.error};
+                }
+                res.json(error.code, error_body);
+                // res.json(JSON.stringify(error));
             })
 
             // let datasets: Datasets = RouteHandler.datasetController.getDatasets();
