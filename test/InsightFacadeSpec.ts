@@ -173,7 +173,7 @@ describe("InsightFacade", function () {
             expect.fail('Should not happen');
         }).catch(function (response: InsightResponse) {
             expect(response.code).to.equal(424);
-            expect(response.missing).to.deep.equal( [ 'courss' ]);
+            expect(response.body).to.deep.equal({missing:[ 'courss' ]});
         });
     });
 
@@ -223,7 +223,7 @@ describe("InsightFacade", function () {
             expect.fail('Should not happen');
         }).catch(function (response: InsightResponse) {
             expect(response.code).to.equal(424);
-            expect(response.missing).to.deep.equal(['course','cours']);
+            expect(response.body).to.deep.equal({missing:['course','cours']});
         });
     });
 
@@ -253,7 +253,7 @@ describe("InsightFacade", function () {
             expect.fail('Should not happen');
         }).catch(function (response: InsightResponse) {
             expect(response.code).to.equal(424);
-            expect(response.missing).to.deep.equal( ['cous','cours','urses','coses','ces']);
+            expect(response.body).to.deep.equal({missing: ['cous','cours','urses','coses','ces']});
         });
     });
 
@@ -290,7 +290,7 @@ describe("InsightFacade", function () {
             expect.fail('Should not happen');
         }).catch(function (response: InsightResponse) {
             expect(response.code).to.equal(424);
-            expect(response.missing).to.deep.equal(["cous","cour","cours","urses","coses","ces"]);
+            expect(response.body).to.deep.equal({missing:["cous","cour","cours","urses","coses","ces"]});
         });
     });
 

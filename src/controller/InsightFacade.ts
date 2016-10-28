@@ -117,7 +117,8 @@ export default class InsightFacade implements IInsightFacade {
                     {
                         // let mids: any = {};
                         // mids.missing = missing_id;
-                        reject({code: 424, missing: missing_id});
+                        // reject({code: 424, missing: missing_id});
+                        reject({code: 424, body: {missing: missing_id}});
                     }
                     else {
                         let result: any = controller.query(query);
@@ -126,13 +127,14 @@ export default class InsightFacade implements IInsightFacade {
                 }
                 else
                     {
-                    reject({code: 400, error: "Invalid query"});
+                    reject({code: 400, body: {error: "Invalid query"}});
                     }
             }
             catch (error)
             {
                 //Log.error('RouteHandler::postQuery(..) - ERROR: '  + error);
-                reject({code: 400, error: "Invalid query"});
+                reject({code: 400, body: {error: "Invalid query"}});
+                // reject({code: 400, error: "Invalid query"});
             }
         })
     } // performQuery
