@@ -256,6 +256,10 @@ export default class DatasetController {
                     {
                         tempobj[key] = resdata[key].toString();
                     }
+                    else if (key === 'Year')
+                    {
+                        tempobj[key] = parseInt(resdata[key]);
+                    }
                 }
                 tempresarr.push(tempobj);
             }

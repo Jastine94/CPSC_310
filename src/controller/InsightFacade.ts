@@ -117,7 +117,7 @@ export default class InsightFacade implements IInsightFacade {
                     {
                         let mids: any = {};
                         mids.missing = missing_id;
-                        reject({code: 424, body: {error: mids}});
+                        reject({code: 424, error: mids});
                     }
                     else {
                         let result: any = controller.query(query);

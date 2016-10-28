@@ -173,13 +173,12 @@ describe("InsightFacade", function () {
             expect.fail('Should not happen');
         }).catch(function (response: InsightResponse) {
             expect(response.code).to.equal(424);
-            expect(response.body).to.deep.equal({ error: { missing: [ 'courss' ] } });
+            expect(response.error).to.deep.equal({ missing: [ 'courss' ] });
         });
     });
 
 
     it("Should be able to perform query with valid query", function(){
-        // this query takes around 22-27s to execute
         var that = this;
         var validQuery: QueryRequest = {
             "GET": ["courses_dept", "courses_id", "courses_avg"],
@@ -224,7 +223,7 @@ describe("InsightFacade", function () {
             expect.fail('Should not happen');
         }).catch(function (response: InsightResponse) {
             expect(response.code).to.equal(424);
-            expect(response.body).to.deep.equal({error: {missing: ['course','cours']}});
+            expect(response.error).to.deep.equal({missing: ['course','cours']});
         });
     });
 
@@ -254,7 +253,7 @@ describe("InsightFacade", function () {
             expect.fail('Should not happen');
         }).catch(function (response: InsightResponse) {
             expect(response.code).to.equal(424);
-            expect(response.body).to.deep.equal({error: {missing: ['cous','cours','urses','coses','ces']}});
+            expect(response.error).to.deep.equal({missing: ['cous','cours','urses','coses','ces']});
         });
     });
 
