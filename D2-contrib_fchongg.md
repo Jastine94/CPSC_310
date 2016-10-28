@@ -1,4 +1,4 @@
-D2 Pass: 97.1 % 34/35 (77.68/80)
+D2 Autotest Pass: 97.1 % 34/35 (77.68/80)
 Test Coverage: 96.1% + 5% for (20/20)
 Total: 97.68/100
 
