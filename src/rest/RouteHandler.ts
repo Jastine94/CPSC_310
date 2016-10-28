@@ -104,7 +104,8 @@ export default class RouteHandler {
 
             }).catch(function (error)
             {
-                res.json(error.code, error[1]);
+                // res.json(error.code, error[1]);
+                res.json(error);
             })
 
             // let datasets: Datasets = RouteHandler.datasetController.getDatasets();
