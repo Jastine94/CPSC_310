@@ -203,6 +203,61 @@ describe("InsightFacade", function () {
         });
     });
 
+    it("Should not be able to perform query and return 424", function(){
+        var that = this;
+        var validQuery: QueryRequest = {
+            "GET": ["courses_dept", "courses_id", "courses_avg"],
+            "WHERE": {
+                "OR": [
+                    {"AND": [
+                        {"GT": {"course_avg": 70}},
+                        {"IS": {"courses_dept": "adhe"}}
+                    ]},
+                    {"EQ": {"cours_avg": 90}}
+                ]
+            },
+            "ORDER": "courses_avg",
+            "AS": "TABLE"
+        };
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(424);
+            expect(response.body).to.deep.equal({error: {missing: ['course','cours']}});
+        });
+    });
+
+    it("Should not be able to perform query with invalid keys in get and where clause and return 424", function(){
+        var that = this;
+        let invalidQuery: QueryRequest = {
+            GET: ["cous_instructor"],
+            WHERE: {
+                AND: [
+                    {AND: [
+                        {AND: [
+                            {"IS": {"cours_instructor":"*gregor*"}},
+                            {"NOT" : {"LT": {"urses_fail": 50}}}
+                        ]},
+                        {"IS" :{ "coses_dept" : "cpsc"}},
+                        {"EQ": {"courses_pass": 95}},
+                        {"GT": {"courses_avg": 80}}
+                    ]},
+                    {"IS" :{ "ces_id" : "1"}},
+                ]
+            },
+            ORDER: null,
+            AS: "TABLE"
+        };
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(invalidQuery).then(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(424);
+            expect(response.body).to.deep.equal({error: {missing: ['cous','cours','urses','coses','ces']}});
+        });
+    });
+
     it("Should be able to perform query and find the average for all cpsc courses (200)", function(){
         var that = this;
         var validQuery: any = {
