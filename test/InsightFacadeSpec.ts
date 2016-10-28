@@ -257,6 +257,43 @@ describe("InsightFacade", function () {
         });
     });
 
+    it("Should not be able to perform query with invalid keys for 5 DEEP query and return 424", function(){
+        var that = this;
+        let invalidQuery: QueryRequest = {
+            GET: ["cous_instructor"],
+            WHERE: {
+                AND: [
+                    {AND: [
+                        {AND: [
+                            {OR: [
+                                {"IS": {"courses_pass": 95}},
+                                {OR: [
+                                    {"GT": {"courses_pass": 22}},
+                                    {"LT": {"cour_fail": 33}}
+                                ]}
+                            ]},
+                            {"IS": {"cours_instructor":"*gregor*"}},
+                            {"NOT" : {"LT": {"urses_fail": 50}}}
+                        ]},
+                        {"IS" :{ "coses_dept" : "cpsc"}},
+                        {"EQ": {"courses_pass": 95}},
+                        {"GT": {"courses_avg": 80}}
+                    ]},
+                    {"IS" :{ "ces_id" : "1"}},
+                ]
+            },
+            ORDER: null,
+            AS: "TABLE"
+        };
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(invalidQuery).then(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(424);
+            expect(response.error).to.deep.equal({"missing": ["cous","cour","cours","urses","coses","ces"]});
+        });
+    });
+
     it("Should be able to perform query and find the average for all cpsc courses (200)", function(){
         var that = this;
         var validQuery: any = {
