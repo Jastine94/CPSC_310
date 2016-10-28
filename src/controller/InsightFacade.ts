@@ -78,8 +78,6 @@ export default class InsightFacade implements IInsightFacade {
                     let fileList: any[] = [];
                     for(var f in files)
                     {  // adding all the files in the data folder in the 'files' array
-                        // if (!files.hasOwnProperty(i)) continue;
-                        // var name = files[i];
                         fileList.push(files[f]);
                     }
                     for (let i = 0; i < value.length; i++)
@@ -115,12 +113,10 @@ export default class InsightFacade implements IInsightFacade {
                     }
                     if (missing_id.length > 0)
                     {
-                        // let mids: any = {};
-                        // mids.missing = missing_id;
-                        // reject({code: 424, missing: missing_id});
                         reject({code: 424, body: {missing: missing_id}});
                     }
-                    else {
+                    else
+                    {
                         let result: any = controller.query(query);
                         fulfill({code: 200, body: result});
                     }
@@ -134,7 +130,6 @@ export default class InsightFacade implements IInsightFacade {
             {
                 //Log.error('RouteHandler::postQuery(..) - ERROR: '  + error);
                 reject({code: 400, body: {error: "Invalid query"}});
-                // reject({code: 400, error: "Invalid query"});
             }
         })
     } // performQuery
@@ -148,7 +143,6 @@ export default class InsightFacade implements IInsightFacade {
                 let filteredObj: any = JSON.parse(JSON.stringify(query[filter][filtobj]));
                 for (let filtval in filteredObj)
                 {
-                    Log.trace("AND/OR " + filtval)
                     this.grabWHEREKeys(filteredObj, filtval);
                 }
             }

@@ -49,7 +49,6 @@ export default class RouteHandler {
             {
                 let concated = Buffer.concat(buffer);
                 req.body = concated.toString('base64');
-
                 let insightFacade: IInsightFacade = new InsightFacade;
                 insightFacade.addDataset(id, req.body).then(function(result)
                 {
@@ -59,28 +58,6 @@ export default class RouteHandler {
                 {
                     res.json(error.code, error.body);
                 })
-                //Log.trace('RouteHandler::putDataset(..) on end; total length: ' + req.body.length);
-                // let controller = RouteHandler.datasetController;
-                // let exists: boolean = fs.existsSync(__dirname + "\/..\/..\/data\/" +id+'.json');
-                // //Log.trace("The current " + id +": exists? " + (exists !== null));
-                // controller.process(id, req.body).then(function (result)
-                // {
-                //     //Log.trace('RouteHandler::putDataset(..) - processed');
-                //     if (exists)
-                //     {   //this is replacing an existing id
-                //         res.json(201, {success: result});
-                //         // Log.trace('201 Success: '+result);
-                //     }
-                //     else
-                //     {    //this is a new id
-                //         res.json(204, {success: result});
-                //         // Log.trace('204 Success: '+result);
-                //     }
-                // }).catch(function (error: Error)
-                // {
-                //     //Log.trace('--  RouteHandler::putDataset(..) - ERROR: ' + err.message);
-                //     res.json(400, {error: error.message});
-                // });
             });
 
         } catch (error)
@@ -96,75 +73,16 @@ export default class RouteHandler {
         try
         {
             let query: QueryRequest = req.params;
-
             let insightFacade: IInsightFacade = new InsightFacade;
             insightFacade.performQuery(query).then(function(result)
             {
+                // Log.trace(JSON.stringify(result.body))
                 res.json(result.code, result.body);
 
             }).catch(function (error)
             {
-                // res.json(error.code, error.body);
-                // Log.trace(error.code)
-                // Log.trace(error.error)
-                // Log.trace(error.missing)
-                // let error_body: any;
-                // if (typeof(error.error) === 'undefined')
-                // {
-                //     error_body = {missing: error.missing};
-                // }
-                // else if (typeof (error.missing) === 'undefined')
-                // {
-                //     error_body = {error: error.error};
-                // }
                 res.json(error.code, error.body);
-                // res.json(JSON.stringify(error));
             })
-
-            // let datasets: Datasets = RouteHandler.datasetController.getDatasets();
-            // let controller = new QueryController(datasets);
-            // let isValid = controller.isValid(query);
-            // Log.trace("Query is valid? " + isValid);
-            // if (isValid)
-            // {
-            //     let value = req.params["GET"];
-            //     let missing_id: string[] = [];
-            //     for (let i = 0; i < value.length; i++)
-            //     {
-            //         let temp_pos = value[i].indexOf("_");
-            //         let id = value[i].substring(0, temp_pos);
-            //         if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json")))
-            //         {
-            //             missing_id.push(id);
-            //         }
-            //     }
-            //     if (missing_id.length > 0)
-            //     {
-            //         let mids: any = {};
-            //         mids["missing"] = missing_id;
-            //         res.json(424, mids);
-            //         Log.trace("424 Missing: " + JSON.stringify(mids));
-            //     }
-            //     else
-            //     {
-            //         let result: any = controller.query(query);
-            //         if (result.status === "failed")
-            //         {
-            //             res.json(400, {error: 'Invalid query'});
-            //             Log.trace("400 Invalid query");
-            //         }
-            //         else
-            //         {
-            //             res.json(200, result);
-            //             Log.trace("200 Successful");
-            //         }
-            //     }
-            // }
-            // else
-            // {
-            //     res.json(400, {error: 'Invalid query'});
-            //     Log.trace("400 Error - Invalid query");
-            // }
         }
         catch (error)
         {
@@ -192,7 +110,6 @@ export default class RouteHandler {
                 let concated = Buffer.concat(buffer);
                 req.body = concated.toString('base64');
 
-
                 let insightFacade: IInsightFacade = new InsightFacade;
                 insightFacade.removeDataset(id).then(function(result)
                 {
@@ -202,19 +119,6 @@ export default class RouteHandler {
                 {
                     res.json(error.code, error.body);
                 })
-
-                //Log.trace('RouteHandler::deleteDataset(..) on end; total length: ' + req.body.length);
-                // let controller = RouteHandler.datasetController;
-                // controller.deleteDataset(id).then(function (result)
-                // {
-                //     //Log.trace('RouteHandler::deleteDataset(..) - processed');
-                //     res.json(204, {success: result}); //dataset was deleted
-                //     //Log.trace("204 Sucessfully deleted");
-                // }).catch(function (error: Error)
-                // {
-                //     res.json(404, {error: "Dataset does not exist"});
-                //     //Log.trace('RouteHandler::deleteDataset(..) - ERROR: ' + error.message);
-                // });
             });
         } catch (error)
         {

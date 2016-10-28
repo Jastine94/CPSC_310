@@ -9,8 +9,6 @@ import {QueryRequest} from "./QueryController";
 export interface InsightResponse {
     code: number;
     body?: {}; // this is what you would return to a requestee in the REST body
-    error?: any
-    missing?: string[];
 }
 
 export interface IInsightFacade {
