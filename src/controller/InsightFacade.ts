@@ -74,32 +74,22 @@ export default class InsightFacade implements IInsightFacade {
                     let value = query["GET"];
                     let missing_id: string[] = [];
                     let dir = __dirname + "\/..\/..\/data\/";
-
                     let files = fs.readdirSync(dir);
                     let fileList: any[] = [];
-                    // TODO: make sure that the where values get checked
-                    if (Object.keys(query.WHERE).length === 0)
+                    for(var f in files)
+                    {  // adding all the files in the data folder in the 'files' array
+                        // if (!files.hasOwnProperty(i)) continue;
+                        // var name = files[i];
+                        fileList.push(files[f]);
+                    }
+                    for (let i = 0; i < value.length; i++)
                     {
-                        Log.trace("No values in where");
-                    }
-                    else {
-                        for (let filter in query.WHERE) {
-                            that.grabWHEREKeys(query.WHERE, filter);
-                        }
-                    }
-
-                    for(var i in files){
-                        if (!files.hasOwnProperty(i)) continue;
-                        var name = files[i];
-                        fileList.push(name);
-                    }
-
-                    for (let i = 0; i < value.length; i++) {
                         let is_Key = value[i].includes("_");
                         if (is_Key) {
                             let temp_pos = value[i].indexOf("_");
                             let id = value[i].substring(0, temp_pos);
-                            if (!fileList.includes(id+".json")) {
+                            if (!fileList.includes(id+".json"))
+                            {
                                 missing_id.push(id);
                             }
                             // if (!(fs.existsSync(__dirname + "\/..\/..\/data\/" + id + ".json"))) {
@@ -107,21 +97,26 @@ export default class InsightFacade implements IInsightFacade {
                             // }
                         }
                     }
-
-                    for (let wk in that.whereKeys)
-                    {
-                        let wksep = that.whereKeys[wk].indexOf(".");
-                        let wkid = that.whereKeys[wk].substring(0, wksep);
-                        if (!fileList.includes(that.whereKeys[wk]))
+                    if (Object.keys(query.WHERE).length > 0)
+                    { // First iterates through the where clause and adds it to whereKeys
+                        for (let filter in query.WHERE)
                         {
-                            Log.trace("Missing id" + wkid)
-                            missing_id.push(wkid);
+                            that.grabWHEREKeys(query.WHERE, filter);
+                        }
+                        for (let wk in that.whereKeys)
+                        {  // Iterates through all the whereKeys to see if that value is in the data folder
+                            let wksep = that.whereKeys[wk].indexOf(".");
+                            let wkid = that.whereKeys[wk].substring(0, wksep);
+                            if (!fileList.includes(that.whereKeys[wk]))
+                            {
+                                missing_id.push(wkid);
+                            }
                         }
                     }
-                    if (missing_id.length > 0) {
+                    if (missing_id.length > 0)
+                    {
                         let mids: any = {};
                         mids.missing = missing_id;
-                        Log.trace(mids.missing)
                         reject({code: 424, body: {error: mids}});
                     }
                     else {
@@ -129,11 +124,13 @@ export default class InsightFacade implements IInsightFacade {
                         fulfill({code: 200, body: result});
                     }
                 }
-                else {
+                else
+                    {
                     reject({code: 400, body: {error: "Invalid query"}});
-                }
+                    }
             }
-            catch (error) {
+            catch (error)
+            {
                 //Log.error('RouteHandler::postQuery(..) - ERROR: '  + error);
                 reject({code: 400, body: {error: "Invalid query"}});
             }
@@ -144,9 +141,11 @@ export default class InsightFacade implements IInsightFacade {
     private grabWHEREKeys(query: any, filter: string): void{
         if (filter === "AND" || filter === "OR") {
             // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
-            for (let filtobj in query[filter]) {
+            for (let filtobj in query[filter])
+            {
                 let filteredObj: any = JSON.parse(JSON.stringify(query[filter][filtobj]));
-                for (let filtval in filteredObj) {
+                for (let filtval in filteredObj)
+                {
                     Log.trace("AND/OR " + filtval)
                     this.grabWHEREKeys(filteredObj, filtval);
                 }
@@ -183,10 +182,12 @@ export default class InsightFacade implements IInsightFacade {
             }
             return;
         }
-        else if (filter === "NOT") {
+        else if (filter === "NOT")
+        {
             // NEGATION ::= 'NOT :{' FILTER '}'
             let negate = query[filter];
-            for (let filt in query[filter]) {
+            for (let filt in query[filter])
+            {
                 this.grabWHEREKeys(negate, filt);
             }
         }
