@@ -453,7 +453,7 @@ export default class DatasetController {
                     if (node.childNodes[cIndex].attrs[0].value === 'views-field views-field-field-room-capacity' && tempVal)
                     {
                         tempVal = parseInt(tempVal.trim());
-                        this.tempRoom['rooms_seat'] = tempVal;
+                        this.tempRoom['rooms_seats'] = tempVal;
                     }
                     else if (node.childNodes[cIndex].attrs[0].value === 'views-field views-field-field-room-furniture' && tempVal)
                     {
@@ -467,7 +467,7 @@ export default class DatasetController {
                     }
                 }
             }
-            if (this.tempRoom['rooms_href'] && this.tempRoom['rooms_number'] && this.tempRoom['rooms_seat'] &&
+            if (this.tempRoom['rooms_href'] && this.tempRoom['rooms_number'] && this.tempRoom['rooms_seats'] &&
                 this.tempRoom['rooms_furniture'] && this.tempRoom['rooms_type'])
             {
                 this.tempRoom['rooms_shortname'] = building;
