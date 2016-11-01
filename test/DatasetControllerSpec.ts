@@ -7,9 +7,13 @@ import Log from "../src/Util";
 
 import JSZip = require('jszip');
 import {expect} from 'chai';
+import parse5 = require('parse5');
+import http = require('http');
 
 //
 import fs = require('fs');
+import {ASTNode} from "parse5";
+import {ASTAttribute} from "parse5";
 
 describe("DatasetController", function () {
 
@@ -32,7 +36,7 @@ describe("DatasetController", function () {
         Log.test("starting 310sampe.zip test")
         let controller = new DatasetController();
         let datasets = controller.getDataset('courses');
-        Log.test('Info inside the dataset is: ' + datasets);
+        // Log.test('Info inside the dataset is: ' + datasets);
     });
 
     it("Should be able create and delete a dataset", function(){
@@ -80,6 +84,47 @@ describe("DatasetController", function () {
         return alldatasets;
     });
 
+
+    it("Should be able to save 310rooms.1.1.zip onto disk", function(){
+        Log.test("Start to unzip second_data.zip and load onto disk");
+        var file = fs.readFileSync("test\/310rooms.1.1.zip");
+        let controller = new DatasetController();
+        return controller.process('rooms',file).then(function (result){
+            let retrieved_datasets = controller.getDataset('courses');
+            expect(retrieved_datasets).not.to.be.empty;
+        });
+    });
+
+
+    it("TESTING!!", function(){
+        Log.test("Start to unzip second_data.zip and load onto disk");
+        var roomsfile = fs.readFileSync("test\/310rooms.1.1.zip");
+        // var file = fs.readFileSync("test\/index.htm");
+        // var dmp = fs.readFileSync("test\/DMP");
+        // var acu = fs.readFileSync("test\/ACU");
+        // var anso = fs.readFileSync("test\/ANSO");
+        // let roomInfo = parse5.parseFragment(file.toString());
+        // let dmpInfo = parse5.parseFragment(dmp.toString())
+        // let acuInfo = parse5.parseFragment(acu.toString())
+        // let ansoInfo = parse5.parseFragment(anso.toString())
+        let controller = new DatasetController();
+
+        return controller.process('rooms',roomsfile).then(function (result){
+            expect(result).to.be.true
+        });
+
+        // controller.findTable(roomInfo)
+        // controller.addBuilding(controller.table)
+        // controller.findTable(dmpInfo);
+        // controller.addRoom(controller.table, "DMP")
+        // Log.trace(JSON.stringify(controller.buildings))
+        // controller.findTable(ansoInfo);
+        // controller.addRoom(controller.table, "ANSO")
+        // // controller.findTable(acuInfo);
+        // // controller.addRoom(controller.table, "ACU")
+        // let boo = controller.findTable(acuInfo);
+
+    });
 
 
 });

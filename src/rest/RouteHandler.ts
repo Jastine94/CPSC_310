@@ -3,20 +3,13 @@
  */
 import restify = require('restify');
 import fs = require('fs');
-
-import DatasetController from '../controller/DatasetController';
-import {Datasets} from '../controller/DatasetController';
-import QueryController from '../controller/QueryController';
 import {IInsightFacade} from '../controller/IInsightFacade';
-
 import {QueryRequest} from "../controller/QueryController";
 import Log from '../Util';
 import {fullResponse} from "restify";
 import InsightFacade from "../controller/InsightFacade";
 
 export default class RouteHandler {
-
-    private static datasetController = new DatasetController();
 
     public static getHomepage(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace('RoutHandler::getHomepage(..)');
