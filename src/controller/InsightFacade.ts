@@ -120,6 +120,7 @@ export default class InsightFacade implements IInsightFacade {
                     else
                     {
                         let result: any = controller.query(query);
+                        // Log.trace(JSON.stringify(result))
                         fulfill({code: 200, body: result});
                     }
                 }

@@ -95,11 +95,6 @@ export default class QueryController {
                 // {string: {APPLYTOKEN: key}}
                 for (let val in getVals[i])
                 {
-                    // let validString = (typeof val === 'string');
-                    // if (validString === false)
-                    // {
-                    //     return false;
-                    // }
                     for (let stringVal in getVals[i][val]){
                         let validAPPTOKEN = this.validApplyToken(stringVal);
                         let validKEY = key.test(getVals[i][val][stringVal]);
