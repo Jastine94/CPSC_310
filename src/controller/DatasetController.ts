@@ -228,22 +228,22 @@ export default class DatasetController {
                     that.findTable(roomInfo);
                     that.addBuilding(that.table);
                     that.addLatLon(that.buildingInfo).then(function (res:any) {
-                    zip.folder('campus\/discover\/buildings-and-classrooms').forEach(function (relativePath, file) {
-                        promises_1.push(file.async("string").then(function (data) {
-                            if (typeof(that.buildings[relativePath.toString()]) !== 'undefined') {
-                                let tabledata = parse5.parseFragment(data.toString())
-                                that.hasTable = false;
-                                let tableExists = that.findTable(tabledata);
-                                if (tableExists === false) {
-                                    that.table = {};
+                        zip.folder('campus\/discover\/buildings-and-classrooms').forEach(function (relativePath, file) {
+                            promises_1.push(file.async("string").then(function (data) {
+                                if (typeof(that.buildings[relativePath.toString()]) !== 'undefined') {
+                                    let tabledata = parse5.parseFragment(data.toString())
+                                    that.hasTable = false;
+                                    let tableExists = that.findTable(tabledata);
+                                    if (tableExists === false) {
+                                        that.table = {};
+                                    }
+                                    that.addRoom(that.table, relativePath.toString());
                                 }
-                                that.addRoom(that.table, relativePath.toString());
-                            }
-                        }).catch(function (err) {
-                            Log.trace('Fail to get the file from the zip file: ' + relativePath + " : " + err);
-                            reject(true);
-                        }))
-                    });
+                            }).catch(function (err) {
+                                Log.trace('Fail to get the file from the zip file: ' + relativePath + " : " + err);
+                                reject(true);
+                            }))
+                        });
                         Promise.all(promises_1).then(function (result) {
                             for (let building in that.buildings) {
                                 let buildingInfo = that.buildings[building]
@@ -258,21 +258,6 @@ export default class DatasetController {
                             fulfill(true);
                         })
                     })
-                    // Promise.all(promises_1).then(function (result) {
-                    //     Log.trace(":LL PMROJE NONNONONONONO" )
-                    //     Log.trace(JSON.stringify(that.buildings))
-                    //     for (let building in that.buildings) {
-                    //         let buildingInfo = that.buildings[building]
-                    //         let tempBuilding = {};
-                    //         if (buildingInfo.length !== 0) {
-                    //             tempBuilding = {'result': buildingInfo};
-                    //             buildingsArr.push(tempBuilding)
-                    //         }
-                    //     }
-                    //     // that.save(id, that.buildings)
-                    //     that.save(id, buildingsArr)
-                    //     fulfill(true);
-                    // })
                 })
             }
             catch (error)
@@ -416,7 +401,6 @@ export default class DatasetController {
      * @param node - table containing all the buildings, use findTable on the index.htm first
      * @param building - the abbreviation of the building, ie (DMP)
      */
-    // TODO: get latlon to work
     public setBuildingInfo(node: ASTNode, building: string): void {
         // Log.trace('setBuildingInfo START')
         if (node.attrs[0].value === 'views-field views-field-title')
@@ -428,8 +412,6 @@ export default class DatasetController {
         }
         else if (node.attrs[0].value === 'views-field views-field-field-building-address') {
             this.buildingInfo[building]['rooms_address'] = node.childNodes[0].value.trim();
-            // also add the lat long address here
-            // this.setLatLon(this.buildingInfo[building]['rooms_address'], building);
         }
         // Log.trace('setBuildingInfo END')
     } //setBuildingInfo
@@ -549,10 +531,8 @@ export default class DatasetController {
                     response.setEncoding('utf8')
                     response.on('data', function(data: any){
                         let parsedData = JSON.parse(data);
-                        // console.log('PARSED DATA: ', parsedData);
-                        let latlon = {'rooms_lat': parsedData.lat, 'rooms_lon': parsedData.lon};
+                        let latlon = {'rooms_lat': Number(parsedData.lat), 'rooms_lon': Number(parsedData.lon)};
                         that.buildingInfo[building] = Object.assign(that.buildingInfo[building], latlon);
-                        // Log.trace("BUILDING INFO" + JSON.stringify(that.buildingInfo[building]))
                         fulfill(true);
                     })
                     response.on('error', function(error: any){
