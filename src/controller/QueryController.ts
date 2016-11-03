@@ -745,7 +745,7 @@ export default class QueryController {
             if (data !== undefined)
             {
                 resultList = data;
-                Log.trace(("result List" + JSON.stringify(resultList)));
+                // Log.trace(("result List" + JSON.stringify(resultList)));
             }
 
             // id_key : value pair == value : instance
