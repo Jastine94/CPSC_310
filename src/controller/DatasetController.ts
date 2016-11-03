@@ -42,7 +42,6 @@ export default class DatasetController {
      * @returns {{}}
      */
     public getDataset(id: string): any {
-        // TODO: this should check if the dataset is on disk in ./data if it is not already in memory.
         Log.trace('DatasetController::getDataset() - processing');
         let that = this;
         let data_dir: string = __dirname+"\/..\/..\/data\/";
@@ -66,7 +65,6 @@ export default class DatasetController {
     /**
      * Returns all dataset files inside the ./data folder from disk if this.datasets is empty
      */
-    // TODO: if datasets is empty, load all dataset files in ./data from disk
     public getDatasets(): Datasets {
         //Log.trace('DatasetController :: getDatasets is being called');
         let that = this;
@@ -133,7 +131,6 @@ export default class DatasetController {
      * @param data base64 representation of a zip file
      * @returns {Promise<boolean>} returns true if successful; false if the dataset was invalid (for whatever reason)
      */
-    // TODO: iterate through files in zip (zip.files)
     // The contents of the file will depend on the id provided. e.g.,
     // some zips will contain .html files, some will contain .json files.
     // You can depend on 'id' to differentiate how the zip should be handled,
