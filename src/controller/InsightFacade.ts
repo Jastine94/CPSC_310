@@ -95,7 +95,7 @@ export default class InsightFacade implements IInsightFacade {
                             // }
                         }
                     }
-                    /*
+
                     if (Object.keys(query.WHERE).length > 0)
                     { // First iterates through the where clause and adds it to whereKeys
                         for (let filter in query.WHERE)
@@ -112,7 +112,7 @@ export default class InsightFacade implements IInsightFacade {
                             }
                         }
                     }
-                    */
+
                     if (missing_id.length > 0)
                     {
                         reject({code: 424, body: {missing: missing_id}});

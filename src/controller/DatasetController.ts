@@ -572,10 +572,15 @@ export default class DatasetController {
                     response.setEncoding('utf8')
                     response.on('data', function(data: any)
                     {
-                        let parsedData = JSON.parse(data);
-                        let latlon = {'rooms_lat': Number(parsedData.lat), 'rooms_lon': Number(parsedData.lon)};
-                        that.buildingInfo[building] = Object.assign(that.buildingInfo[building], latlon);
-                        fulfill(true);
+                        // let parsedData = JSON.parse(data);
+                        that.geoResponse = JSON.parse(data);
+                        // let latlon = {'rooms_lat': Number(parsedData.lat), 'rooms_lon': Number(parsedData.lon)};
+                        if (typeof (that.geoResponse.error) === 'undefined')
+                        {
+                            let latlon = {'rooms_lat': that.geoResponse.lat, 'rooms_lon': that.geoResponse.lon};
+                            that.buildingInfo[building] = Object.assign(that.buildingInfo[building], latlon);
+                            fulfill(true);
+                        }
                     })
                     response.on('error', function(error: any)
                     {
