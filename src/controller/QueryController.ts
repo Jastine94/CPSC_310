@@ -821,10 +821,10 @@ export default class QueryController {
                             if (firstOne)
                             {
                                 firstOne = false;
-                                resultList = JSON.parse(JSON.stringify(myDataList));
                                 if ('NOT' == i || 'OR' == i || 'AND' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, resultList, isNot);
+                                    Log.trace("Result from the first OR is" + JSON.stringify(accResult));
                                 }
                                 else
                                 {
@@ -839,15 +839,9 @@ export default class QueryController {
                                 // handle case where not is in inside and
                                 if ('AND' == i || 'OR' == i)
                                 {
-                                    let tempResult = this.queryWhere(tempKey, newList, isNot);
-                                    for (var values in tempResult)
-                                    {
-                                        var value = tempResult[values];
-                                        if (!this.isDuplicate(accResult, value))
-                                        {
-                                            accResult.push(value);
-                                        }
-                                    }
+                                    accResult = this.queryWhere(tempKey, newList, isNot);
+
+                                    Log.trace("temp Result is " + JSON.stringify(accResult));
                                 }
                                 else if ('NOT' == i)
                                 {
@@ -1285,6 +1279,10 @@ export default class QueryController {
         else if ("courses_uuid" == key)
         {
             tempKey = "id";
+        }
+        else if ("courses_year" == key)
+        {
+            tempKey = "Year";
         }
         else if ("rooms_fullname" == key || "rooms_shortname" == key || "rooms_number" == key || "rooms_name" == key ||
             "rooms_address" == key || "rooms_lat" == key || "rooms_lon" == key || "rooms_seats" == key ||

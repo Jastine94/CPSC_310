@@ -323,6 +323,7 @@ export default class DatasetController {
             {
                 let resdata = resarr[j];
                 let tempobj: any = {};
+                let overallPresent: boolean = false;
                 for (let key in resdata)
                 {
                     // Log.trace("object value is: " + key + ':' + resdata[key]);
@@ -331,9 +332,21 @@ export default class DatasetController {
                     {
                         tempobj[key] = resdata[key];
                     }
+                    else if (key === 'Section')
+                    {
+                        if ('Overall' === resdata[key])
+                        {
+                            overallPresent = true;
+                        }
+                    }
                     else if (key === 'Course' || key === 'id')
                     {
                         tempobj[key] = resdata[key].toString();
+                    }
+
+                    if (overallPresent)
+                    {
+                        tempobj['Year'] = Number(1900);
                     }
                 }
                 tempresarr.push(tempobj);

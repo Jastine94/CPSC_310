@@ -445,7 +445,6 @@ describe("QueryControllerAND,OR", function () {
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({ render: 'TABLE', result: [{"courses_instructor": "gg"},
-                                                       {"courses_instructor": "graves, gregor;zeiler, kathryn"},
                                                        {"courses_instructor": "TT"}]});
     });
 
