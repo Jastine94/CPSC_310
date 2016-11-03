@@ -96,7 +96,7 @@ describe("DatasetController", function () {
     });
 
 
-    it("TESTING!!", function(){
+    it("Should be able to import a rooms.zip file and add it to the dataset", function(){
         Log.test("Start to unzip second_data.zip and load onto disk");
         var roomsfile = fs.readFileSync("test\/310rooms.1.1.zip");
         // var file = fs.readFileSync("test\/index.htm");

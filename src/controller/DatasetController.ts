@@ -7,7 +7,6 @@ import JSZip = require('jszip');
 import fs = require('fs');
 import parse5 = require('parse5');
 import {ASTNode} from "parse5";
-import {ASTAttribute} from "parse5";
 import http = require('http');
 
 /**
@@ -16,7 +15,11 @@ import http = require('http');
 export interface Datasets {
     [id: string]: {};
 }
-
+interface GeoResponse {
+    lat?: number;
+    lon?: number;
+    error?: string;
+}
 export default class DatasetController {
 
     private datasets: Datasets = {};
@@ -25,6 +28,7 @@ export default class DatasetController {
     private tempRoom: any = {};
     public buildingInfo: any = {};
     private hasTable: boolean = false;
+    private geoResponse: GeoResponse = {};
 
     constructor() {
         Log.trace('DatasetController::init()');
@@ -113,13 +117,13 @@ export default class DatasetController {
                 {
                     reject("File does not exist on disk");
                 }
-            }catch (err) {
+            }catch (err)
+            {
                 //Log.trace('DatasetController::deleteDataset(..) - ERROR: ' + err.message);
                 reject(err);
             }
         });
     } //deleteDataset
-
 
 
     /**
@@ -149,51 +153,59 @@ export default class DatasetController {
                     let promises:any[] = [];
                     /** promises is the promise that retrieves all the info from the zip file and stores it in
                      processedDataset **/
-                    // Log.trace(JSON.stringify(zip.files))
-                    let temp = zip.file('index.htm');
+                    let containIndexHtml = zip.file('index.htm');
 
-                    if (temp !== null){
-                        that.processRooms(zip, temp, id).then(function(result) {
+                    if (containIndexHtml !== null){
+                        that.processRooms(zip, containIndexHtml, id).then(function(result)
+                        {
                             Log.trace('Completed processing and adding rooms dataset: ' + result)
                             fulfill(true);
-                        }).catch(function(error) {
+                        }).catch(function(error)
+                        {
                             Log.trace("Didn't complete adding rooms dataset due to: " + error);
                             reject(true);
                         })
                     }
                     else {
-                        zip.folder(id).forEach(function (relativePath, file) {
+                        zip.folder(id).forEach(function (relativePath, file)
+                        {
                             empty_folder = false;
-                            promises.push(file.async("string").then(function (data) {
+                            promises.push(file.async("string").then(function (data)
+                            {
                                 let courseinfo: any;
                                 courseinfo = JSON.parse(data);
                                 let emptydata = '{"result":[],"rank":0}';
-                                if (data !== emptydata) {
+                                if (data !== emptydata)
+                                {
                                     processedDataset.push(courseinfo);
                                 }
                             })
-                                .catch(function (err) {
+                                .catch(function (err)
+                                {
                                     Log.trace('Fail to get the file from the zip file: ' + err);
-                                    // reject(err);
                                     reject(true);
                                 }))
                         });
                         Promise.all(promises).then(function (results) {
-                            if (empty_folder) {
+                            if (empty_folder)
+                            {
                                 reject(true);
                             }
-                            else {
+                            else
+                            {
                                 Log.trace("Now will be going to save zip file into disk and memory");
                                 that.save(id, processedDataset);
                                 fulfill(true);
                             }
-                        }).catch(function (err) {
+                        }).catch(function (err)
+                        {
                             //Log.trace("Failed to iterate through all files: " + err.message);
                             reject(err);
                             reject(true);
                         });
 
-                    }}).catch(function (err) {
+                    }}).catch(function (err)
+                {
                     //Log.trace('DatasetController::process(..) - unzip ERROR: ' + err.message);
                     reject(err);
                     reject(true);
@@ -222,39 +234,49 @@ export default class DatasetController {
         let buildingsArr: any[] = [];
 
         return new Promise(function (fulfill, reject) {
-            try {
-                index.async("string").then(function (tempdata: any) {
+            try
+            {
+                index.async("string").then(function (tempdata: any)
+                {
                     let roomInfo = parse5.parseFragment(tempdata.toString());
                     that.findTable(roomInfo);
                     that.addBuilding(that.table);
-                    that.addLatLon(that.buildingInfo).then(function (res:any) {
-                        zip.folder('campus\/discover\/buildings-and-classrooms').forEach(function (relativePath, file) {
-                            promises_1.push(file.async("string").then(function (data) {
-                                if (typeof(that.buildings[relativePath.toString()]) !== 'undefined') {
+                    that.addLatLon(that.buildingInfo).then(function (res:any)
+                    {
+                        zip.folder('campus\/discover\/buildings-and-classrooms').forEach(function (relativePath, file)
+                        {
+                            promises_1.push(file.async("string").then(function (data)
+                            {
+                                if (typeof(that.buildings[relativePath.toString()]) !== 'undefined')
+                                {
                                     let tabledata = parse5.parseFragment(data.toString())
                                     that.hasTable = false;
                                     let tableExists = that.findTable(tabledata);
-                                    if (tableExists === false) {
+                                    if (tableExists === false)
+                                    {
                                         that.table = {};
                                     }
                                     that.addRoom(that.table, relativePath.toString());
                                 }
-                            }).catch(function (err) {
+                            }).catch(function (err)
+                            {
                                 Log.trace('Fail to get the file from the zip file: ' + relativePath + " : " + err);
                                 reject(true);
                             }))
                         });
-                        Promise.all(promises_1).then(function (result) {
-                            for (let building in that.buildings) {
+                        Promise.all(promises_1).then(function (result)
+                        {
+                            for (let building in that.buildings)
+                            {
                                 let buildingInfo = that.buildings[building]
                                 let tempBuilding = {};
-                                if (buildingInfo.length !== 0) {
+                                if (buildingInfo.length !== 0)
+                                {
                                     tempBuilding = {'result': buildingInfo};
                                     buildingsArr.push(tempBuilding)
                                 }
                             }
-                            // that.save(id, that.buildings)
-                            that.save(id, buildingsArr)
+                            that.save(id, buildingsArr);
                             fulfill(true);
                         })
                     })
@@ -410,36 +432,46 @@ export default class DatasetController {
                 this.buildingInfo[building] = {'rooms_fullname': node.childNodes[1].childNodes[0].value};
             }
         }
-        else if (node.attrs[0].value === 'views-field views-field-field-building-address') {
+        else if (node.attrs[0].value === 'views-field views-field-field-building-address')
+        {
             this.buildingInfo[building]['rooms_address'] = node.childNodes[0].value.trim();
         }
         // Log.trace('setBuildingInfo END')
     } //setBuildingInfo
 
+    /**
+     * Returns a promise when all the lat and lon have been set in the this.buildingInfo object
+     *
+     * @param buildings - Object that contains an array of buildings {'ACU':{}, 'DMP':{} ... }
+     * @return Promise<boolean> - returns fulfilled if all the buildings have their lat and lons set
+     */
     public addLatLon(buildings: any): Promise<boolean>{
         let promises: any[] = [];
         let that = this;
         return new Promise(function (fulfill, reject)
         {
             try {
-                for (let bI in buildings) {
+                for (let bI in buildings)
+                {
                     let address = buildings[bI]['rooms_address'];
                     promises.push(that.setLatLon(address, bI));
                 }
-                Promise.all(promises).then(function (res) {
+                Promise.all(promises).then(function (res)
+                {
                     fulfill(true);
-                }).catch(function (err) {
+                }).catch(function (err)
+                {
                     Log.trace('Failed to add lat lons to all buildings: ' + err)
                     reject(true);
                 })
             }
-            catch (error) {
+            catch (error)
+            {
                 Log.trace("addLatLon error was: " + error);
                 reject(true);
-                reject(error);
             }
         })
-    }
+    } //addLatLon
 
     /**
      * Adds the rooms in the building to the temporary data structure
@@ -517,30 +549,29 @@ export default class DatasetController {
         {
             try
             {
-                http.get(newAdd, function (response) {
-                    if (response.statusCode !== 200)
+                http.get(newAdd, function (response)
+                {
+                    if (response.statusCode !== 200 || !/^application\/json/.test(response.headers['content-type']))
                     {
-                        Log.trace('STATUS CODE WAS NOT 200 FOR LATLON, INSTEAD: ' + response.statusCode);
-                        reject(true);
-                    }
-                    else if (!/^application\/json/.test(response.headers['content-type']))
-                    {
-                        Log.trace("INCORRECT TYPE: " + response.headers)
+                        Log.trace('STATUS CODE WAS NOT 200 OR INCORRECT TYPE FOR LATLON, INSTEAD: ' + response.statusCode + " : " + response.headers);
                         reject(true);
                     }
                     response.setEncoding('utf8')
-                    response.on('data', function(data: any){
+                    response.on('data', function(data: any)
+                    {
                         let parsedData = JSON.parse(data);
                         let latlon = {'rooms_lat': Number(parsedData.lat), 'rooms_lon': Number(parsedData.lon)};
                         that.buildingInfo[building] = Object.assign(that.buildingInfo[building], latlon);
                         fulfill(true);
                     })
-                    response.on('error', function(error: any){
+                    response.on('error', function(error: any)
+                    {
                         Log.trace("Error was: " + error)
                         reject(true)
                     })
                 })
-            }catch (err) {
+            }catch (err)
+            {
                 Log.trace("setLatLon EROOORRR: " + err)
                 reject(err);
             }

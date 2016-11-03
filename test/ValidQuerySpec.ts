@@ -487,4 +487,51 @@ describe("QueryController", function () {
         expect(invalidQ).to.be.false;
     })
 
+
+
+
+    // TODO: add additional cases for valid queries with room values
+/*    it("Should be valid with querying rooms", function(){
+        let query: any =
+        {
+            "GET": ["rooms_number"],
+            "WHERE": {
+                "OR": [
+                    {"AND": [
+                        {"GT": {"courses_avg": 70}}
+                    ]},
+                    {"EQ": {"courses_avg": 90}}
+                ]
+            },
+            "ORDER": "courses_avg",
+            "AS": "TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })*/
+
+    it("Should not be valid with both rooms and courses dataset present", function(){
+        let query: any =
+        {
+            "GET": ["courses_dept", "rooms_id", "courses_avg"],
+            "WHERE": {
+                "OR": [
+                    {"AND": [
+                        {"GT": {"courses_avg": 70}}
+                    ]},
+                    {"EQ": {"courses_avg": 90}}
+                ]
+            },
+            "ORDER": "courses_avg",
+            "AS": "TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let invalidQ = controller.isValid(query);
+        expect(invalidQ).to.be.false;
+    })
+
+
 })
