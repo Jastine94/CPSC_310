@@ -745,7 +745,6 @@ export default class QueryController {
             if (data !== undefined)
             {
                 resultList = data;
-                Log.trace(("result List" + JSON.stringify(resultList)));
             }
 
             // id_key : value pair == value : instance
@@ -820,7 +819,6 @@ export default class QueryController {
                                 if ('NOT' == i || 'OR' == i || 'AND' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, resultList, isNot);
-                                    //Log.trace("Result from the first OR is" + JSON.stringify(accResult));
                                 }
                                 else
                                 {
@@ -832,14 +830,11 @@ export default class QueryController {
                                 emptyList = [];
                                 let newList: any[] = [];
                                 newList.push({"result": accResult});
-                               // Log.trace("Before Result is " + JSON.stringify(accResult) + "!!!!!!!!");
 
                                 // handle case where not is in inside and
                                 if ('AND' == i || 'OR' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, newList, isNot);
-
-                                    //Log.trace("temp Result is " + JSON.stringify(accResult));
                                 }
                                 else if ('NOT' == i)
                                 {
