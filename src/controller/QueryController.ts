@@ -30,7 +30,12 @@ export default class QueryController {
 
      // This method will return if the query provided is valid or not
     public isValid(query: QueryRequest): boolean {
+        let queryString = JSON.stringify(query);
         if ( Object.keys(query).length === 0 || typeof query === 'undefined' || query === null)
+        {
+            return false;
+        }
+        else if (queryString.match('rooms') && queryString.match('courses'))
         {
             return false;
         }
