@@ -227,6 +227,7 @@ export default class DatasetController {
                     let roomInfo = parse5.parseFragment(tempdata.toString());
                     that.findTable(roomInfo);
                     that.addBuilding(that.table);
+                    that.addLatLon(that.buildingInfo).then(function (res:any) {
                     zip.folder('campus\/discover\/buildings-and-classrooms').forEach(function (relativePath, file) {
                         promises_1.push(file.async("string").then(function (data) {
                             if (typeof(that.buildings[relativePath.toString()]) !== 'undefined') {
@@ -243,19 +244,35 @@ export default class DatasetController {
                             reject(true);
                         }))
                     });
-                    Promise.all(promises_1).then(function (result) {
-                        for (let building in that.buildings) {
-                            let buildingInfo = that.buildings[building]
-                            let tempBuilding = {};
-                            if (buildingInfo.length !== 0) {
-                                tempBuilding = {'result': buildingInfo};
-                                buildingsArr.push(tempBuilding)
+                        Promise.all(promises_1).then(function (result) {
+                            for (let building in that.buildings) {
+                                let buildingInfo = that.buildings[building]
+                                let tempBuilding = {};
+                                if (buildingInfo.length !== 0) {
+                                    tempBuilding = {'result': buildingInfo};
+                                    buildingsArr.push(tempBuilding)
+                                }
                             }
-                        }
-                        // that.save(id, that.buildings)
-                        that.save(id, buildingsArr)
-                        fulfill(true);
+                            // that.save(id, that.buildings)
+                            that.save(id, buildingsArr)
+                            fulfill(true);
+                        })
                     })
+                    // Promise.all(promises_1).then(function (result) {
+                    //     Log.trace(":LL PMROJE NONNONONONONO" )
+                    //     Log.trace(JSON.stringify(that.buildings))
+                    //     for (let building in that.buildings) {
+                    //         let buildingInfo = that.buildings[building]
+                    //         let tempBuilding = {};
+                    //         if (buildingInfo.length !== 0) {
+                    //             tempBuilding = {'result': buildingInfo};
+                    //             buildingsArr.push(tempBuilding)
+                    //         }
+                    //     }
+                    //     // that.save(id, that.buildings)
+                    //     that.save(id, buildingsArr)
+                    //     fulfill(true);
+                    // })
                 })
             }
             catch (error)
@@ -373,7 +390,7 @@ export default class DatasetController {
      *
      * @param node - table containing all the buildings information, uss findTable on index.htm file first
      */
-    public addBuilding(node:ASTNode): void{
+    public addBuilding(node:ASTNode): any{
         let code: string;
         for (let cIndex in node.childNodes)
         {
@@ -400,7 +417,7 @@ export default class DatasetController {
      * @param building - the abbreviation of the building, ie (DMP)
      */
     // TODO: get latlon to work
-    public setBuildingInfo(node: ASTNode, building: string): boolean {
+    public setBuildingInfo(node: ASTNode, building: string): void {
         // Log.trace('setBuildingInfo START')
         if (node.attrs[0].value === 'views-field views-field-title')
         {
@@ -408,19 +425,39 @@ export default class DatasetController {
             {
                 this.buildingInfo[building] = {'rooms_fullname': node.childNodes[1].childNodes[0].value};
             }
-            return true;
         }
         else if (node.attrs[0].value === 'views-field views-field-field-building-address') {
             this.buildingInfo[building]['rooms_address'] = node.childNodes[0].value.trim();
             // also add the lat long address here
-            /*this.setLatLon(this.buildingInfo[building]['rooms_address'], building).then(function (result) {
-                return result;
-            }).catch(function (error) {
-                Log.trace("ERRO IS " + error)
-            })*/
+            // this.setLatLon(this.buildingInfo[building]['rooms_address'], building);
         }
         // Log.trace('setBuildingInfo END')
     } //setBuildingInfo
+
+    public addLatLon(buildings: any): Promise<boolean>{
+        let promises: any[] = [];
+        let that = this;
+        return new Promise(function (fulfill, reject)
+        {
+            try {
+                for (let bI in buildings) {
+                    let address = buildings[bI]['rooms_address'];
+                    promises.push(that.setLatLon(address, bI));
+                }
+                Promise.all(promises).then(function (res) {
+                    fulfill(true);
+                }).catch(function (err) {
+                    Log.trace('Failed to add lat lons to all buildings: ' + err)
+                    reject(true);
+                })
+            }
+            catch (error) {
+                Log.trace("addLatLon error was: " + error);
+                reject(true);
+                reject(error);
+            }
+        })
+    }
 
     /**
      * Adds the rooms in the building to the temporary data structure
@@ -489,7 +526,7 @@ export default class DatasetController {
      *
      * @return Promise<boolean> returns true if successful, otherwise false for some reason
      */
-    public setLatLon(address: string, building: string): Promise<boolean> {
+  public setLatLon(address: string, building: string): Promise<boolean> {
         let encodedAdd: string = encodeURI(address);
         let newAdd: string = 'http://skaha.cs.ubc.ca:8022/api/v1/team17/'+encodedAdd;
         let that: any = this;
@@ -512,10 +549,11 @@ export default class DatasetController {
                     response.setEncoding('utf8')
                     response.on('data', function(data: any){
                         let parsedData = JSON.parse(data);
-                        console.log('PARSED DATA: ', parsedData);
+                        // console.log('PARSED DATA: ', parsedData);
                         let latlon = {'rooms_lat': parsedData.lat, 'rooms_lon': parsedData.lon};
                         that.buildingInfo[building] = Object.assign(that.buildingInfo[building], latlon);
-                        // fulfill(true);
+                        // Log.trace("BUILDING INFO" + JSON.stringify(that.buildingInfo[building]))
+                        fulfill(true);
                     })
                     response.on('error', function(error: any){
                         Log.trace("Error was: " + error)
@@ -523,6 +561,7 @@ export default class DatasetController {
                     })
                 })
             }catch (err) {
+                Log.trace("setLatLon EROOORRR: " + err)
                 reject(err);
             }
         });
