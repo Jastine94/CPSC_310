@@ -745,6 +745,7 @@ export default class QueryController {
             if (data !== undefined)
             {
                 resultList = data;
+                Log.trace(("result List" + JSON.stringify(resultList)));
             }
 
             // id_key : value pair == value : instance
@@ -794,7 +795,7 @@ export default class QueryController {
                             }
                             else
                             {
-                                resultList = JSON.parse(JSON.stringify(myDataList));
+                                //resultList = JSON.parse(JSON.stringify(myDataList));
                                 accResult = this.queryWhereHelper(tempKey, resultList, accResult, isNot, true);
                             }
                         }
@@ -831,6 +832,8 @@ export default class QueryController {
                                 emptyList = [];
                                 let newList: any[] = [];
                                 newList.push({"result": accResult});
+                               // Log.trace("Before Result is " + JSON.stringify(accResult) + "!!!!!!!!");
+
                                 // handle case where not is in inside and
                                 if ('AND' == i || 'OR' == i)
                                 {
