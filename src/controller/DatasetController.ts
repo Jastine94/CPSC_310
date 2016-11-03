@@ -28,7 +28,6 @@ export default class DatasetController {
     private tempRoom: any = {};
     public buildingInfo: any = {};
     private hasTable: boolean = false;
-    private geoResponse: GeoResponse = {};
 
     constructor() {
         Log.trace('DatasetController::init()');
@@ -570,14 +569,20 @@ export default class DatasetController {
                     response.on('data', function(data: any)
                     {
                         // let parsedData = JSON.parse(data);
-                        that.geoResponse = JSON.parse(data);
+                        let geoResponse : GeoResponse = JSON.parse(data);
                         // let latlon = {'rooms_lat': Number(parsedData.lat), 'rooms_lon': Number(parsedData.lon)};
-                        if (typeof (that.geoResponse.error) === 'undefined')
+                        let latlon : any;
+                        if (typeof (geoResponse.error) === 'undefined')
                         {
-                            let latlon = {'rooms_lat': that.geoResponse.lat, 'rooms_lon': that.geoResponse.lon};
-                            that.buildingInfo[building] = Object.assign(that.buildingInfo[building], latlon);
-                            fulfill(true);
+                            latlon = {'rooms_lat': geoResponse.lat, 'rooms_lon': geoResponse.lon};
                         }
+                        else
+                        {
+                            latlon = {'rooms_lat': null, 'rooms_lon': null};
+                        }
+
+                        that.buildingInfo[building] = Object.assign(that.buildingInfo[building], latlon);
+                        fulfill(true);
                     })
                     response.on('error', function(error: any)
                     {

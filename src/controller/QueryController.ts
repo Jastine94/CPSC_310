@@ -819,7 +819,7 @@ export default class QueryController {
                                 if ('NOT' == i || 'OR' == i || 'AND' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, resultList, isNot);
-                                    Log.trace("Result from the first OR is" + JSON.stringify(accResult));
+                                    //Log.trace("Result from the first OR is" + JSON.stringify(accResult));
                                 }
                                 else
                                 {
@@ -836,7 +836,7 @@ export default class QueryController {
                                 {
                                     accResult = this.queryWhere(tempKey, newList, isNot);
 
-                                    Log.trace("temp Result is " + JSON.stringify(accResult));
+                                    //Log.trace("temp Result is " + JSON.stringify(accResult));
                                 }
                                 else if ('NOT' == i)
                                 {

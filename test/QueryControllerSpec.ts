@@ -1136,4 +1136,26 @@ describe("QueryController", function () {
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).not.to.be.equal(null);
     });
+
+    // random query
+    it("Should be able to query, although the answer will be empty", function () {
+        let query: QueryRequest = {
+            GET: ["rooms_lat", "rooms_lon"],
+            WHERE: {},
+            ORDER: null,
+            AS: "TABLE"
+        };
+        let dataset: Datasets = {"rooms":[
+            {"result":[
+                {"rooms_href":"http",
+                    "rooms_number":"105",
+                    "rooms_seats":94,
+                    "rooms_furniture":"Classroom-Fixed Tables/Movable Chairs",
+                    "rooms_type":"Case Style","rooms_shortname":"ALRD",
+                    "rooms_name":"ALRD_105","rooms_fullname":"Allard Hall (LAW)",
+                    "rooms_address":"1822 East Mall","rooms_lat": null,"rooms_lon":null}]}]};
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.eql({ render: 'TABLE', result: []})});
 });
