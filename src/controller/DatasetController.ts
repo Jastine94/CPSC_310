@@ -566,22 +566,20 @@ export default class DatasetController {
                         reject(true);
                     }
                     response.setEncoding('utf8')
-                    response.on('data', function(data: any)
-                    {
+                    response.on('data', function(data: any) {
                         // let parsedData = JSON.parse(data);
-                        let geoResponse : GeoResponse = JSON.parse(data);
+                        let geoResponse: GeoResponse = JSON.parse(data);
                         // let latlon = {'rooms_lat': Number(parsedData.lat), 'rooms_lon': Number(parsedData.lon)};
-                        let latlon : any;
-                        if (typeof (geoResponse.error) === 'undefined')
-                        {
-                            latlon = {'rooms_lat': geoResponse.lat, 'rooms_lon': geoResponse.lon};
+                        let latlon: any;
+                        if (typeof (geoResponse.error) === 'undefined') {
+                            that.buildingInfo[building]["Lat"] = Number(geoResponse.lat);
+                            that.buildingInfo[building]["Lon"] = Number(geoResponse.lon);
                         }
-                        else
-                        {
-                            latlon = {'rooms_lat': null, 'rooms_lon': null};
+                        else {
+                            that.buildingInfo[building]["Lat"] = null;
+                            that.buildingInfo[building]["Lon"] = null;
                         }
 
-                        that.buildingInfo[building] = Object.assign(that.buildingInfo[building], latlon);
                         fulfill(true);
                     })
                     response.on('error', function(error: any)

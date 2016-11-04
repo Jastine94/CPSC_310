@@ -1279,10 +1279,18 @@ export default class QueryController {
             tempKey = "Year";
         }
         else if ("rooms_fullname" == key || "rooms_shortname" == key || "rooms_number" == key || "rooms_name" == key ||
-            "rooms_address" == key || "rooms_lat" == key || "rooms_lon" == key || "rooms_seats" == key ||
+            "rooms_address" == key || /*"rooms_lat" == key || "rooms_lon" == key ||*/ "rooms_seats" == key ||
             "rooms_type" == key || "rooms_furniture" == key || "rooms_href" == key )
         {
             tempKey = key.toString();
+        }
+        else if ("rooms_lat" == key)
+        {
+            tempKey = "Lat";
+        }
+        else if ("rooms_lon" == key)
+        {
+            tempKey = "Lon";
         }
         else
         {
