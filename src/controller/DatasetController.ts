@@ -513,27 +513,17 @@ export default class DatasetController {
                     if (node.childNodes[cIndex].attrs[0].value === 'views-field views-field-field-room-capacity' && tempVal)
                     {
                         tempVal = parseInt(tempVal.trim());
-                        // tempVal = parseInt(node.childNodes[cIndex].childNodes[0].value.trim());
                         this.tempRoom['rooms_seats'] = tempVal;
                     }
                     else if (node.childNodes[cIndex].attrs[0].value === 'views-field views-field-field-room-furniture' && tempVal)
                     {
                         tempVal = tempVal.trim();
-                        // tempVal = node.childNodes[cIndex].childNodes[0].value.trim();
                         this.tempRoom['rooms_furniture'] = tempVal;
                     }
                     else if (node.childNodes[cIndex].attrs[0].value === 'views-field views-field-field-room-type' /*&& tempVal*/)
                     {
                         tempVal = tempVal.trim();
-                        if (tempVal === "")
-                        {
-                            this.tempRoom['rooms_type'] = "";
-                            Log.trace(JSON.stringify(this.tempRoom))
-                        }
-                        else
-                        {
-                            this.tempRoom['rooms_type'] = tempVal;
-                        }
+                        this.tempRoom['rooms_type'] = tempVal;
                     }
                 }
             }
