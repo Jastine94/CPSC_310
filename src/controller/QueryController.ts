@@ -1316,7 +1316,7 @@ export default class QueryController {
                         Object.assign(obj, tempObj);
                         gotData = true;
                     }
-                    else if (key[i].toString() == String(instance))
+                    else if (!key[i].includes("_") && key[i].toString() == String(instance))
                     {
                         let tempObj : {} = {[key[i]] : value[instance]};
                         Object.assign(obj, tempObj);
