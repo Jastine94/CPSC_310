@@ -158,7 +158,7 @@ export default class DatasetController {
                             fulfill(true);
                         }).catch(function(error)
                         {
-                            Log.trace("Didn't complete adding rooms dataset due to: " + error);
+                            // Log.trace("Didn't complete adding rooms dataset due to: " + error);
                             reject(true);
                         })
                     }
@@ -178,7 +178,7 @@ export default class DatasetController {
                             })
                                 .catch(function (err)
                                 {
-                                    Log.trace('Fail to get the file from the zip file: ' + err);
+                                    // Log.trace('Fail to get the file from the zip file: ' + err);
                                     reject(true);
                                 }))
                         });
@@ -256,7 +256,7 @@ export default class DatasetController {
                                 }
                             }).catch(function (err)
                             {
-                                Log.trace('Fail to get the file from the zip file: ' + relativePath + " : " + err);
+                                // Log.trace('Fail to get the file from the zip file: ' + relativePath + " : " + err);
                                 reject(true);
                             }))
                         });
@@ -280,7 +280,7 @@ export default class DatasetController {
             }
             catch (error)
             {
-                Log.trace("Error in rooms ZIP: " + error);
+                // Log.trace("Error in rooms ZIP: " + error);
                 reject(true);
             }
         })
@@ -470,13 +470,13 @@ export default class DatasetController {
                     fulfill(true);
                 }).catch(function (err)
                 {
-                    Log.trace('Failed to add lat lons to all buildings: ' + err)
+                    // Log.trace('Failed to add lat lons to all buildings: ' + err)
                     reject(true);
                 })
             }
             catch (error)
             {
-                Log.trace("addLatLon error was: " + error);
+                // Log.trace("addLatLon error was: " + error);
                 reject(true);
             }
         })
@@ -586,13 +586,13 @@ export default class DatasetController {
                     })
                     response.on('error', function(error: any)
                     {
-                        Log.trace("Error was: " + error)
+                        // Log.trace("Error was: " + error)
                         reject(true)
                     })
                 })
             }catch (err)
             {
-                Log.trace("setLatLon EROOORRR: " + err)
+                // Log.trace("setLatLon EROOORRR: " + err)
                 reject(err);
             }
         });
