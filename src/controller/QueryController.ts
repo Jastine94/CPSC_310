@@ -8,7 +8,7 @@ import fs = require('fs');
 import get = Reflect.get;
 
 export interface QueryRequest {
-    GET: string|string[];
+    GET: string[];
     WHERE: {};
     ORDER: string | {};
     AS: string;
@@ -224,6 +224,7 @@ export default class QueryController {
         for (let i = 0; i < getVals.length; i++)
         {
             let validKey:boolean = (typeof getVals[i] === 'string');
+
             if (!validKey)
             {
                 validGET = false;
@@ -1233,7 +1234,7 @@ export default class QueryController {
      * @param key
      * @returns string
      */
-    private getKey(key: string | string[]): string
+    private getKey(key: string): string
     {
         var tempKey : string;
         // map key to satisfy dataset key
