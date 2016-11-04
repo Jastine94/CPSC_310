@@ -513,22 +513,35 @@ export default class DatasetController {
                     if (node.childNodes[cIndex].attrs[0].value === 'views-field views-field-field-room-capacity' && tempVal)
                     {
                         tempVal = parseInt(tempVal.trim());
+                        // tempVal = parseInt(node.childNodes[cIndex].childNodes[0].value.trim());
                         this.tempRoom['rooms_seats'] = tempVal;
                     }
                     else if (node.childNodes[cIndex].attrs[0].value === 'views-field views-field-field-room-furniture' && tempVal)
                     {
                         tempVal = tempVal.trim();
+                        // tempVal = node.childNodes[cIndex].childNodes[0].value.trim();
                         this.tempRoom['rooms_furniture'] = tempVal;
                     }
-                    else if (node.childNodes[cIndex].attrs[0].value === 'views-field views-field-field-room-type' && tempVal)
+                    else if (node.childNodes[cIndex].attrs[0].value === 'views-field views-field-field-room-type' /*&& tempVal*/)
                     {
                         tempVal = tempVal.trim();
-                        this.tempRoom['rooms_type'] = tempVal;
+                        Log.trace("THE VALUE INSIDE THE IS TYPE: " + building + " : " + typeof (tempVal))
+                        Log.trace(tempVal === "")
+
+                        if (tempVal === "")
+                        {
+                            this.tempRoom['rooms_type'] = "";
+                            Log.trace(JSON.stringify(this.tempRoom))
+                        }
+                        else
+                        {
+                            this.tempRoom['rooms_type'] = tempVal;
+                        }
                     }
                 }
             }
             if (this.tempRoom['rooms_href'] && this.tempRoom['rooms_number'] && this.tempRoom['rooms_seats'] &&
-                this.tempRoom['rooms_furniture'] && this.tempRoom['rooms_type'])
+                this.tempRoom['rooms_furniture'] && (typeof (this.tempRoom['rooms_type']) === 'string'))
             {
                 this.tempRoom['rooms_shortname'] = building;
                 this.tempRoom['rooms_name'] = building+'_'+this.tempRoom['rooms_number'];
@@ -572,11 +585,11 @@ export default class DatasetController {
                         // let latlon = {'rooms_lat': Number(parsedData.lat), 'rooms_lon': Number(parsedData.lon)};
                         let latlon: any;
                         if (typeof (geoResponse.error) === 'undefined') {
-                            that.buildingInfo[building]["Lat"] = parseFloat(geoResponse.lat.toString()).toFixed(5);
-                            that.buildingInfo[building]["Lon"] = parseFloat(geoResponse.lon.toString()).toFixed(5);
-                            //
-                            // that.buildingInfo[building]["Lat"] = Number(geoResponse.lat);
-                            // that.buildingInfo[building]["Lon"] = Number(geoResponse.lon);
+                            // that.buildingInfo[building]["Lat"] = parseFloat(geoResponse.lat.toString()).toFixed(5);
+                            // that.buildingInfo[building]["Lon"] = parseFloat(geoResponse.lon.toString()).toFixed(5);
+
+                            that.buildingInfo[building]["Lat"] = Number(geoResponse.lat);
+                            that.buildingInfo[building]["Lon"] = Number(geoResponse.lon);
                         }
                         else {
                             that.buildingInfo[building]["Lat"] = null;
