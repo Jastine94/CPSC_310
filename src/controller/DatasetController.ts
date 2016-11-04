@@ -525,9 +525,6 @@ export default class DatasetController {
                     else if (node.childNodes[cIndex].attrs[0].value === 'views-field views-field-field-room-type' /*&& tempVal*/)
                     {
                         tempVal = tempVal.trim();
-                        Log.trace("THE VALUE INSIDE THE IS TYPE: " + building + " : " + typeof (tempVal))
-                        Log.trace(tempVal === "")
-
                         if (tempVal === "")
                         {
                             this.tempRoom['rooms_type'] = "";
