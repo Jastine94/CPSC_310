@@ -8,7 +8,7 @@ import fs = require('fs');
 import get = Reflect.get;
 
 export interface QueryRequest {
-    GET: string|string[];
+    GET: string[];
     WHERE: {};
     ORDER: string | {};
     AS: string;
@@ -224,6 +224,7 @@ export default class QueryController {
         for (let i = 0; i < getVals.length; i++)
         {
             let validKey:boolean = (typeof getVals[i] === 'string');
+
             if (!validKey)
             {
                 validGET = false;
@@ -745,7 +746,6 @@ export default class QueryController {
             if (data !== undefined)
             {
                 resultList = data;
-                // Log.trace(("result List" + JSON.stringify(resultList)));
             }
 
             // id_key : value pair == value : instance
@@ -820,7 +820,6 @@ export default class QueryController {
                                 if ('NOT' == i || 'OR' == i || 'AND' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, resultList, isNot);
-                                    //Log.trace("Result from the first OR is" + JSON.stringify(accResult));
                                 }
                                 else
                                 {
@@ -832,14 +831,11 @@ export default class QueryController {
                                 emptyList = [];
                                 let newList: any[] = [];
                                 newList.push({"result": accResult});
-                               // Log.trace("Before Result is " + JSON.stringify(accResult) + "!!!!!!!!");
 
                                 // handle case where not is in inside and
                                 if ('AND' == i || 'OR' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, newList, isNot);
-
-                                    //Log.trace("temp Result is " + JSON.stringify(accResult));
                                 }
                                 else if ('NOT' == i)
                                 {
@@ -1238,7 +1234,7 @@ export default class QueryController {
      * @param key
      * @returns string
      */
-    private getKey(key: string | string[]): string
+    private getKey(key: string): string
     {
         var tempKey : string;
         // map key to satisfy dataset key
@@ -1321,7 +1317,7 @@ export default class QueryController {
                         Object.assign(obj, tempObj);
                         gotData = true;
                     }
-                    else if (key[i].toString() == String(instance))
+                    else if (!key[i].includes("_") && key[i].toString() == String(instance))
                     {
                         let tempObj : {} = {[key[i]] : value[instance]};
                         Object.assign(obj, tempObj);
