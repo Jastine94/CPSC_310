@@ -1364,9 +1364,13 @@ export default class QueryController {
                     break;
                 }
             }
-            else
+            else if ((typeof (resultList[i]["rooms_name"] !== 'undefined')))
             {
-                break;
+                if (resultList[i]["rooms_name"] == instance["rooms_name"])
+                {
+                    isDuplicate = true;
+                    break;
+                }
             }
         }
 
