@@ -796,6 +796,7 @@ export default class QueryController {
                             else
                             {
                                 //resultList = JSON.parse(JSON.stringify(myDataList));
+                                //let emptyList : any[] = [];
                                 accResult = this.queryWhereHelper(tempKey, resultList, accResult, isNot, true);
                             }
                         }
@@ -831,6 +832,7 @@ export default class QueryController {
                                 emptyList = [];
                                 let newList: any[] = [];
                                 newList.push({"result": accResult});
+                                //console.log("ResultList" + JSON.stringify((newList)));
 
                                 // handle case where not is in inside and
                                 if ('AND' == i || 'OR' == i)
@@ -1354,9 +1356,16 @@ export default class QueryController {
 
         for (var i = 0 ; i < resultList.length; ++i)
         {
-            if (resultList[i]["id"] == instance["id"])
+            if ((typeof (resultList[i]["id"])) !== 'undefined')
             {
-                isDuplicate = true;
+                if (resultList[i]["id"] == instance["id"])
+                {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+            else
+            {
                 break;
             }
         }

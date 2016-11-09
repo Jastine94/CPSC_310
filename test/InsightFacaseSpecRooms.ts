@@ -83,4 +83,59 @@ describe("InsightFacadeRoom", function () {
         });
     });
 
+    it("Should be able to perform deep query", function()
+    {
+        var validQuery: QueryRequest = {
+            "GET": ["rooms_fullname", "rooms_name",  "maxSeats", "rooms_furniture"],
+            "WHERE": {"AND" :
+                [
+                    {"NOT" : {"IS": {"rooms_type": "Small Group"}}},
+                    {"GT": {"rooms_lon": -123.249886}},
+                    {"AND": [
+                        {"NOT": {"IS": {"rooms_number": "1*"}}},
+                        {"IS": {"rooms_fullname": "*oo*"}},
+                        {"OR": [
+                            {"GT": {"rooms_seats": 98}}
+                        ]}
+                    ]}
+                ]},
+            "GROUP": [ "rooms_fullname", "rooms_name", "rooms_furniture"],
+            "APPLY": [  {"maxSeats": {"MAX": "rooms_seats"}} ],
+            "ORDER": { "dir": "DOWN", "keys": ["maxSeats", "rooms_name", "rooms_fullname"]},
+            "AS":"TABLE"
+        };
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should be able to perform deep query without OR", function()
+    {
+        var validQuery: QueryRequest = {
+            "GET": ["rooms_fullname", "rooms_name",  "maxSeats", "rooms_furniture"],
+            "WHERE": {"AND" :
+                [
+                    {"NOT" : {"IS": {"rooms_type": "Small Group"}}},
+                    {"GT": {"rooms_lon": -123.249886}},
+                    {"AND": [
+                        {"NOT": {"IS": {"rooms_number": "1*"}}},
+                        {"IS": {"rooms_fullname": "*oo*"}},
+                        {"GT": {"rooms_seats": 98}}
+                    ]}
+                ]},
+            "GROUP": [ "rooms_fullname", "rooms_name", "rooms_furniture"],
+            "APPLY": [  {"maxSeats": {"MAX": "rooms_seats"}} ],
+            "ORDER": { "dir": "DOWN", "keys": ["maxSeats", "rooms_name", "rooms_fullname"]},
+            "AS":"TABLE"
+        };
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
 });
