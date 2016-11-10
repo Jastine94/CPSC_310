@@ -82,4 +82,71 @@ describe("InsightFacadeRoomSpecRoomsBuchanan", function () {
             expect.fail('Should not happen');
         });
     });
+
+    it("Should be able to perform query group by room-furniture", function(){
+        var that = this;
+        var validQuery: QueryRequest =  {
+            "GET": ["maxSeats", "rooms_type", "numRooms"],
+            "WHERE": {
+                "GT": {"rooms_seats": 0}},
+            "GROUP": ["rooms_type"],
+            "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}},{"numRooms":{"COUNT":"rooms_name"}}],
+            "ORDER": {"dir": "UP", "keys": ["rooms_type", "maxSeats", "numRooms"]},
+            "AS": "TABLE"
+        };
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    // NOTE: there might be a bug here, A202 and A201 shouldnt be here
+    it("Should be able to perform query group by room-furniture excluding room A2*", function(){
+        var that = this;
+        var validQuery: QueryRequest =  {
+            "GET": ["maxSeats", "rooms_type", "numRooms"],
+            "WHERE": {
+                "OR": [
+                    {"NOT" : {"GT": {"rooms_seats": 0}}},
+                    {"AND" : [
+                        {"IS": {"rooms_shortname":"A*"}},
+                        {"NOT": {"IS" : {"rooms_furniture": "Classroom*"}}}
+                    ]},
+                    {"OR" : [
+                        {"IS": {"rooms_shortname":"A101"}},
+                        {"IS": {"rooms_shortname":"B*"}},
+                        {"IS": {"rooms_shortname":"D*"}},
+                        {"AND": [
+                            {"NOT": {"IS": {"rooms_shortname":"A*"}}},
+                            {"NOT": {"IS": {"rooms_shortname":"B*"}}},
+                            {"NOT": {"IS": {"rooms_shortname":"D*"}}}
+                        ]}
+                    ]},
+                    {"OR": [
+                        {"NOT": {"GT": {"rooms_seats": 100}}}
+                        ]},
+                    {"AND": [
+                        {"GT": {"rooms_seats": 60}},
+                        {"IS": {"rooms_furniture":"*Fixed Tablets"}},
+                        {"IS": {"rooms_type":"*Tiered*"}},
+                        {"NOT": {"IS": {"rooms_type": "Open*"}}}
+                        ]},
+                    {"EQ": {"rooms_seats": 30}}
+                    ]},
+            "GROUP": ["rooms_type"],
+            "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}},{"numRooms":{"COUNT":"rooms_name"}}],
+            "ORDER": {"dir": "UP", "keys": ["rooms_type", "maxSeats", "numRooms"]},
+            "AS": "TABLE"
+        };
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
 });
