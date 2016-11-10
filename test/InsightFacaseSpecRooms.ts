@@ -9,7 +9,7 @@ import InsightFacade from "../src/controller/InsightFacade";
 import {InsightResponse} from "../src/controller/IInsightFacade";
 import {QueryRequest} from "../src/controller/QueryController";
 
-describe("InsightFacadeRoom", function () {
+describe("InsightFacadeRoomSpecRooms", function () {
 
     var zipFileContents: string = null;
     var facade: InsightFacade = null;
@@ -257,6 +257,110 @@ describe("InsightFacadeRoom", function () {
                     {"NOT" : {"IS": {"rooms_fullname": "I*"}}},
                     {"NOT" : {"GT": {"rooms_seats": 60}}},
                     {"GT": {"rooms_seats": 60}}]},
+            "GROUP": ["rooms_fullname"],
+            "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}}],
+            "ORDER": {"dir": "UP", "keys": ["rooms_fullname", "maxSeats"]},
+            "AS": "TABLE"
+        };
+
+        facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should return an empty result", function() {
+        var validQuery: QueryRequest =     {
+            "GET": ["rooms_fullname", "maxSeats"],
+            "WHERE": {
+                "AND": [
+                    {"GT": {"rooms_seats": 60}},
+                    {"NOT" : {"GT": {"rooms_seats": 60}}}]},
+            "GROUP": ["rooms_fullname"],
+            "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}}],
+            "ORDER": {"dir": "UP", "keys": ["rooms_fullname", "maxSeats"]},
+            "AS": "TABLE"
+        };
+
+        facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should return an empty result", function() {
+        var validQuery: QueryRequest ={
+            "GET": ["rooms_fullname", "maxSeats"],
+            "WHERE": {
+                "AND": [
+                    {"NOT" : {"GT": {"rooms_seats": 60}}},
+                    {"GT": {"rooms_seats": 60}}]},
+            "GROUP": ["rooms_fullname"],
+            "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}}],
+            "ORDER": {"dir": "UP", "keys": ["rooms_fullname", "maxSeats"]},
+            "AS": "TABLE"
+        };
+
+        facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should return an empty result", function() {
+        var validQuery: QueryRequest ={
+            "GET": ["rooms_fullname", "maxSeats"],
+            "WHERE": {
+                "AND": [
+                    {"LT": {"rooms_seats": 60}},
+                    {"GT": {"rooms_seats": 60}}]},
+            "GROUP": ["rooms_fullname"],
+            "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}}],
+            "ORDER": {"dir": "UP", "keys": ["rooms_fullname", "maxSeats"]},
+            "AS": "TABLE"
+        };
+
+        facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should return all max rooms of all buildings", function() {
+        var validQuery: QueryRequest ={
+            "GET": ["rooms_fullname", "maxSeats"],
+            "WHERE": {
+                "AND": [
+                    {"GT": {"rooms_seats": 0}}]},
+            "GROUP": ["rooms_fullname"],
+            "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}}],
+            "ORDER": {"dir": "UP", "keys": ["rooms_fullname", "maxSeats"]},
+            "AS": "TABLE"
+        };
+
+        facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should return all max rooms of all buildings that does not start with C", function() {
+        var validQuery: QueryRequest ={
+            "GET": ["rooms_fullname", "maxSeats"],
+            "WHERE": {
+                "AND": [
+                    {"GT": {"rooms_seats": 60}},
+                    {"NOT" : {"IS": {"rooms_fullname": "C*"}}}]},
             "GROUP": ["rooms_fullname"],
             "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}}],
             "ORDER": {"dir": "UP", "keys": ["rooms_fullname", "maxSeats"]},
