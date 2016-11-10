@@ -70,7 +70,7 @@ export default class InsightFacade implements IInsightFacade {
                 let controller = new QueryController(datasets);
                 let isValid = controller.isValid(query);
                 Log.trace("Query is valid? " + isValid);
-                if (isValid) {
+                // if (isValid) {
                     let value = query["GET"];
                     let missing_id: string[] = [];
                     let dir = __dirname + "\/..\/..\/data\/";
@@ -120,13 +120,14 @@ export default class InsightFacade implements IInsightFacade {
                     else
                     {
                         let result: any = controller.query(query);
+                        // Log.trace(JSON.stringify(result));
                         fulfill({code: 200, body: result});
                     }
-                }
-                else
-                    {
-                    reject({code: 400, body: {error: "Invalid query"}});
-                    }
+                // }
+                // else
+                //     {
+                //     reject({code: 400, body: {error: "Invalid query"}});
+                //     }
             }
             catch (error)
             {
