@@ -783,17 +783,15 @@ export default class QueryController {
                                 //Log.trace("Should be here");
 
                                 // need to remove the not items that is in the accResult so far
+
                                 trimResult = this.queryWhere(tempKey, trimResult, !isNot);
                                 accResult = this.queryWhere(tempKey, resultList, isNot);
-
-                                //Log.trace("Trimed Result is" + JSON.stringify(trimResult));
 
                                 for (var values in trimResult)
                                 {
                                     var value = trimResult[values];
                                     if (!this.isDuplicate(accResult, value))
                                     {
-                                        //Log.trace("Should never hit here");
                                         accResult.push(value);
                                     }
                                 }
@@ -817,39 +815,91 @@ export default class QueryController {
                         for (var i in itemList)
                         {
                             let tempKey : {} = {[i] : itemList[i]};
-                            let emptyList : any[] = [];
-                            if (firstOne)
+
+                            // Apply De Morgans' ~a v ~ b v ~c ...
+                            if (isNot)
                             {
-                                firstOne = false;
-                                if ('NOT' == i || 'OR' == i || 'AND' == i)
+                                if ('OR' == i || 'AND' == i)
                                 {
+                                    let tempResult = this.queryWhere(tempKey, resultList, true);
+
+                                    for (var values in tempResult)
+                                    {
+                                        var value = tempResult[values];
+                                        if (!this.isDuplicate(accResult, value))
+                                        {
+                                            accResult.push(value);
+                                        }
+                                    }
+                                }
+                                else if ('NOT' == i)
+                                {
+                                    let trimResult: any[] = [];
+
+                                    trimResult.push({"result": accResult});
+                                    //Log.trace("Should be here");
+
+                                    // need to remove the not items that is in the accResult so far
+
+                                    trimResult = this.queryWhere(tempKey, trimResult, !isNot);
                                     accResult = this.queryWhere(tempKey, resultList, isNot);
+
+                                    //Log.trace("Trimed Result is" + JSON.stringify(trimResult));
+                                    //Log.trace("ACC Result is" + JSON.stringify(accResult));
+
+                                    for (var values in trimResult)
+                                    {
+                                        var value = trimResult[values];
+                                        if (!this.isDuplicate(accResult, value))
+                                        {
+                                            //Log.trace("Should never hit here");
+                                            accResult.push(value);
+                                        }
+                                    }
+                                    //Log.trace("Temp Key is" + JSON.stringify(tempKey));
+                                    //Log.trace("ACC Result from AND" + JSON.stringify(accResult));
+
                                 }
                                 else
                                 {
-                                    accResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot, false);
+                                    //Log.trace("Temp Key is" + JSON.stringify(tempKey));
+                                    accResult = this.queryWhereHelper(tempKey, resultList, accResult, isNot, true);
+                                    //Log.trace("ACC Result from AND" + JSON.stringify(accResult));
                                 }
                             }
                             else
                             {
-                                emptyList = [];
-                                let newList: any[] = [];
-                                newList.push({"result": accResult});
-                                //console.log("ResultList" + JSON.stringify((newList)));
+                                let emptyList : any[] = [];
+                                if (firstOne)
+                                {
+                                    firstOne = false;
+                                    if ('NOT' == i || 'OR' == i || 'AND' == i)
+                                    {
+                                        accResult = this.queryWhere(tempKey, resultList, isNot);
+                                    }
+                                    else
+                                    {
 
-                                // handle case where not is in inside and
-                                if ('AND' == i || 'OR' == i)
-                                {
-                                    accResult = this.queryWhere(tempKey, newList, isNot);
+                                        accResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot, false);
+                                    }
                                 }
-                                else if ('NOT' == i)
-                                {
-                                    // get each result object
-                                    accResult = this.queryWhere(tempKey, newList, isNot);
-                                }
-                                else
-                                {
-                                    accResult = this.queryWhereHelper(tempKey, newList, emptyList, isNot, false);
+                                else {
+                                    emptyList = [];
+                                    let newList: any[] = [];
+                                    newList.push({"result": accResult});
+                                    //console.log("ResultList" + JSON.stringify((newList)));
+
+                                    // handle case where not is in inside and
+                                    if ('AND' == i || 'OR' == i) {
+                                        accResult = this.queryWhere(tempKey, newList, isNot);
+                                    }
+                                    else if ('NOT' == i) {
+                                        // get each result object
+                                        accResult = this.queryWhere(tempKey, newList, isNot);
+                                    }
+                                    else {
+                                        accResult = this.queryWhereHelper(tempKey, newList, emptyList, isNot, false);
+                                    }
                                 }
                             }
                         }
