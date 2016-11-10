@@ -138,4 +138,80 @@ describe("InsightFacadeRoom", function () {
             expect.fail('Should not happen');
         });
     });
+
+    it("Should be able to get the same result for 2 queries with the same meaning", function()
+    {
+        var validQuery: QueryRequest = {
+            "GET": ["rooms_shortname", "rooms_name",  "maxSeats", "rooms_furniture", "rooms_lat", "rooms_lon"],
+            "WHERE": {"AND" :
+                [
+                    {"AND" : [
+                        {"NOT" : {"IS": {"rooms_type": "Tie*"}}}
+                    ]},
+                    {"AND" : [
+                        {"NOT" : {"IS": {"rooms_fullname": "C*"}}}
+                    ]},
+                    {"AND" : [
+                        {"LT": {"rooms_lon": 0}}
+                    ]},
+                    {"AND" : [
+                        {"GT": {"rooms_lat": 0}}
+                    ]},
+                    {"AND" : [
+                        {"GT": {"rooms_seats": 100}}
+                    ]},
+                    {"AND" : [
+                        {"GT": {"rooms_seats": 90}}
+                    ]}
+                ]},
+            "GROUP": [ "rooms_shortname", "rooms_name", "rooms_furniture", "rooms_lat", "rooms_lon"],
+            "APPLY": [  {"maxSeats": {"MAX": "rooms_seats"}} ],
+            "ORDER": { "dir": "DOWN", "keys": ["maxSeats", "rooms_name", "rooms_shortname"]},
+            "AS":"TABLE"
+        };
+
+        var validQuery2: QueryRequest = {
+            "GET": ["rooms_shortname", "rooms_name",  "maxSeats", "rooms_furniture", "rooms_lat", "rooms_lon"],
+            "WHERE": {"AND" :
+                [
+                    {"OR" : [
+                        {"NOT" : {"IS": {"rooms_type": "Tie*"}}}
+                    ]},
+                    {"OR" : [
+                        {"NOT" : {"IS": {"rooms_fullname": "C*"}}}
+                    ]},
+                    {"OR" : [
+                        {"LT": {"rooms_lon": 0}}
+                    ]},
+                    {"OR" : [
+                        {"GT": {"rooms_lat": 0}}
+                    ]},
+                    {"OR" : [
+                        {"GT": {"rooms_seats": 90}}
+                    ]},
+                    {"OR" : [
+                        {"GT": {"rooms_seats": 100}}
+                    ]}
+                ]},
+            "GROUP": [ "rooms_shortname", "rooms_name", "rooms_furniture", "rooms_lat", "rooms_lon"],
+            "APPLY": [  {"maxSeats": {"MAX": "rooms_seats"}} ],
+            "ORDER": { "dir": "DOWN", "keys": ["maxSeats", "rooms_name", "rooms_shortname"]},
+            "AS":"TABLE"
+        };
+
+        facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+
+        facade.performQuery(validQuery2).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
 });
