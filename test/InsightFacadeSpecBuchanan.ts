@@ -157,12 +157,12 @@ describe("InsightFacadeRoomSpecRoomsBuchanan", function () {
                 "OR": [
                     {"AND" : [
                         {"IS": {"rooms_number":"A*"}},
-                        {"IS": {"rooms_shortname":"BU*H"}},
+                        {"IS": {"rooms_shortname":"BUC*"}},
                         {"LT": {"rooms_seat": 276}},
                         {"NOT": {"NOT" : {"GT" : {"rooms_seats": 107}}}},
                         {"NOT": {"IS" : {"rooms_type":"Open*"}}},
-                        {"IS": {"room_furniture": "Class*"}}
-                    ]},
+                        {"IS": {"rooms_furniture": "Class*"}}
+                    ]}
                 ]},
             "GROUP": ["rooms_type"],
             "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}},{"numRooms":{"COUNT":"rooms_name"}}],
