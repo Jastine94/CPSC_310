@@ -155,14 +155,22 @@ describe("InsightFacadeRoomSpecRoomsBuchanan", function () {
             "GET": ["maxSeats", "rooms_type", "numRooms"],
             "WHERE": {
                 "OR": [
-                    {"AND" : [
+                    {"NOT" : {"AND" : [
                         {"IS": {"rooms_number":"A*"}},
                         {"IS": {"rooms_shortname":"BUC*"}},
-                        {"LT": {"rooms_seat": 276}},
                         {"NOT": {"NOT" : {"GT" : {"rooms_seats": 107}}}},
                         {"NOT": {"IS" : {"rooms_type":"Open*"}}},
-                        {"IS": {"rooms_furniture": "Class*"}}
-                    ]}
+                        {"IS": {"rooms_furniture": "Class*"}},
+                        {"NOT": {"NOT" : {"LT" : {"rooms_seats": 276}}}},
+                        {"NOT" : {"GT" : {"rooms_seats": 276}}},
+                        {"LT": {"rooms_seats": 276}},
+                        {"NOT":  {"IS": {"rooms_number":"A*"}}}
+                    ]}},
+                    {"NOT" : {"AND" : [
+                        {"IS": {"rooms_number":"A*"}},
+                        {"NOT":  {"NOT": {"NOT":  {"IS": {"rooms_number":"D*"}}}}},
+                        {"NOT":  {"IS": {"rooms_number":"B*"}}},
+                        {"NOT":  {"NOT": {"NOT":  {"IS": {"rooms_number":"D*"}}}}}]}}
                 ]},
             "GROUP": ["rooms_type"],
             "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}},{"numRooms":{"COUNT":"rooms_name"}}],
