@@ -131,15 +131,45 @@ describe("InsightFacadeRoomSpecRoomsBuchanan", function () {
         var validQuery: QueryRequest =  {
             "GET": ["maxSeats", "rooms_type", "numRooms"],
             "WHERE": {"OR" : [
-                {"IS": {"rooms_shortname":"A101"}},
-                {"IS": {"rooms_shortname":"B*"}},
-                {"IS": {"rooms_shortname":"D*"}}
+                {"IS": {"rooms_number":"A101"}},
+                {"IS": {"rooms_number":"B*"}},
+                {"IS": {"rooms_number":"D*"}}
             ]},
             "GROUP": ["rooms_type"],
             "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}},{"numRooms":{"COUNT":"rooms_name"}}],
             "ORDER": {"dir": "UP", "keys": ["rooms_type", "maxSeats", "numRooms"]},
             "AS": "TABLE"
         };
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should be able to return all rooms starting with A*", function(){
+        var that = this;
+        var validQuery: QueryRequest =  {
+            "GET": ["maxSeats", "rooms_type", "numRooms"],
+            "WHERE": {
+                "OR": [
+                    {"AND" : [
+                        {"IS": {"rooms_number":"A*"}},
+                        {"IS": {"rooms_shortname":"BU*H"}},
+                        {"LT": {"rooms_seat": 276}},
+                        {"NOT": {"NOT" : {"GT" : {"rooms_seats": 107}}}},
+                        {"NOT": {"IS" : {"rooms_type":"Open*"}}},
+                        {"IS": {"room_furniture": "Class*"}}
+                    ]},
+                ]},
+            "GROUP": ["rooms_type"],
+            "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}},{"numRooms":{"COUNT":"rooms_name"}}],
+            "ORDER": {"dir": "UP", "keys": ["rooms_type", "maxSeats", "numRooms"]},
+            "AS": "TABLE"
+        };
+
         Log.trace("Starting test: " + that.test.title);
         return facade.performQuery(validQuery).then(function (response: InsightResponse) {
             expect(response.code).to.equal(200);
@@ -158,17 +188,17 @@ describe("InsightFacadeRoomSpecRoomsBuchanan", function () {
                 "OR": [
                     {"NOT" : {"GT": {"rooms_seats": 0}}},
                     {"AND" : [
-                        {"IS": {"rooms_shortname":"A*"}},
+                        {"IS": {"rooms_number":"A*"}},
                         {"NOT": {"IS" : {"rooms_furniture": "Classroom*"}}}
                     ]},
                     {"OR" : [
-                        {"IS": {"rooms_shortname":"A101"}},
-                        {"IS": {"rooms_shortname":"B*"}},
-                        {"IS": {"rooms_shortname":"D*"}},
+                        {"IS": {"rooms_number":"A101"}},
+                        {"IS": {"rooms_number":"B*"}},
+                        {"IS": {"rooms_number":"D*"}},
                         {"AND": [
-                            {"NOT": {"IS": {"rooms_shortname":"A*"}}},
-                            {"NOT": {"IS": {"rooms_shortname":"B*"}}},
-                            {"NOT": {"IS": {"rooms_shortname":"D*"}}}
+                            {"NOT": {"IS": {"rooms_number":"A*"}}},
+                            {"NOT": {"IS": {"rooms_number":"B*"}}},
+                            {"NOT": {"IS": {"rooms_number":"D*"}}}
                         ]}
                     ]},
                     {"OR": [
