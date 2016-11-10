@@ -183,7 +183,8 @@ describe("QueryControllerAND,OR", function () {
         let ret = controller.query(query);
         Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         expect(ret).to.eql({ render: 'TABLE', result: [{"courses_instructor": "prof 1"},
-                                                       {"courses_instructor" : "prof 4"}]});
+                                                       {"courses_instructor": "prof 2"},
+                                                       {"courses_instructor": "prof 4"}]});
     });
 
     it("Should be able to query nested AND AND query", function(){

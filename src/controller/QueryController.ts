@@ -780,23 +780,26 @@ export default class QueryController {
                                 let trimResult: any[] = [];
 
                                 trimResult.push({"result": accResult});
+                                //Log.trace("Should be here");
+
                                 // need to remove the not items that is in the accResult so far
-                                trimResult = this.queryWhere(tempKey, trimResult, isNot);
+                                trimResult = this.queryWhere(tempKey, trimResult, !isNot);
                                 accResult = this.queryWhere(tempKey, resultList, isNot);
+
+                                //Log.trace("Trimed Result is" + JSON.stringify(trimResult));
 
                                 for (var values in trimResult)
                                 {
                                     var value = trimResult[values];
                                     if (!this.isDuplicate(accResult, value))
                                     {
+                                        //Log.trace("Should never hit here");
                                         accResult.push(value);
                                     }
                                 }
                             }
                             else
                             {
-                                //resultList = JSON.parse(JSON.stringify(myDataList));
-                                //let emptyList : any[] = [];
                                 accResult = this.queryWhereHelper(tempKey, resultList, accResult, isNot, true);
                             }
                         }
