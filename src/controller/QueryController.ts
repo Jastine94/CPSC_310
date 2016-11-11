@@ -28,7 +28,7 @@ export default class QueryController {
         this.datasets = datasets;
     }
 
-     // This method will return if the query provided is valid or not
+    // This method will return if the query provided is valid or not
     public isValid(query: QueryRequest): boolean {
         let queryString = JSON.stringify(query);
         if ( Object.keys(query).length === 0 || typeof query === 'undefined' || query === null)
@@ -142,7 +142,7 @@ export default class QueryController {
         let sCompRegex = new RegExp("[*]?[a-zA-Z0-9,_-]+[*]?");
 
         if (filter === "AND" || filter === "OR"){
-           // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
+            // LOGICCOMPARISON ::= LOGIC ':[{' FILTER ('}, {' FILTER )* '}]'
             if (query[filter].length < 1)
             {
                 return false;
@@ -164,7 +164,7 @@ export default class QueryController {
         }
         else if (filter === "LT" || filter === "GT" || filter === "EQ")
         {
-           // MCOMPARISON ::= MCOMPARATOR ':{' key ':' number '}'
+            // MCOMPARISON ::= MCOMPARATOR ':{' key ':' number '}'
             let mcompvalue = query[filter];
             if (Object.keys(query[filter]).length !== 1)
             {
@@ -173,8 +173,8 @@ export default class QueryController {
             for (let val in mcompvalue)
             {
                 /*let tempkey = this.getKey(val.toString());
-                let isValidKey: boolean = (tempkey !== "Invalid Key");
-                return (isValidKey && key.test(val) && numberRegex.test(mcompvalue[val]));*/
+                 let isValidKey: boolean = (tempkey !== "Invalid Key");
+                 return (isValidKey && key.test(val) && numberRegex.test(mcompvalue[val]));*/
                 return (/*isValidKey && */key.test(val) && numberRegex.test(mcompvalue[val]));
             }
         }
@@ -189,14 +189,14 @@ export default class QueryController {
             for (let val in scompvalue)
             {
                 /*let tempkey = this.getKey(val.toString());
-                let isValidKey: boolean = (tempkey !== "Invalid Key");
-                return (isValidKey && key.test(val) && sCompRegex.test(scompvalue[val]));*/
+                 let isValidKey: boolean = (tempkey !== "Invalid Key");
+                 return (isValidKey && key.test(val) && sCompRegex.test(scompvalue[val]));*/
                 return (/*isValidKey &&*/ key.test(val) && sCompRegex.test(scompvalue[val]));
             }
         }
         else if (filter === "NOT")
         {
-           // NEGATION ::= 'NOT :{' FILTER '}'
+            // NEGATION ::= 'NOT :{' FILTER '}'
             let negate = query[filter];
             if (Object.keys(query[filter]).length !== 1)
             {
@@ -247,7 +247,7 @@ export default class QueryController {
             let validKey = (this.getKey(orderVals) !== "Invalid Key");
             let inGET = getVals.includes(orderVals);
             return ((validKey && inGET && key.test(orderVals)) ||
-                    query.ORDER === "" /*|| query.ORDER === null*/ );
+            query.ORDER === "" /*|| query.ORDER === null*/ );
             // return (key.test(orderVals) || query.ORDER === "" /*|| query.ORDER === null*/ );
         }
         else
@@ -353,29 +353,29 @@ export default class QueryController {
     public query(query: QueryRequest): QueryResponse {
         let response : any[];
         let queryResponse : QueryResponse = {};
-            if (this.whereEmpty)
-            {
-                response = [];
-                for (var myCurrentDataSet in this.datasets) {
-                    var myDataList = this.datasets[myCurrentDataSet];
-                    var resultList = JSON.parse(JSON.stringify(myDataList));
-                    for (var keys in resultList)
-                    {
-                        var result = resultList[keys];
-                        let valuesList = result["result"];
+        if (this.whereEmpty)
+        {
+            response = [];
+            for (var myCurrentDataSet in this.datasets) {
+                var myDataList = this.datasets[myCurrentDataSet];
+                var resultList = JSON.parse(JSON.stringify(myDataList));
+                for (var keys in resultList)
+                {
+                    var result = resultList[keys];
+                    let valuesList = result["result"];
 
-                        for (var values in valuesList)
-                        {
-                            var value = valuesList[values];
-                            response.push(value);
-                        }
+                    for (var values in valuesList)
+                    {
+                        var value = valuesList[values];
+                        response.push(value);
                     }
                 }
             }
-            else
-            {
-                response = this.queryWhere(query.WHERE, response, false);
-            }
+        }
+        else
+        {
+            response = this.queryWhere(query.WHERE, response, false);
+        }
 
         if (query.hasOwnProperty("GROUP"))
         {
@@ -859,7 +859,6 @@ export default class QueryController {
                 {
                     if (!isNot)
                     {
-                        //Log.trace("Should be here1");
                         accResult = this.queryWhere(key[where], resultList, true);
                     }
                     else
@@ -878,7 +877,7 @@ export default class QueryController {
     }// queryWhere
 
     private queryWhereHelper(key: any, resultList: any[], ret : any [],
-                            isNot : boolean, isOr : boolean): any[]
+                             isNot : boolean, isOr : boolean): any[]
     {
         // get each result object
         for (var keys in resultList)
@@ -1033,7 +1032,7 @@ export default class QueryController {
                                         }
                                     }
                                     else if ((temp === String(instance)) &&
-                                             (keyContains[k] != value[instance]) && isNot)
+                                        (keyContains[k] != value[instance]) && isNot)
                                     {
                                         if (isOr)
                                         {
