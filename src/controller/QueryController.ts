@@ -802,7 +802,7 @@ export default class QueryController {
                 }
                 else if ('AND' == where)
                 {
-
+                    let myisNot = isNot;
                     let keyContains = key[where];
                     let firstOne: boolean = true;
                     for (var it in keyContains)
@@ -818,13 +818,13 @@ export default class QueryController {
                             if (firstOne)
                             {
                                 firstOne = false;
-                                if ('NOT' == i || 'OR' == i || 'AND' == i)
+                                if ('OR' == i || 'AND' == i || 'NOT' == i)
                                 {
                                     accResult = this.queryWhere(tempKey, resultList, isNot);
+                                    //Log.trace("First ACCResult" + JSON.stringify(accResult));
                                 }
                                 else
                                 {
-
                                     accResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot, false);
                                 }
                             }
@@ -835,14 +835,39 @@ export default class QueryController {
                                 //console.log("ResultList" + JSON.stringify((newList)));
 
                                 // handle case where not is in inside and
-                                if ('AND' == i || 'OR' == i) {
+                                if ('OR' == i) {
                                     accResult = this.queryWhere(tempKey, newList, isNot);
                                 }
-                                else if ('NOT' == i) {
-                                    //get each result object
-                                    let notAccResult = this.queryWhere(tempKey, newList, !isNot);
+                                else if('AND' == i)
+                                {
+                                    accResult = this.queryWhere(tempKey, newList, isNot);
+                                    /*
+                                    // DeMorgan this
+                                    if(isNot)
+                                    {
+                                        let tempResult = this.queryWhere(tempKey, resultList, !isNot);
 
-                                    let notResultList = this.queryWhere(tempKey, resultList, !isNot);
+                                        for (var values in tempResult)
+                                        {
+                                            var value = tempResult[values];
+                                            if (!this.isDuplicate(accResult, value))
+                                            {
+                                                accResult.push(value);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                    */
+                                }
+                                else if ('NOT' == i) {
+                                    //get each result object\
+                                    /*
+                                    let notAccResult = this.queryWhere(tempKey, newList, !myisNot);
+
+                                    let notResultList = this.queryWhere(tempKey, resultList, myisNot);
 
                                     for (var values in notAccResult)
                                     {
@@ -852,10 +877,14 @@ export default class QueryController {
                                             accResult.push(value);
                                         }
                                     }
-                                    //accResult = this.queryWhere(tempKey, newList, isNot);
+                                    */
+                                    accResult = this.queryWhere(tempKey, newList, isNot);
                                 }
                                 else {
+                                    //Log.trace("ACCResult Before" + JSON.stringify(accResult));
+
                                     accResult = this.queryWhereHelper(tempKey, newList, emptyList, isNot, false);
+                                    //Log.trace("ACCResult" + JSON.stringify(accResult));
                                 }
                             }
                         }
@@ -865,6 +894,7 @@ export default class QueryController {
                 {
                     if (!isNot)
                     {
+                        //Log.trace("Should be here1");
                         accResult = this.queryWhere(key[where], resultList, true);
                     }
                     else
