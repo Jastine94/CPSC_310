@@ -754,13 +754,24 @@ export default class QueryController {
                 if ('OR' == where)
                 {
                     let keyContains = key[where];
+
+                    if (isNot)
+                    {
+                        accResult = this.queryWhereAnd(keyContains, resultList, accResult, isNot);
+                    }
+                    else
+                    {
+                        accResult = this.queryWhereOr(keyContains, resultList, accResult, isNot);
+                    }
+                    /*
+
                     for (var it in keyContains)
                     {
                         let item = keyContains[it];
                         let itemList = JSON.parse(JSON.stringify(item));
 
-                        accResult = this.queryWhereOr(keyContains, resultList, accResult, isNot);
-                        /*
+                        //accResult = this.queryWhereOr(keyContains, resultList, accResult, isNot);
+
 
                         for (var i in itemList)
                         {
@@ -808,7 +819,6 @@ export default class QueryController {
 
                         }
                         */
-                    }
                 }
                 else if ('AND' == where)
                 {
@@ -818,11 +828,13 @@ export default class QueryController {
                     // DeMorgans
                     if (isNot)
                     {
-                        Log.trace("Should be here!!!!" + JSON.stringify(keyContains));
                         accResult = this.queryWhereOr(keyContains, resultList, accResult, isNot);
                     }
                     else
                     {
+                        accResult = this.queryWhereAnd(keyContains, resultList, accResult, isNot);
+                    }
+                        /*
                         for (var it in keyContains) {
                             let item = keyContains[it];
                             let itemList = JSON.parse(JSON.stringify(item));
@@ -865,7 +877,7 @@ export default class QueryController {
                                 }
                             }
                         }
-                    }
+                        */
                 }
                 else if ('NOT' == where)
                 {
@@ -893,17 +905,40 @@ export default class QueryController {
     {
         for (var curKey in keys)
         {
-            let keyList = JSON.parse(JSON.stringify(keys[curKey]));
-            for (var i in keyList) {
+            let item = keys[curKey];
+            let keyList:any[] = JSON.parse(JSON.stringify(item));
+
+            for (var i in keyList)
+            {
                 let tempKey: {} = {[i]: keyList[i]};
 
-                if ('OR' == i || 'AND' == i)
+                if ('OR' == i)
                 {
-                    let tempResult = this.queryWhere(tempKey, resultList, isNot);
-
-                    for (var values in tempResult)
+                    if (isNot)
                     {
-                        var value = tempResult[values];
+                        currentResult = this.queryWhereAnd(keyList[i], resultList, currentResult, isNot);
+                    }
+                    else
+                    {
+                        currentResult = this.queryWhereOr(keyList[i], resultList, currentResult, isNot);
+                    }
+                }
+                else if ('AND' == i)
+                {
+                    let andResult :any[];
+
+                    if (isNot)
+                    {
+                        andResult = this.queryWhereOr(keyList[i], resultList, currentResult, isNot);
+                    }
+                    else
+                    {
+                        andResult = this.queryWhereAnd(keyList[i], resultList, currentResult, isNot);
+                    }
+
+                    for (var values in andResult)
+                    {
+                        var value = andResult[values];
                         if (!this.isDuplicate(currentResult, value))
                         {
                             currentResult.push(value);
@@ -912,17 +947,15 @@ export default class QueryController {
                 }
                 else if ('NOT' == i)
                 {
-                    let trimResult: any[] = [];
+                    //let trimResult: any[] = [];
 
-                    trimResult.push({"result": currentResult});
+                    //trimResult.push({"result": currentResult});
 
-                    // need to remove the not items that are in currentResult
-                    trimResult = this.queryWhere(tempKey, trimResult, !isNot);
-                    currentResult = this.queryWhere(tempKey, resultList, isNot);
+                    let tempResult = this.queryWhere(tempKey, resultList, isNot);
 
-                    for (var values in trimResult)
+                    for (var values in tempResult)
                     {
-                        var value = trimResult[values];
+                        var value = tempResult[values];
                         if (!this.isDuplicate(currentResult, value))
                         {
                             currentResult.push(value);
@@ -939,6 +972,110 @@ export default class QueryController {
         return currentResult;
     } // queryWhereOr
 
+    private queryWhereAnd(keys: any, resultList: any[], currentResult: any[], isNot : boolean): any[]
+    {
+        let firstOne: boolean = true;
+        for (var curKey in keys) {
+            let item = keys[curKey];
+            let keyList:any[] = JSON.parse(JSON.stringify(item));
+            for (var i in keyList) {
+                let tempKey: {} = {[i]: keyList[i]};
+
+                let emptyList: any[] = [];
+                if (firstOne)
+                {
+                    firstOne = false;
+                    if ('NOT' == i)
+                    {
+                        currentResult = this.queryWhere(tempKey, resultList, isNot);
+                    }
+                    else if ('OR' == i)
+                    {
+                        if (isNot)
+                        {
+                            currentResult = this.queryWhereAnd(keyList[i], resultList, currentResult, isNot);
+                        }
+                        else
+                        {
+                            currentResult = this.queryWhereOr(keyList[i], resultList, currentResult, isNot);
+                        }
+                    }
+                    else if ('AND' == i)
+                    {
+                        if (isNot)
+                        {
+                            currentResult = this.queryWhereOr(keyList[i], resultList, currentResult, isNot);
+                        }
+                        else
+                        {
+                            currentResult = this.queryWhereAnd(keyList[i], resultList, currentResult, isNot);
+                        }
+                    }
+                    else
+                    {
+                        currentResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot, false);
+                    }
+                }
+                else
+                {
+                    emptyList = [];
+                    let newList: any[] = [];
+                    newList.push({"result": currentResult});
+
+                    // handle case where not is in inside and
+                    if ('AND' == i)
+                    {
+                        if (isNot)
+                        {
+                            currentResult = this.queryWhereOr(keyList[i], newList, currentResult, isNot);
+                        }
+                        else
+                        {
+                            currentResult = this.queryWhereAnd(keyList[i], newList, currentResult, isNot);
+                        }
+                    }
+                    else if ('OR' == i)
+                    {
+                        let orResult :any[];
+
+                        if (isNot)
+                        {
+                            orResult = this.queryWhereAnd(keyList[i], newList, emptyList, isNot);
+                        }
+                        else
+                        {
+                            orResult = this.queryWhereOr(keyList[i], newList, emptyList, isNot);
+                        }
+
+                        let newResult: any[] = [];
+
+                        // take the intersection
+                        for (var values in orResult)
+                        {
+                            var value = orResult[values];
+                            if (this.isDuplicate(currentResult, value))
+                            {
+                                newResult.push(value);
+                            }
+                        }
+
+                        currentResult = newResult;
+                    }
+                    else if ('NOT' == i)
+                    {
+                        // get each result object
+                        currentResult = this.queryWhere(tempKey, newList, isNot);
+                    }
+                    else
+                    {
+                        currentResult = this.queryWhereHelper(tempKey, newList, emptyList, isNot, false);
+                    }
+                }
+            }
+        }
+
+        return currentResult;
+    } // queryWhereAnd
 
     private queryWhereHelper(key: any, resultList: any[], ret : any [],
                              isNot : boolean, isOr : boolean): any[]
