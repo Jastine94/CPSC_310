@@ -759,6 +759,9 @@ export default class QueryController {
                         let item = keyContains[it];
                         let itemList = JSON.parse(JSON.stringify(item));
 
+                        accResult = this.queryWhereOr(keyContains, resultList, accResult, isNot);
+                        /*
+
                         for (var i in itemList)
                         {
                             let tempKey : {} = {[i] : itemList[i]};
@@ -802,54 +805,63 @@ export default class QueryController {
                             {
                                 accResult = this.queryWhereHelper(tempKey, resultList, accResult, isNot, true);
                             }
+
                         }
+                        */
                     }
                 }
                 else if ('AND' == where)
                 {
                     let keyContains = key[where];
                     let firstOne: boolean = true;
-                    for (var it in keyContains)
+
+                    // DeMorgans
+                    if (isNot)
                     {
-                        let item = keyContains[it];
-                        let itemList = JSON.parse(JSON.stringify(item));
+                        Log.trace("Should be here!!!!" + JSON.stringify(keyContains));
+                        accResult = this.queryWhereOr(keyContains, resultList, accResult, isNot);
+                    }
+                    else
+                    {
+                        for (var it in keyContains) {
+                            let item = keyContains[it];
+                            let itemList = JSON.parse(JSON.stringify(item));
 
-                        for (var i in itemList)
-                        {
-                            let tempKey : {} = {[i] : itemList[i]};
-                            let emptyList : any[] = [];
-                            if (firstOne)
-                            {
-                                firstOne = false;
-                                if ('NOT' == i || 'OR' == i || 'AND' == i)
+                            for (var i in itemList) {
+                                let tempKey: {} = {[i]: itemList[i]};
+                                let emptyList: any[] = [];
+                                if (firstOne)
                                 {
-                                    accResult = this.queryWhere(tempKey, resultList, isNot);
+                                    firstOne = false;
+                                    if ('NOT' == i || 'OR' == i || 'AND' == i)
+                                    {
+                                        accResult = this.queryWhere(tempKey, resultList, isNot);
+                                    }
+                                    else
+                                    {
+                                        accResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot, false);
+                                    }
                                 }
                                 else
                                 {
-                                    accResult = this.queryWhereHelper(tempKey, resultList, emptyList, isNot, false);
-                                }
-                            }
-                            else
-                            {
-                                emptyList = [];
-                                let newList: any[] = [];
-                                newList.push({"result": accResult});
-                                //console.log("ResultList" + JSON.stringify((newList)));
+                                    emptyList = [];
+                                    let newList: any[] = [];
+                                    newList.push({"result": accResult});
 
-                                // handle case where not is in inside and
-                                if ('AND' == i || 'OR' == i)
-                                {
-                                    accResult = this.queryWhere(tempKey, newList, isNot);
-                                }
-                                else if ('NOT' == i)
-                                {
-                                    // get each result object
-                                    accResult = this.queryWhere(tempKey, newList, isNot);
-                                }
-                                else
-                                {
-                                    accResult = this.queryWhereHelper(tempKey, newList, emptyList, isNot, false);
+                                    // handle case where not is in inside and
+                                    if ('AND' == i || 'OR' == i)
+                                    {
+                                        accResult = this.queryWhere(tempKey, newList, isNot);
+                                    }
+                                    else if ('NOT' == i)
+                                    {
+                                        // get each result object
+                                        accResult = this.queryWhere(tempKey, newList, isNot);
+                                    }
+                                    else
+                                    {
+                                        accResult = this.queryWhereHelper(tempKey, newList, emptyList, isNot, false);
+                                    }
                                 }
                             }
                         }
@@ -875,6 +887,58 @@ export default class QueryController {
 
         return accResult;
     }// queryWhere
+
+
+    private queryWhereOr(keys: any, resultList: any[], currentResult: any[], isNot : boolean): any[]
+    {
+        for (var curKey in keys)
+        {
+            let keyList = JSON.parse(JSON.stringify(keys[curKey]));
+            for (var i in keyList) {
+                let tempKey: {} = {[i]: keyList[i]};
+
+                if ('OR' == i || 'AND' == i)
+                {
+                    let tempResult = this.queryWhere(tempKey, resultList, isNot);
+
+                    for (var values in tempResult)
+                    {
+                        var value = tempResult[values];
+                        if (!this.isDuplicate(currentResult, value))
+                        {
+                            currentResult.push(value);
+                        }
+                    }
+                }
+                else if ('NOT' == i)
+                {
+                    let trimResult: any[] = [];
+
+                    trimResult.push({"result": currentResult});
+
+                    // need to remove the not items that are in currentResult
+                    trimResult = this.queryWhere(tempKey, trimResult, !isNot);
+                    currentResult = this.queryWhere(tempKey, resultList, isNot);
+
+                    for (var values in trimResult)
+                    {
+                        var value = trimResult[values];
+                        if (!this.isDuplicate(currentResult, value))
+                        {
+                            currentResult.push(value);
+                        }
+                    }
+                }
+                else
+                {
+                    currentResult = this.queryWhereHelper(tempKey, resultList, currentResult, isNot, true);
+                }
+            }
+        }
+
+        return currentResult;
+    } // queryWhereOr
+
 
     private queryWhereHelper(key: any, resultList: any[], ret : any [],
                              isNot : boolean, isOr : boolean): any[]

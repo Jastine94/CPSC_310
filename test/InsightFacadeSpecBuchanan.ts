@@ -149,7 +149,7 @@ describe("InsightFacadeRoomSpecRoomsBuchanan", function () {
         });
     });
 
-    it("Should be able to return all rooms not  starting with A*", function(){
+    it("Should be able to return all rooms not starting with A*", function(){
         var that = this;
         var validQuery: QueryRequest =  {
             "GET": ["maxSeats", "rooms_type", "numRooms"],
@@ -175,7 +175,35 @@ describe("InsightFacadeRoomSpecRoomsBuchanan", function () {
         });
     });
 
-    // NOTE: there might be a bug here, A202 and A201 shouldnt be here
+    it("Should be able to return B* and A* rooms", function(){
+        var that = this;
+        var validQuery: QueryRequest =  {
+            "GET": ["maxSeats", "rooms_type", "numRooms"],
+            "WHERE": {
+                "AND": [
+                    {"OR" : [
+                        {"IS" : {"rooms_number": "A*"}},
+                        {"IS" : {"rooms_number": "B*"}}]},
+                    {"NOT" : {"AND" : [
+                        {"IS": {"rooms_number":"D*"}},
+                        {"NOT": {"IS": {"rooms_number":"A*"}}},
+                        {"NOT": {"IS": {"rooms_number":"B*"}}}]}}
+                ]},
+            "GROUP": ["rooms_type"],
+            "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}},{"numRooms":{"COUNT":"rooms_name"}}],
+            "ORDER": {"dir": "UP", "keys": ["rooms_type", "maxSeats", "numRooms"]},
+            "AS": "TABLE"
+        };
+
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
     it("Should be able to perform query group by room-furniture excluding room A2*", function(){
         var that = this;
         var validQuery: QueryRequest =  {
