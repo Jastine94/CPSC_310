@@ -76,4 +76,138 @@ describe("InsightFacadeRoomSpecRoomsBuchanan", function () {
         });
     });
 
+    it("Should be able to query three nested deepness with AND AND AND", function(){
+        /* should return WOOD_3 with 88 seats */
+        var that = this;
+        var validQuery: QueryRequest =
+        {
+            "GET": ["rooms_fullname", "rooms_name",  "maxSeats", "rooms_furniture"],
+            "WHERE": {"AND" :
+                [
+                    {"NOT" : {"IS": {"rooms_type": "Small Group"}}},
+                    {"AND": [
+                        {"NOT": {"IS": {"rooms_number": "1*"}}},
+                        {"IS": {"rooms_fullname": "*oo*"}},
+                        {"NOT": {"AND": [
+                            {"GT": {"rooms_seats": 98}},
+                            {"NOT": {"IS": {"rooms_furniture": "Classroom-Movable Tables & Chairs"}}}
+                        ]}}
+                    ]}
+                ]},
+            "GROUP": [ "rooms_fullname", "rooms_name", "rooms_furniture"],
+            "APPLY": [  {"maxSeats": {"MAX": "rooms_seats"}} ],
+            "ORDER": { "dir": "DOWN", "keys": ["maxSeats", "rooms_name", "rooms_fullname"]},
+            "AS":"TABLE"
+        };
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            expect(response.body).to.deep.equal({"render":"TABLE",
+                "result":[
+                    {"rooms_fullname":"Woodward (Instructional Resources Centre-IRC)",
+                        "rooms_name":"WOOD_3",
+                        "maxSeats":88,
+                        "rooms_furniture":"Classroom-Fixed Tables/Movable Chairs"}]
+            });
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should be able to query four nested deepness with AND AND AND AND", function(){
+        var that = this;
+        var validQuery: QueryRequest =
+        {
+            "GET": ["rooms_fullname", "rooms_name",  "maxSeats", "rooms_furniture"],
+            "WHERE": {"AND" :
+                [
+                    {"NOT" : {"IS": {"rooms_type": "Tiered Large Group"}}},
+                    {"AND": [
+                        {"NOT": {"IS": {"rooms_number": "1*"}}},
+                        {"IS": {"rooms_fullname": "*oo*"}},
+                        {"AND": [
+                            {"LT": {"rooms_seats": 98}},
+                            {"IS": {"rooms_furniture": "Classroom-Movable Tables & Chairs"}},
+                            {"AND": [{"IS": {"rooms_number": "G5*"}}]}
+                        ]}
+                    ]}
+                ]},
+            "GROUP": [ "rooms_fullname", "rooms_name", "rooms_furniture"],
+            "APPLY": [  {"maxSeats": {"MAX": "rooms_seats"}} ],
+            "ORDER": { "dir": "DOWN", "keys": ["maxSeats", "rooms_name", "rooms_fullname"]},
+            "AS":"TABLE"
+        };
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            expect(response.body).to.deep.equal({"render":"TABLE",
+                "result":[{
+                    "rooms_fullname":"Woodward (Instructional Resources Centre-IRC)",
+                    "rooms_name":"WOOD_G57",
+                    "maxSeats":12,
+                    "rooms_furniture":"Classroom-Movable Tables & Chairs"},
+                    {"rooms_fullname":"Woodward (Instructional Resources Centre-IRC)",
+                        "rooms_name":"WOOD_G59",
+                        "maxSeats":10,
+                        "rooms_furniture":"Classroom-Movable Tables & Chairs"},
+                    {"rooms_fullname":"Woodward (Instructional Resources Centre-IRC)",
+                        "rooms_name":"WOOD_G55",
+                        "maxSeats":10,
+                        "rooms_furniture":"Classroom-Movable Tables & Chairs"},
+                    {"rooms_fullname":"Woodward (Instructional Resources Centre-IRC)",
+                        "rooms_name":"WOOD_G53",
+                        "maxSeats":10,
+                        "rooms_furniture":"Classroom-Movable Tables & Chairs"}]});
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should be able to query four nested deepness with AND AND AND (NOT)OR", function(){
+        var that = this;
+        var validQuery: QueryRequest =
+        {
+            "GET": ["rooms_fullname", "rooms_name",  "maxSeats", "rooms_furniture"],
+            "WHERE": {"AND" :
+                [
+                    {"NOT" : {"IS": {"rooms_type": "Tiered Large Group"}}},
+                    {"AND": [
+                        {"NOT": {"IS": {"rooms_number": "1*"}}},
+                        {"IS": {"rooms_fullname": "*oo*"}},
+                        {"AND": [
+                            {"LT": {"rooms_seats": 98}},
+                            {"IS": {"rooms_furniture": "Classroom-Movable Tables & Chairs"}},
+                            {"NOT": {"OR": [{"IS": {"rooms_number": "G5*"}},
+                                {"GT":{"rooms_seats": 16}}]}}
+                        ]}
+                    ]}
+                ]},
+            "GROUP": [ "rooms_fullname", "rooms_name", "rooms_furniture"],
+            "APPLY": [  {"maxSeats": {"MAX": "rooms_seats"}} ],
+            "ORDER": { "dir": "DOWN", "keys": ["maxSeats", "rooms_name", "rooms_fullname"]},
+            "AS":"TABLE"
+        };
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            expect(response.body).to.deep.equal({"render":"TABLE",
+                "result":[
+                    {"rooms_fullname":"Woodward (Instructional Resources Centre-IRC)",
+                        "rooms_name":"WOOD_G66","maxSeats":16,
+                        "rooms_furniture":"Classroom-Movable Tables & Chairs"},
+                    {"rooms_fullname":"Woodward (Instructional Resources Centre-IRC)",
+                        "rooms_name":"WOOD_G44","maxSeats":14,
+                        "rooms_furniture":"Classroom-Movable Tables & Chairs"},
+                    {"rooms_fullname":"Woodward (Instructional Resources Centre-IRC)",
+                        "rooms_name":"WOOD_G65",
+                        "maxSeats":12,
+                        "rooms_furniture":"Classroom-Movable Tables & Chairs"}]});
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
 });
