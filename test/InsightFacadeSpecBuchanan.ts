@@ -249,4 +249,65 @@ describe("InsightFacadeRoomSpecRoomsBuchanan", function () {
             expect.fail('Should not happen');
         });
     });
+
+    it("Should be able to return A*", function(){
+        var that = this;
+        var validQuery: QueryRequest =  {
+            "GET": ["maxSeats", "rooms_type", "numRooms"],
+            "WHERE": {
+                "AND": [
+                    {"OR" : [
+                        {"AND" : [
+                            {"NOT": {"IS" : {"rooms_number": "D*"}}},
+                            {"IS" : {"rooms_number": "A*"}}]},
+                        {"IS" : {"rooms_number": "B*"}}]},
+                    {"NOT": {"IS" : {"rooms_number": "B*"}}},
+                    {"NOT" : {"OR" : [
+                        {"IS" : {"rooms_number": "D*"}},
+                        {"IS" : {"rooms_number": "B*"}},
+                        {"NOT": {"IS" : {"rooms_number": "A*"}}}
+                    ]}}]},
+            "GROUP": ["rooms_type"],
+            "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}},{"numRooms":{"COUNT":"rooms_name"}}],
+            "ORDER": {"dir": "UP", "keys": ["rooms_type", "maxSeats", "numRooms"]},
+            "AS": "TABLE"
+        };
+
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should be able to return D*", function(){
+        var that = this;
+        var validQuery: QueryRequest =  {
+            "GET": ["maxSeats", "rooms_type", "numRooms"],
+            "WHERE": {
+                "AND": [
+                    {"NOT" : {"OR" : [
+                        {"IS": {"rooms_number":"A*"}},
+                        {"NOT":{"NOT": {"NOT":{"IS": {"rooms_number":"D*"}}}}},
+                        {"IS": {"rooms_number":"A*"}}]}},
+                    {"NOT":{"IS": {"rooms_number":"A*"}}},
+                    {"NOT":{"IS": {"rooms_number":"B*"}}},
+                    {"IS": {"rooms_number":"D*"}}]},
+            "GROUP": ["rooms_type"],
+            "APPLY": [{"maxSeats": {"MAX": "rooms_seats"}},{"numRooms":{"COUNT":"rooms_name"}}],
+            "ORDER": {"dir": "UP", "keys": ["rooms_type", "maxSeats", "numRooms"]},
+            "AS": "TABLE"
+        };
+
+        Log.trace("Starting test: " + that.test.title);
+        return facade.performQuery(validQuery).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(200);
+            Log.trace("response " + JSON.stringify(response.body));
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
 });
