@@ -1,0 +1,71 @@
+Show all rooms in building X.
+
+Show all rooms within X meters of building X.
+    {
+        GET: ["rooms_name", "rooms_number"],
+        WHERE: {
+        IS: {
+            "rooms_fullname": X
+            }
+        },
+        ORDER: null, AS: 'TABLE'
+    };
+
+    X = building name
+
+Show all rooms over size X.
+        {
+            GET: ["rooms_name", "rooms_number"],
+            WHERE: {
+            GT: {
+                "rooms_seats": X
+                }
+            },
+            ORDER: null, AS: 'TABLE'
+        };
+
+        X = size of rooms
+
+Previous task within X meters of building X.
+            {
+                GET: ["rooms_name", "rooms_number"],
+                WHERE: {
+                    "AND" : {[
+                        {GT: {"rooms_seats": X}},
+                        {within X meters of building X}]}
+                },
+                ORDER: null, AS: 'TABLE'
+            };
+
+            X = size of rooms
+
+Show all rooms with type X or furniture X.
+            {
+                GET: ["rooms_shortname", "rooms_name", "rooms_number"],
+                WHERE: {
+                    "OR" : {[
+                        {IS: {"rooms_furniture": X}},
+                        {IS: {"rooms_type": Y}}]}
+                },
+                ORDER: null, AS: 'TABLE'
+            };
+
+            X = furniture
+            Y = type
+
+Previous task within X meters of building X.
+            {
+                GET: ["rooms_name", "rooms_number"],
+                WHERE: {
+                    "AND" : {[
+                        {"OR" : {[
+                                 {IS: {"rooms_furniture": X}},
+                                 {IS: {"rooms_type": Y}}]}},
+                        {within Z meters of building Z}]}
+                },
+                ORDER: null, AS: 'TABLE'
+            };
+
+            X = furniture
+            Y = type
+            Z = radius

@@ -73,3 +73,10 @@
         Y = variables
 6.Previous task, allow filtering by more than one field concurrently.
     previous queries but with support for AND/OR...
+
+
+NOTE:
+The 'size' of course should be determined by the number of pass + fail students in its largest section.
+The number of sections that need to be scheduled should be the number of sections in the last available year (2014) divided
+by three and rounded up to the nearest integer (aka if the number was 0 it should be 1, if it was 2.1 it should be 3).
+
