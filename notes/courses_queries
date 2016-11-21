@@ -1,0 +1,75 @@
+1.Show all of the sections in department X.
+
+    {
+        GET: ["courses_dept", "courses_id"],
+        WHERE: {
+        IS: {
+            "courses_dept": X
+            }
+        },
+        ORDER: null, AS: 'TABLE'
+    };
+
+2.Show all of the courses in department X ordered by [the most failing students || the most passing students || average grade].
+        {
+            GET: ["courses_dept", "courses_id", Z],
+            WHERE: {
+            IS: {
+                "courses_dept": X
+                }
+            },
+            ORDER: { "dir": Y, "keys": [Z]},
+            AS: 'TABLE'
+        };
+
+        X = department
+        Y = UP/DOWN
+        Z = courses_fail || courses_pass || courses_avg
+
+3.Previous task, allow sorting by more than one field.
+        {
+            GET: ["courses_dept", "courses_id", Z1, Z2, ...],
+            WHERE: {
+            IS: {
+                "courses_dept": X
+                }
+            },
+            ORDER: { "dir": Y, "keys": [Z1, Z2,...]},
+            AS: 'TABLE'
+        };
+
+        X = department
+        Y = UP/DOWN
+        Zi = courses_fail || courses_pass || courses_avg
+
+4.Find all the sections taught by instructor Y.
+        {
+            GET: ["courses_dept", "courses_id"],
+            WHERE: {
+            IS: {
+                "courses_instructor": Y
+                }
+            },
+            ORDER: null,
+            AS: 'TABLE'
+        };
+
+        Y = instructor
+
+5.Show all of the key details for courses in the university with filters for course titles, department, and sizes.
+{
+            GET: ["courses_dept", "courses_id", "courses_avg", "courses_instructor", "courses_title",
+                    "courses_pass", "courses_fail", "courses_audit"],
+            WHERE: {
+            IS: {
+                "X": Y
+                }
+            },
+            ORDER: null,
+            AS: 'TABLE'
+        };
+
+        X = courses_dept || courses_titles || courses_size
+        Y = variables
+6.Previous task, allow filtering by more than one field concurrently.
+    previous queries but with support for AND/OR...
