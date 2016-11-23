@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<head>
+	<link rel="stylesheet" href="./public/bootstrap.min.css">
+	<link rel="stylesheet" href="./public/main.css">
+	<script src="./public/jquery.min.js"></script>
+	<script src="./public/bootstrap.min.js"></script>
+	<script src="./public/d3.min.js"></script>
+	<script src="./public/main_courses.js"></script>
+</head>
+<html>
+<body>
+<div id="dataset">
+	<div class="form-group">
+		<h3>Dataset</h3>
+		<button type="button" class="btn btn-primary" id="datasetAddCourses">Add Courses</button>
+		<label for="datasetZip">Archive:</label>
+		<input type="file" class="form-control" id="datasetZip">
+	</div>
+	<button type="button" class="btn btn-primary" id="datasetAdd">Add Dataset</button>
+	<button type="button" class="btn btn-primary" id="datasetRm">Remove Dataset</button>
+</div>
+<div id="container">
+	<h3>Query</h3>
+	<form id="queryForm">
+		<div class="form-group">
+			<label for="query"></label>
+				<label for="courseDept">Course Department</label>
+				<input type="text" class="form-group" id="courseDept">
+				<label for="courseInstructor">Course Instructor</label>
+				<input type="text" class="form-group" id="courseInstructor">
+				<label for="courseTitle">Course Title</label>
+				<input type="text" class="form-group" id="courseTitle"><br>
+				<label for="courseSize">Course Size</label>
+				<input type="text" class="form-group" id="courseSize">
+				<label for="orderBy">Sort By</label>
+				<select multiple required class="form-group" id="orderBy">
+				  <option value="None"> None </option>
+				  <option value="MostFailing">Most Failing</option>
+				  <option value="MostPassing">Most Passing</option>
+				  <option value="AverageGrade">Average Grade</option>
+				</select>
+				<label for="query">Query:</label>
+	  			<textarea class="form-control" rows="10" id="query"></textarea>
+		</div>
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+</div>
+<div id="render">
+	<h3>Result</h3>
+</div>
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title"></h4>
+			</div>
+			<div class="modal-body">
+				<p></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

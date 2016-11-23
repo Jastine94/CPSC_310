@@ -69,7 +69,7 @@ export default class InsightFacade implements IInsightFacade {
                 let datasets: Datasets = InsightFacade.datasetController.getDatasets();
                 let controller = new QueryController(datasets);
                 let isValid = controller.isValid(query);
-                Log.trace("Query is valid? " + isValid);
+                Log.trace("Query is valid? " + isValid + JSON.stringify(query));
                 if (isValid) {
                     let value = query["GET"];
                     let missing_id: string[] = [];

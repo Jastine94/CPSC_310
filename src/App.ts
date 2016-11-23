@@ -11,6 +11,7 @@ import Log from './Util';
 export class App {
     public initServer(port: number) {
         Log.info('App::initServer( ' + port + ' ) - start');
+
         let s = new Server(port);
         s.start().then(function (val: boolean) {
             Log.info("App::initServer() - started: " + val);
