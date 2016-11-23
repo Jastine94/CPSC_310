@@ -14,7 +14,7 @@ export default class RouteHandler {
     public static getHomepage(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace('RoutHandler::getHomepage(..)');
 
-        fs.readFile('./src/rest/views/index_courses.html', 'utf8', function (err: Error, file: Buffer) {
+        fs.readFile('./src/rest/views/index.html', 'utf8', function (err: Error, file: Buffer) {
             if (err) {
                 res.send(500);
                 //Log.error(JSON.stringify(err));
@@ -63,9 +63,10 @@ export default class RouteHandler {
     }
 
     public static postQuery(req: restify.Request, res: restify.Response, next: restify.Next) {
-        //Log.trace('RouteHandler::postQuery(..) - params: ' + JSON.stringify(req.params));
+        Log.trace('RouteHandler::postQuery(..) - params: ' + JSON.stringify(req.params));
         try
         {
+
             let query: QueryRequest = req.params;
             let insightFacade: IInsightFacade = new InsightFacade;
             insightFacade.performQuery(query).then(function(result)
