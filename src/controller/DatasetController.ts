@@ -597,8 +597,6 @@ export default class DatasetController {
                         // let latlon = {'rooms_lat': Number(parsedData.lat), 'rooms_lon': Number(parsedData.lon)};
                         let latlon: any;
                         if (typeof (geoResponse.error) === 'undefined') {
-                            // that.buildingInfo[building]["Lat"] = parseFloat(geoResponse.lat.toString()).toFixed(5);
-                            // that.buildingInfo[building]["Lon"] = parseFloat(geoResponse.lon.toString()).toFixed(5);
 
                             that.buildingInfo[building]["Lat"] = Number(geoResponse.lat);
                             that.buildingInfo[building]["Lon"] = Number(geoResponse.lon);
@@ -612,13 +610,13 @@ export default class DatasetController {
                     })
                     response.on('error', function(error: any)
                     {
-                        // Log.trace("Error was: " + error)
+                        Log.trace("Error was: " + error)
                         reject(true)
                     })
                 })
             }catch (err)
             {
-                // Log.trace("setLatLon EROOORRR: " + err)
+                Log.trace("setLatLon Error: " + err)
                 reject(err);
             }
         });

@@ -149,8 +149,12 @@ $(function () {
             if (courseSize !== '')
             {
                 comma = true;
-                // TODO: handleSize and comma;
-                //where = where + "{\"IS\" : {\"courses_dept\" :\""+String(courseDepartment)+"\"}}";
+                if (comma){
+                    where = where + ",{\"GT\" : {\"courses_size\" :\""+String(courseSize)+"\"}}";
+                }
+                else{
+                    where = where + "{\"GT\" : {\"courses_size\" :\""+String(courseSize)+"\"}}";
+                }
             }
 
             where = where + "]},";
