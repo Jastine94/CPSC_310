@@ -1484,6 +1484,10 @@ export default class QueryController {
         {
             tempKey = "Year";
         }
+        else if ("courses_size" == key)
+        {
+            tempKey = "Size";
+        }
         else if ("rooms_fullname" == key || "rooms_shortname" == key || "rooms_number" == key || "rooms_name" == key ||
             "rooms_address" == key || /*"rooms_lat" == key || "rooms_lon" == key ||*/ "rooms_seats" == key ||
             "rooms_type" == key || "rooms_furniture" == key || "rooms_href" == key )
