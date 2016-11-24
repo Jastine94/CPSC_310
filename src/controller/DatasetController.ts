@@ -337,6 +337,9 @@ export default class DatasetController {
             let temparr = processedDataset[i];
             let resarr = temparr.result;
             let tempresarr = new Array();
+            let pass = 0;
+            let fail = 0;
+            let courseSize = 0;
             for (let j = 0; j < resarr.length; j++)
             {
                 let resdata = resarr[j];
@@ -344,11 +347,22 @@ export default class DatasetController {
                 let overallPresent: boolean = false;
                 for (let key in resdata)
                 {
+                    // TODO: calculate the course size here and add support.
                     // Log.trace("object value is: " + key + ':' + resdata[key]);
                     if (key === 'Subject' || key === 'Avg'  || key === 'Professor' ||
-                        key === 'Title' || key === 'Pass'    || key === 'Fail' || key === 'Audit' || key === 'Year')
+                        key === 'Title'  || key === 'Audit' || key === 'Year')
                     {
                         tempobj[key] = resdata[key];
+                    }
+                    else if (key === 'Pass')
+                    {
+                        tempobj[key] = resdata[key];
+                        pass = parseInt(resdata[key]);
+                    }
+                    else if (key === 'Fail')
+                    {
+                        tempobj[key] = resdata[key];
+                        fail = parseInt(resdata[key]);
                     }
                     else if (key === 'Section')
                     {
@@ -366,8 +380,19 @@ export default class DatasetController {
                     {
                         tempobj['Year'] = Number(1900);
                     }
+
+                    if (courseSize < (Number(pass) + Number(fail)))
+                    {
+                        courseSize = (Number(pass) + Number(fail));
+                    }
                 }
                 tempresarr.push(tempobj);
+            }
+
+            // add courseSize to dataset
+            for (let i = 0; i < tempresarr.length; i++)
+            {
+                tempresarr[i]['Size'] = courseSize;
             }
             tempresobj["result"] = tempresarr;
             finalDataset.push(tempresobj);
