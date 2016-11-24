@@ -1,0 +1,73 @@
+Deliverable 4 -- Room Scheduling
+
+Provide a usbale interface for scheduling specific courses into specific rooms
+	-- calcuate based on heurstic values
+	-- multiple sections of a course cannot be held concurrently
+	-- quality of the schedule is determined by fraction of the classes that need to be scheulded outside  8 -5
+	-- MWF - 1 hour long classes
+	-- T/TH - 90 minute long classes
+
+	-- determining the size:
+		"The 'size' of course should be determined by the number of pass + fail students in its largest section.
+		The number of sections that need to be scheduled should be the number of sections in the last available
+		year (2014) divided by three and rounded up to the nearest integer"
+
+
+	Inputs:
+		- list of courses (filtered by deparment and course #)
+		- list of rooms (filtered by building name or distance from a building)
+
+	Show your interface for selecting the subset of rooms to be used for the schedule
+		- keep these rooms as an array, certain rooms can be used for the schedule
+	Allow rooms to be filtered by building name AND/OR distance from building X
+		- filtering by building name: {POST: "rooms where building name = "SHORT NAME CODE OR LONG NAME CODE""}
+		- to calcuate distance: use pythagorean's theorem
+		- or can use lat long values
+		- need to get the lat and long values of the two buildings (POST : "....")
+		- http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
+			function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+				var R = 6371; // Radius of the earth in km
+				var dLat = deg2rad(lat2-lat1);  // deg2rad below
+				var dLon = deg2rad(lon2-lon1);
+				var a =
+					Math.sin(dLat/2) * Math.sin(dLat/2) +
+					Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+					Math.sin(dLon/2) * Math.sin(dLon/2);
+				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+				var d = R * c; // Distance in km
+				return d;
+			}
+
+			function deg2rad(deg) {
+				return deg * (Math.PI/180)
+			}
+		- http://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates-shows-wrong
+		- that is if you want it to be precise, will give you the actual path distance between the two points using google maps api
+	Show you interface for selecting the subset of courses to be used for the schedule
+		- same as the rooms, make an array to store this subset or something similar to that
+	Allow courses to be filtered by deparment AND/OR course number
+		- apply the query with something like this:
+		   {
+				GET: ["courses_name"], //might not be a correct way to validate this
+				WHERE: {
+					{OR:
+						IS: {
+							"courses_dept": X
+						},
+						IS: {
+							"courses_id": X
+						}
+					}
+				},
+				ORDER: null, AS: 'TABLE'
+			};
+	Show your interface for displaying a timetable
+		- https://github.com/Grible/timetable.js
+		- https://www.dynatable.com/
+		- http://twiki.org/cgi-bin/view/Plugins/TimeTablePlugin
+	Show that your scheduling algorithm correctly determines the right number of sections to schedule for the courses selected
+	Show that your scheduling algorithm correctly determines the right number of seats for the sections being scheduled
+		- need a query that iterates through all the courses for that section and check the year to see how many sections were schedule, probably best to base on the previous year
+		- basing on the previous year should be a 'good enough' heuristic value
+	Show that the quality measure is being displayed for your schedule
+		- this will be required by taking the number of courses that are not from 8-5 and divide that by the total number of courses
