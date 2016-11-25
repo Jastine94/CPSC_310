@@ -343,6 +343,7 @@ export default class DatasetController {
             for (let j = 0; j < resarr.length; j++)
             {
                 let resdata = resarr[j];
+                let year = 0;
                 let tempobj: any = {};
                 let overallPresent: boolean = false;
                 for (let key in resdata)
@@ -350,9 +351,14 @@ export default class DatasetController {
                     // TODO: calculate the course size here and add support.
                     // Log.trace("object value is: " + key + ':' + resdata[key]);
                     if (key === 'Subject' || key === 'Avg'  || key === 'Professor' ||
-                        key === 'Title'  || key === 'Audit' || key === 'Year')
+                        key === 'Title'  || key === 'Audit')
                     {
                         tempobj[key] = resdata[key];
+                    }
+                    else if (key === 'Year')
+                    {
+                        tempobj[key] = resdata[key];
+                        year = parseInt(resdata[key]);
                     }
                     else if (key === 'Pass')
                     {
@@ -366,7 +372,7 @@ export default class DatasetController {
                     }
                     else if (key === 'Section')
                     {
-                        if ('Overall' === resdata[key])
+                        if ('overall' === resdata[key])
                         {
                             overallPresent = true;
                         }
@@ -379,13 +385,24 @@ export default class DatasetController {
                     if (overallPresent)
                     {
                         tempobj['Year'] = Number(1900);
+                        pass = 0;
+                        fail = 0;
                     }
 
-                    if (courseSize < (Number(pass) + Number(fail)))
+                    if ((Number(year) !== 2014)){
+                        pass = 0;
+                        fail = 0;
+                    }
+
+                    if (!overallPresent && (Number(year) === 2014))
                     {
-                        courseSize = (Number(pass) + Number(fail));
+                        if (courseSize < (Number(pass) + Number(fail)))
+                        {
+                            courseSize = (Number(pass) + Number(fail));
+                        }
                     }
                 }
+
                 tempresarr.push(tempobj);
             }
 

@@ -1,24 +1,8 @@
 $(function () {
-    $("#datasetAdd").click(function () {
-        var id = $("#datasetId").val();
-        console.log(id);
-        var zip = $("#datasetZip").prop('files')[0];
-        var data = new FormData();
-        data.append("zip", zip);
-        $.ajax("/dataset/" + id,
-            {
-                type: "PUT",
-                data: data,
-                processData: false
-            }).fail(function (e) {
-            spawnHttpErrorModal(e)
-        });
-    });
-
     $("#datasetAddCourses").click(function () {
         var id = "courses";
-        console.log("adding course" + id);
         var zip = $("#datasetZip").prop('files')[0];
+        console.log(String(zip));
         var data = new FormData();
         data.append("zip", zip);
         $.ajax("/dataset/" + id,
@@ -45,6 +29,24 @@ $(function () {
         var courseInstructor = $("#courseInstructor").val();
         var courseTitle = $("#courseTitle").val();
         var courseSize = $("#courseSize").val();
+        if (courseSize !== '')
+        {
+            if (isNaN(courseSize))
+            {
+                alert("Course Size must be number");
+                return;
+            }
+        }
+
+        if (courseNumber !== '')
+        {
+            if (isNaN(courseNumber))
+            {
+                alert("Course Number must be number");
+                return;
+            }
+        }
+
         var querySkeleton;
 
         // handle ordering
@@ -101,7 +103,7 @@ $(function () {
             courseTitle === '' &&
             courseSize === '')
         {
-            querySkeleton = "{\"GET\": [\"courses_dept\", \"courses_id\", \"courses_pass\",\"courses_fail\",\"courses_avg\"],\
+            querySkeleton = "{\"GET\": [\"courses_dept\", \"courses_id\",\"courses_size\", \"courses_pass\",\"courses_fail\",\"courses_avg\"],\
                     \"WHERE\": {},\
                     "+ order+"\"AS\": \"TABLE\"}";
         }
@@ -117,38 +119,36 @@ $(function () {
             }
             if (courseInstructor !== '')
             {
-                comma = true;
                 if (comma){
                     where = where + ",{\"IS\" : {\"courses_instructor\" :\""+String(courseInstructor)+"\"}}";
                 }
                 else{
                     where = where + "{\"IS\" : {\"courses_instructor\" :\""+String(courseInstructor)+"\"}}";
                 }
-
+                comma = true;
             }
             if (courseTitle !== '')
             {
-                comma = true;
                 if (comma){
                     where = where + ",{\"IS\" : {\"courses_title\" :\""+String(courseTitle)+"\"}}";
                 }
                 else{
                     where = where + "{\"IS\" : {\"courses_title\" :\""+String(courseTitle)+"\"}}";
                 }
+                comma = true;
             }
             if (courseNumber !== '')
             {
-                comma = true;
                 if (comma){
                     where = where + ",{\"IS\" : {\"courses_id\" :\""+String(courseNumber)+"\"}}";
                 }
                 else{
                     where = where + "{\"IS\" : {\"courses_id\" :\""+String(courseNumber)+"\"}}";
                 }
+                comma = true;
             }
             if (courseSize !== '')
             {
-                comma = true;
                 if (comma){
                     where = where + ",{\"GT\" : {\"courses_size\" :\""+String(courseSize)+"\"}}";
                 }
@@ -159,7 +159,7 @@ $(function () {
 
             where = where + "]},";
             console.log(where);
-            querySkeleton = "{\"GET\": [\"courses_dept\", \"courses_id\", \"courses_pass\",\"courses_fail\",\"courses_avg\"],\
+            querySkeleton = "{\"GET\": [\"courses_dept\", \"courses_id\", \"courses_size\", \"courses_pass\",\"courses_fail\",\"courses_avg\"],\
                             "+ where + order+"\"AS\": \"TABLE\"}";
         }
 

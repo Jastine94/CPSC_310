@@ -23,22 +23,24 @@
     <form id="queryForm">
         <div class="form-group">
             <label for="query"></label>
-            <label for="courseDept">Course Department</label>
-            <input type="text" class="form-group" id="courseDept">
-            <label for="courseNumber">Course Number</label>
-            <input type="text" class="form-group" id="courseNumber">
-            <label for="courseInstructor">Course Instructor</label>
-            <input type="text" class="form-group" id="courseInstructor"><br>
-            <label for="courseTitle">Course Title</label>
-            <input type="text" class="form-group" id="courseTitle">
-            <label for="courseSize">Course Size</label>
-            <input type="text" class="form-group" id="courseSize"><br>
-            <label for="orderBy">Sort By</label>
-            <select multiple required class="form-group" id="orderBy">
-                <option value="None"> None </option>
-                <option value="MostFailing">Most Failing</option>
-                <option value="MostPassing">Most Passing</option>
-                <option value="AverageGrade">Average Grade</option>
+            <label for="buildingName">Building Name</label>
+            <input type="text" class="form-group" id="buildingName">
+            <label for="roomSize">Room Size</label>
+            <input type="text" class="form-group" id="roomSize">
+            <label for="distance">Distance</label>
+            <input type="text" class="form-group" id="distance"><br>
+            <label for="roomFurniture">Room Furniture</label>
+            <input type="text" size="35" class="form-group" id="roomFurniture"><br>
+            <label for="roomType">Room Type</label>
+            <select class="form-group" id="roomType">
+                <option value="None"> - </option>
+                <option value="Active Learning">Active Learning</option>
+                <option value="Case Style">Case Style</option>
+                <option value="Open Design General Purpose">Open Design General Purpose</option>
+                <option value="Small Group">Small Group</option>
+                <option value="Studio Lab">Studio Lab</option>
+                <option value="Tiered Large Group">Tiered Large Group</option>
+                <option value="TBD">TBD</option>
             </select>
             <label for="query">Query:</label>
             <textarea class="form-control" rows="10" id="query"></textarea>
