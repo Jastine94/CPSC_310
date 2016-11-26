@@ -78,7 +78,9 @@ $(function () {
 			var comma = false;
 			var lat = 0;
 			var lon = 0;
+			var empty = true;
 
+            // Get the Lat and Lon of the current building
 			if (distance !== '' && buildingName !== '')
 			{
 				querySkeleton = "{\"GET\": [\"rooms_fullname\", \"rooms_name\",  \"rooms_lat\", \"rooms_lon\"],\
@@ -88,16 +90,11 @@ $(function () {
 
 				try {
 					$.ajax("/query", {type:"POST", data: querySkeleton, contentType: "application/json", dataType: "json", success: function(data) {
-						console.log(data);
 						var resultArray = data["result"];
 						lat = resultArray[0]["rooms_lat"];
 						lon = resultArray[0]["rooms_lon"];
-
 						console.log("Lat" + lat);
 						console.log("Lon" + lon);
-						if (data["render"] === "TABLE") {
-							generateTable(data["result"]);
-						}
 					}}).fail(function (e) {
 						spawnHttpErrorModal(e)
 					});
@@ -107,13 +104,13 @@ $(function () {
 			}
 
 			// handle where
-			if (buildingName !== '')
+			if (distance === '' && buildingName !== '')
 			{
 				where = where + "{\"OR\":[{\"IS\" : {\"rooms_shortname\" :\""+String(buildingName)+"\"}},\
 								 {\"IS\" : {\"rooms_fullname\" :\""+String(buildingName)+"\"}}]}";
 				comma = true;
+				empty = false;
 			}
-
 			if (roomSize !== '')
 			{
 				if (comma){
@@ -123,6 +120,7 @@ $(function () {
 					where = where + "{\"GT\" : {\"rooms_seats\" :\""+String(roomSize)+"\"}}";
 				}
 				comma = true;
+				empty = false;
 			}
 			if (roomFurniture !== '')
 			{
@@ -133,6 +131,7 @@ $(function () {
 					where = where + "{\"IS\" : {\"rooms_furniture\" :\""+String(roomFurniture)+"\"}}";
 				}
 				comma = true;
+				empty = false;
 			}
 			if (roomType !== '' && roomType !== "None")
 			{
@@ -143,20 +142,70 @@ $(function () {
 					where = where + "{\"IS\" : {\"rooms_type\" :\""+String(roomType)+"\"}}";
 				}
 				comma = true;
+				empty = false;
 			}
-			if (distance !== '')
+			if (distance !== '' && buildingName !== '')
 			{
-				/*
-				if (comma){
-					where = where + ",{\"IS\" : {\"rooms_types\" :\""+String(roomType)+"\"}}";
+				var distanceWhere;
+				if(empty) {
+					distanceWhere = "\"WHERE\": {},";
 				}
-				else{
-					where = where + "{\"IS\" : {\"rooms_types\" :\""+String(roomType)+"\"}}";
+				else
+				{
+					distanceWhere = where + "]},";
 				}
-				*/
+
+				var distanceWhere = where + "]},";
+				var queryForDistance = "{\"GET\": [\"rooms_fullname\", \"rooms_name\", \"rooms_type\", \"rooms_furniture\",\"rooms_seats\"],\
+					"+ distanceWhere +
+					"\"ORDER\": null,\"AS\": \"TABLE\"}";
+				try {
+					$.ajax("/query", {type:"POST", data: queryForDistance, contentType: "application/json", dataType: "json", success: function(data) {
+						console.log(data);
+
+						var resultArray = data["result"];
+
+						for (var i = 0; i < resultArray.length(); ++i){
+							buildingName = resultArray[i]["rooms_fullname"];
+
+							// get the building name lat lon.
+							querySkeleton = "{\"GET\": [\"rooms_fullname\", \"rooms_name\",  \"rooms_lat\", \"rooms_lon\"],\
+								\"WHERE\": {\"OR\":[{\"IS\" : {\"rooms_shortname\" :\""+String(buildingName)+"\"}},\
+								{\"IS\" : {\"rooms_fullname\" :\""+String(buildingName)+"\"}}]},\
+								\"ORDER\": null,\"AS\": \"TABLE\"}";
+							try {
+								$.ajax("/query", {type:"POST", data: querySkeleton, contentType: "application/json", dataType: "json", success: function(data) {
+									var resultArray = data["result"];
+									var lat2 = resultArray[0]["rooms_lat"];
+									var lon2 = resultArray[0]["rooms_lon"];
+									console.log("Lat" + lat2);
+									console.log("Lon" + lon2);
+									var buildingDistance = getDistanceFromLatLonInKm(lat,lon,lat2,lon2);
+
+									if ((buildingDistance * 1000) > distance){
+										resultArray.splice(i,1);
+									}
+								}}).fail(function (e) {
+									spawnHttpErrorModal(e)
+								});
+							} catch (err) {
+								spawnErrorModal("Query Error", err);
+							}
+						}
+
+						if (data["render"] === "TABLE") {
+							generateTable(data["result"]);
+							return;
+						}
+					}}).fail(function (e) {
+						spawnHttpErrorModal(e)
+					});
+				} catch (err) {
+					spawnErrorModal("Query Error", err);
+				}
 			}
+
 			where = where + "]},";
-			console.log(where);
 			querySkeleton = "{\"GET\": [\"rooms_fullname\", \"rooms_name\", \"rooms_type\", \"rooms_furniture\",\"rooms_seats\"],\
 					"+ where +
 					"\"ORDER\": null,\"AS\": \"TABLE\"}";
@@ -227,6 +276,23 @@ $(function () {
 				return d["cl"]
 			});
 	}
+
+    function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+        var R = 6371; // Radius of the earth in km
+        var dLat = deg2rad(lat2-lat1);  // deg2rad below
+        var dLon = deg2rad(lon2-lon1);
+        var a =
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c; // Distance in km
+        return d;
+    }
+
+    function deg2rad(deg) {
+        return deg * (Math.PI/180)
+    }
 
 	function spawnHttpErrorModal(e) {
 		$("#errorModal .modal-title").html(e.status);
