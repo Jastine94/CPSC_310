@@ -26,18 +26,16 @@ $(function () {
         var coursesSet = [], roomsSet =[];
         var coursesFilt = filterByCourses(listofcourses);
         var coursesquery = '{"GET": ["courses_dept", "courses_id", "numSections", "courses_size"], ' +
-            '"WHERE": {' +
-            '"AND": [' +
-                '{"IS": {"courses_year":"2014"}},'  + coursesFilt + ']},' +
+            '"WHERE": { "AND": [' +
+                            '{"IS": {"courses_year":"2014"}},'  + coursesFilt + ']},' +
             '"GROUP": [ "courses_dept", "courses_id","courses_size" ],' +
-            '"APPLY": [ {"numSections": {"COUNT": "courses_uuid"}} ],' +
-            '"ORDER": { "dir": "UP", "keys": ["courses_size"]}, "AS": "TABLE"}';
+            '"APPLY": [ {"numSections": {"COUNT": "courses_uuid"}} ], "ORDER": { "dir": "UP", "keys": ["courses_size"]}, "AS": "TABLE"}';
 
         try {
             $.ajax("/query", {type:"POST", data: coursesquery, contentType: "application/json", dataType: "json", success: function(data) {
                 if (data["render"] === "TABLE") {
                     // generateTable(data["result"]);
-                    coursesSet = calculateCourses(data["result"]);
+                    coursesSet = calculateSections(data["result"]);
                 }
             }}).fail(function (e) {
                 spawnHttpErrorModal(e)
@@ -50,9 +48,7 @@ $(function () {
         var roomsFilt = filterByRooms(listofrooms);
         var roomsquery ='{"GET": ["rooms_shortname","rooms_seats"],' +
             '"WHERE": ' + roomsFilt + ',' +
-            '"GROUP": [ "rooms_shortname", "rooms_seats"], "APPLY": [],' +
-            '"ORDER": { "dir": "UP", "keys": ["rooms_seats"]},' +
-            '"AS": "TABLE"}';
+            '"GROUP": [ "rooms_shortname", "rooms_seats"], "APPLY": [], "ORDER": { "dir": "UP", "keys": ["rooms_seats"]}, "AS": "TABLE"}';
 
         try {
             $.ajax("/query", {type:"POST", data: roomsquery, contentType: "application/json", dataType: "json", success: function(data) {
@@ -68,9 +64,31 @@ $(function () {
         }
 
         // now scheulde room
+        scheduleCourses(coursesSet, roomsSet);
     });
 
-    function calculateCourses(courseResult){
+    function scheduleCourses(coursesSet, roomsSet){
+        var courses = coursesSet, rooms = roomsSet;
+
+        for (var c = 0; c < courses.length; c++)
+        {
+            var numSections = courses[c]['numSections'];
+            var coursesize = courses[c]['courses_size'];
+            for (var ns = 0; ns < numSections; ns++)
+            {
+                for (var r = 0; r < rooms.length; r ++)
+                {
+                    var roomsize = rooms[i]['rooms_seats'];
+                    if (coursesize <= roomsize)
+                    {
+                        // then allocate the slot for that section but check if it occurs at the same time as well
+                    }
+                }
+            }
+        }
+    }
+
+    function calculateSections(courseResult){
         var cResultTable = courseResult;
         for (var section in courseResult)
         {
