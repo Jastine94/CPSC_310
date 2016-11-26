@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="./public/bootstrap.min.css">
+    <link rel="stylesheet" href="./public/main.css">
+    <script src="./public/jquery.min.js"></script>
+    <script src="./public/bootstrap.min.js"></script>
+    <script src="./public/d3.min.js"></script>
+    <script src="./public/main_roomsSchedule.js"></script>
+</head>
+<html>
+<body>
+<div id="dataset">
+    <div class="form-group">
+        <h3>Dataset</h3>
+        <label for="datasetId">ID:</label>
+        <input type="text" class="form-control" id="datasetId">
+        <label for="datasetZip">Archive:</label>
+        <input type="file" class="form-control" id="datasetZip">
+    </div>
+    <button type="button" class="btn btn-primary" id="datasetAdd">Add Dataset</button>
+    <button type="button" class="btn btn-primary" id="datasetRm">Remove Dataset</button>
+</div>
+<div id="container">
+    <h3>Rooms Scheduling</h3>
+    <form id="roomSchedulingForm">
+        <div class="form-group">
+
+            <p>Input department, course number, or specific courses to filter by: (i.e. cpsc310, stats, 221 etc..)</p>
+            <label for="courses" style="margin-left: 40px">List of Courses: </label>
+            <input type="text" id="courses"  style="width: 500px;" style="margin-left: 40px"/>
+            <p>Filter buildings by: </p>
+            <label for="buildings" style="margin-left: 40px">List of Buildings: </label>
+            <p style="margin-left: 40px">Building abbreivations: i.e. DMP, SWNG, etc.. </p>
+            <input type="text" class="form-group" id="buildings" style="margin-left: 40px">
+            <p style="margin-left: 40px">OR</p>
+            <label for="startbuilding" style="margin-left: 40px">Filter by distance from building: </label>
+            <input type="text" class="form-group" id="startbuilding" style="margin-left: 40px">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<div id="render">
+    <h3>Result</h3>
+</div>
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <p></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
