@@ -206,6 +206,62 @@ export default class InsightFacade implements IInsightFacade {
         }
     }
 
+    //
+    // public calculateBoundingBox(lat:any, lon:any, dist: any):any {
+    //     //http://zurb.com/forrst/posts/Finding_if_a_Lat_Lng_point_is_inside_a_Bounding-OCs
+    //     var half = (((dist / 2)*1.2) * 1000); // added 1.2 for error
+    //     var latrad = this.deg2rad(lat);
+    //     var lonrad = this.deg2rad(lon);
+    //
+    //     var radius = this.devineRadius(lat);
+    //     var radius_p = (radius * Math.cos(lat));
+    //
+    //     var latMin = (latrad - (half / radius));
+    //     var latMax = (latrad + (half / radius));
+    //     var lonMin = (lonrad - (half / radius_p));
+    //     var lonMax = (lonrad + (half / radius_p));
+    //
+    //     var box: any = [latMin, latMax, lonMin, lonMax];
+    //     for (var coord in box)
+    //     {
+    //         box[coord] = this.rad2deg(box[coord]);
+    //     }
+    //     return box;
+    // }
+    //
+    // private deg2rad(deg:any):any {
+    //     return deg * (Math.PI/180)
+    // }
+    //
+    // private rad2deg(rad:any):any {
+    //     return rad * (180/Math.PI)
+    // }
+    //
+    // private devineRadius(lat:any):any{
+    //     var WGS84_maj = 6378137.0;  // Major semiaxis in KM
+    //     var WGS84_min = 6356752.3;
+    //
+    //     var An = ((WGS84_maj * WGS84_min) * Math.cos(lat));
+    //     var Bn = ((WGS84_maj * WGS84_min) * Math.sin(lat));
+    //     var Ad = (WGS84_maj * Math.cos(lat));
+    //     var Bd = (WGS84_min * Math.sin(lat));
+    //     return Math.sqrt(((An * An) + (Bn * Bn)) / ((Ad * Ad) + (Bd * Bd)));
+    // }
+
+    // public calculateDistance(lat:any, lon:any, distance:any):any{
+    //     var R: any = 6371;  // earth radius in km
+    //
+    //     var radius: any = 50; // km
+    //
+    //     var x1: any = lon - Math.toDegrees(radius/R/Math.cos(Math.toRadians(lat)));
+    //
+    //     var x2: any = lon + Math.toDegrees(radius/R/Math.cos(Math.toRadians(lat)));
+    //
+    //     var y1: any = lat + Math.toDegrees(radius/R);
+    //
+    //     var y2: any = lat - Math.toDegrees(radius/R);
+    // }
+
     // TODO DELETE WHEN DONE WITH TESTING - FRANCES
     // public scheduleCourses(coursesSet: any, roomsSet: any): any{
     //     var courses = coursesSet;

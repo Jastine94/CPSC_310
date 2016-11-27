@@ -209,6 +209,49 @@ $(function () {
         return cResultTable;
     }
 
+
+    function calculateBoundingBox(lat, lon, dist) {
+        // TODO, make this call after you get the lat lon of the building that you're interested in
+        //http://zurb.com/forrst/posts/Finding_if_a_Lat_Lng_point_is_inside_a_Bounding-OCs
+        var half = (((dist / 2)*1.2) * 1000); // added 1.2 for error
+        var latrad = this.deg2rad(lat);
+        var lonrad = this.deg2rad(lon);
+
+        var radius = this.devineRadius(lat);
+        var radius_p = (radius * Math.cos(lat));
+
+        var latMin = (latrad - (half / radius));
+        var latMax = (latrad + (half / radius));
+        var lonMin = (lonrad - (half / radius_p));
+        var lonMax = (lonrad + (half / radius_p));
+
+        var box = [latMin, latMax, lonMin, lonMax];
+        for (var coord in box)
+        {
+            box[coord] = this.rad2deg(box[coord]);
+        }
+        return box;
+    }
+
+    function deg2rad(deg) {
+        return deg * (Math.PI/180)
+    }
+
+    function rad2deg(rad) {
+        return rad * (180/Math.PI)
+    }
+
+    function devineRadius(lat){
+        var WGS84_maj = 6378137.0;  // Major semiaxis in KM
+        var WGS84_min = 6356752.3;
+
+        var An = ((WGS84_maj * WGS84_min) * Math.cos(lat));
+        var Bn = ((WGS84_maj * WGS84_min) * Math.sin(lat));
+        var Ad = (WGS84_maj * Math.cos(lat));
+        var Bd = (WGS84_min * Math.sin(lat));
+        return Math.sqrt(((An * An) + (Bn * Bn)) / ((Ad * Ad) + (Bd * Bd)));
+    }
+
     function filterByRooms(listofrooms){
         var lor = listofrooms.split(",");
         var buildingsKey = new RegExp('[A-Z]{2,4}');
