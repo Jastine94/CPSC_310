@@ -155,46 +155,35 @@ $(function () {
 					distanceWhere = where + "]},";
 				}
 
-				var distanceWhere = where + "]},";
-				var queryForDistance = "{\"GET\": [\"rooms_fullname\", \"rooms_name\", \"rooms_type\", \"rooms_furniture\",\"rooms_seats\"],\
+				var queryForDistance = "{\"GET\": [\"rooms_fullname\",\"rooms_lat\", \"rooms_lon\", \"rooms_name\", \"rooms_type\", \"rooms_furniture\",\"rooms_seats\"],\
 					"+ distanceWhere +
 					"\"ORDER\": null,\"AS\": \"TABLE\"}";
+				console.log(String(queryForDistance));
 				try {
 					$.ajax("/query", {type:"POST", data: queryForDistance, contentType: "application/json", dataType: "json", success: function(data) {
 						console.log(data);
 
-						var resultArray = data["result"];
+						var resultA = new Array();
 
-						for (var i = 0; i < resultArray.length(); ++i){
-							buildingName = resultArray[i]["rooms_fullname"];
+						for (var i = 0; i < data["result"].length; ++i){
+							var lat2 = data["result"][i]["rooms_lat"];
+							var lon2 = data["result"][i]["rooms_lon"];
+							console.log("Lat" + lat2);
+							console.log("Lon" + lon2);
+							var buildingDistance = getDistanceFromLatLonInKm(lat,lon,lat2,lon2);
 
-							// get the building name lat lon.
-							querySkeleton = "{\"GET\": [\"rooms_fullname\", \"rooms_name\",  \"rooms_lat\", \"rooms_lon\"],\
-								\"WHERE\": {\"OR\":[{\"IS\" : {\"rooms_shortname\" :\""+String(buildingName)+"\"}},\
-								{\"IS\" : {\"rooms_fullname\" :\""+String(buildingName)+"\"}}]},\
-								\"ORDER\": null,\"AS\": \"TABLE\"}";
-							try {
-								$.ajax("/query", {type:"POST", data: querySkeleton, contentType: "application/json", dataType: "json", success: function(data) {
-									var resultArray = data["result"];
-									var lat2 = resultArray[0]["rooms_lat"];
-									var lon2 = resultArray[0]["rooms_lon"];
-									console.log("Lat" + lat2);
-									console.log("Lon" + lon2);
-									var buildingDistance = getDistanceFromLatLonInKm(lat,lon,lat2,lon2);
-
-									if ((buildingDistance * 1000) > distance){
-										resultArray.splice(i,1);
-									}
-								}}).fail(function (e) {
-									spawnHttpErrorModal(e)
-								});
-							} catch (err) {
-								spawnErrorModal("Query Error", err);
+							if ((buildingDistance * 1000) < distance){
+								resultA.push(data["result"][i]);
+								console.log("Add this room to result");
 							}
 						}
+						console.log("Done");
+						console.log(String(resultA.length));
+
+						//data["result"] = resultArray;
 
 						if (data["render"] === "TABLE") {
-							generateTable(data["result"]);
+							generateTable(resultA);
 							return;
 						}
 					}}).fail(function (e) {
