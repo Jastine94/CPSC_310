@@ -22,6 +22,7 @@ $(function () {
     });
 
     $("#roomSchedulingForm").submit(function (e) {
+        e.preventDefault();
         var listofcourses = $("#courses").val();
         var coursesSet = [], roomsSet =[];
         var coursesFilt = filterByCourses(listofcourses);
@@ -35,6 +36,7 @@ $(function () {
             $.ajax("/query", {type:"POST", data: coursesquery, contentType: "application/json", dataType: "json", success: function(data) {
                 if (data["render"] === "TABLE") {
                     // generateTable(data["result"]);
+                    console.log("COURSES DATA: ", JSON.stringify(data));
                     coursesSet = calculateSections(data["result"]);
                 }
             }}).fail(function (e) {
@@ -54,7 +56,12 @@ $(function () {
             $.ajax("/query", {type:"POST", data: roomsquery, contentType: "application/json", dataType: "json", success: function(data) {
                 if (data["render"] === "TABLE") {
                     // generateTable(data["result"]);
+                    console.log("ROOMS DATA: ", JSON.stringify(data));
                     roomsSet = data["result"];
+
+                    var table = scheduleCourses(coursesSet, roomsSet);
+                    console.log(JSON.stringify(table));
+                    generateTable(table);
                 }
             }}).fail(function (e) {
                 spawnHttpErrorModal(e)
@@ -63,13 +70,10 @@ $(function () {
             spawnErrorModal("Query Error", err);
         }
 
-        // now scheulde room
-        var table = scheduleCourses(coursesSet, roomsSet);
-        generateTable(table);
     });
 
-
     function scheduleCourses(coursesSet, roomsSet){
+        console.log("TIME TO SCHEDULE COURSES NOW")
         var courses = coursesSet, rooms = roomsSet;
         var unscheduledCourses = [];
         for (var c = 0; c < courses.length; c++)
@@ -81,14 +85,17 @@ $(function () {
                 var filled = false;
                 for (var r = 0; r < rooms.length; r ++)
                 {
+                    var roomsize = rooms[r]['rooms_seats'];
                     if (filled){
                         break;
                     }
-                    var roomsize = rooms[r]['rooms_seats'];
                     if (coursesize <= roomsize &&
                         (typeof ( rooms[r]['timetable']) == 'undefined' || rooms[r]['timetable'].length < 16))
                     {
-                        filled = this.putCourseIntoRoom(courses[c],rooms[r]);
+
+                        filled = putCourseIntoRoom(courses[c],rooms[r]);
+                        // need to add it so that if it's all full, can still add more
+                        // todo calculate the number of schedule
                     }
                 }
                 if (filled == false)
@@ -106,13 +113,18 @@ $(function () {
         {
             if (typeof (rooms[ro]["timetable"]) != 'undefined')
             {
-                this.mapArrayToTime(rooms[ro]["timetable"]);
+                mapArrayToTime(rooms[ro]["timetable"]);
                 renderTimetable = renderTimetable.concat(rooms[ro]["timetable"]);
             }
         }
         renderTimetable = renderTimetable.concat(unscheduledCourses);
+        console.log("rednered tt length: ", renderTimetable.length, unscheduledCourses.length);
+        var quality = ((1-(unscheduledCourses.length/renderTimetable.length))*100).toFixed(2);
+        // todo save this quality somewhere
+
         return renderTimetable;
     }
+
 
     function putCourseIntoRoom(course, room){
         if (typeof (room["timetable"]) == 'undefined')

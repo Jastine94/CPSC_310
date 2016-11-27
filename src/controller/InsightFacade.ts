@@ -126,8 +126,7 @@ export default class InsightFacade implements IInsightFacade {
                             let result: any = cont.query(query);
                             if (JSON.stringify(result) !== JSON.stringify({render: 'TABLE', result: []}))
                             {
-                                Log.trace(JSON.stringify(result));
-                                // Log.trace("OK SHOULD BE FULFILL HERE")
+                                // Log.trace("OK SHOULD BE FULFILL HERE: " + JSON.stringify(result))
                                 return fulfill({code: 200, body: result});
                             }
                         }
