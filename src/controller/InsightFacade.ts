@@ -119,6 +119,19 @@ export default class InsightFacade implements IInsightFacade {
                     }
                     else
                     {
+                        for (var ds in datasets)
+                        {
+                            let dataset: any = {[ds]: datasets[ds]};
+                            let cont = new QueryController(dataset);
+                            let result: any = cont.query(query);
+                            if (JSON.stringify(result) !== JSON.stringify({render: 'TABLE', result: []}))
+                            {
+                                // Log.trace(JSON.stringify(result));
+                                fulfill({code: 200, body: result});
+                            }
+                        }
+                        /*The next piece of code will cause d2 to fail with apply not working, but all d1,d3 will pass*/
+                        // fulfill({code: 200, body: {render: 'TABLE', result: []}});
                         let result: any = controller.query(query);
                         // Log.trace(JSON.stringify(result));
                         fulfill({code: 200, body: result});
