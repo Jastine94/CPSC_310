@@ -130,9 +130,10 @@ export default class InsightFacade implements IInsightFacade {
                                 fulfill({code: 200, body: result});
                             }
                         }
-                        let result: any = controller.query(query);
+                        fulfill({code: 200, body: {render: 'TABLE', result: []}});
+                        // let result: any = controller.query(query);
                         // Log.trace(JSON.stringify(result));
-                        fulfill({code: 200, body: result});
+                        // fulfill({code: 200, body: result});
                     }
                 }
                 else
