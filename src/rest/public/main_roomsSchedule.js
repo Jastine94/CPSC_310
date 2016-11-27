@@ -53,8 +53,8 @@ $(function () {
         try {
             $.ajax("/query", {type:"POST", data: roomsquery, contentType: "application/json", dataType: "json", success: function(data) {
                 if (data["render"] === "TABLE") {
-                    generateTable(data["result"]);
-                    // roomsSet = data["result"];
+                    // generateTable(data["result"]);
+                    roomsSet = data["result"];
                 }
             }}).fail(function (e) {
                 spawnHttpErrorModal(e)
@@ -62,41 +62,124 @@ $(function () {
         } catch (err) {
             spawnErrorModal("Query Error", err);
         }
-        //
-        // // now scheulde room
-        // scheduleCourses(coursesSet, roomsSet);
+
+        // now scheulde room
+        var table = scheduleCourses(coursesSet, roomsSet);
+        generateTable(table);
     });
+
 
     function scheduleCourses(coursesSet, roomsSet){
         var courses = coursesSet, rooms = roomsSet;
-
-        // make another key mapping so that you can use it to schdule
+        var unscheduledCourses = [];
         for (var c = 0; c < courses.length; c++)
         {
             var numSections = courses[c]['numSections'];
             var coursesize = courses[c]['courses_size'];
             for (var ns = 0; ns < numSections; ns++)
             {
+                var filled = false;
                 for (var r = 0; r < rooms.length; r ++)
                 {
-                    var roomsize = rooms[r]['rooms_seats'];
-                    if (coursesize <= roomsize && rooms[r]['timetable'].length < 15)
-                    {
-                        putCourseIntoRoom(courses[c],rooms[r]);
-                        // need to map that the room has a table for some time slot [15 slots]
-                        // put the course into the room as long as constraints are held
-                        // then allocate the slot for that section but check if it occurs at the same time as well
+                    if (filled){
+                        break;
                     }
+                    var roomsize = rooms[r]['rooms_seats'];
+                    if (coursesize <= roomsize &&
+                        (typeof ( rooms[r]['timetable']) == 'undefined' || rooms[r]['timetable'].length < 16))
+                    {
+                        filled = this.putCourseIntoRoom(courses[c],rooms[r]);
+                    }
+                }
+                if (filled == false)
+                {
+                    unscheduledCourses.push({"course": courses[c]["courses_dept"] + courses[c]["courses_id"],
+                        "course_size": courses[c]["courses_size"],
+                        "room": "Unable to fit class into selected rooms",
+                        "room seats": "N/A",
+                        "time": "N/A"});
                 }
             }
         }
+        var renderTimetable = [];
+        for (var ro in rooms)
+        {
+            if (typeof (rooms[ro]["timetable"]) != 'undefined')
+            {
+                this.mapArrayToTime(rooms[ro]["timetable"]);
+                renderTimetable = renderTimetable.concat(rooms[ro]["timetable"]);
+            }
+        }
+        renderTimetable = renderTimetable.concat(unscheduledCourses);
+        return renderTimetable;
     }
 
     function putCourseIntoRoom(course, room){
-        // this will be the course into the room and map it there
-        // need to render a schedule
-        room["timetable"].push({"course": course["courses_dept"] + course["courses_id"], "course_size": course["course_size"]});
+        if (typeof (room["timetable"]) == 'undefined')
+        {
+            room["timetable"] = [];
+        }
+        room["timetable"].push({"course": course["courses_dept"] + course["courses_id"],
+            "course_size": course["courses_size"],
+            "room": room["rooms_name"],
+            "room seats": room["rooms_seats"]});
+        return true;
+    }
 
+    function mapArrayToTime(roomTimetable){
+        for (var i = 0; i < roomTimetable.length; i ++)
+        {
+            switch(i)
+            {
+                case 0:
+                    roomTimetable[i]["time"] = "MWF 8:00 - 9:00 a.m.";
+                    break;
+                case 1:
+                    roomTimetable[i]["time"] = "MWF 9:00 - 10:00 a.m.";
+                    break;
+                case 2:
+                    roomTimetable[i]["time"] = "MWF 10:00 -11:00 a.m.";
+                    break;
+                case 3:
+                    roomTimetable[i]["time"] = "MWF 11:00 a.m. - 12:00 p.m.";
+                    break;
+                case 4:
+                    roomTimetable[i]["time"] = "MWF 12:00 - 1:00 p.m. ";
+                    break;
+                case 5:
+                    roomTimetable[i]["time"] = "MWF 1:00 - 2:00 p.m.";
+                    break;
+                case 6:
+                    roomTimetable[i]["time"] = "MWF 2:00 - 3:00 p.m.";
+                    break;
+                case 7:
+                    roomTimetable[i]["time"] = "MWF 3:00 - 4:00 p.m.";
+                    break;
+                case 8:
+                    roomTimetable[i]["time"] = "MWF 4:00 - 5:00 p.m.";
+                    break;
+                case 9:
+                    roomTimetable[i]["time"] = "TTH 8:00 - 9:30 a.m.";
+                    break;
+                case 10:
+                    roomTimetable[i]["time"] = "TTH 9:30 - 11:00 a.m.";
+                    break;
+                case 11:
+                    roomTimetable[i]["time"] = "TTH 11:00 a.m. - 12:30 p.m.";
+                    break;
+                case 12:
+                    roomTimetable[i]["time"] = "TTH 12:30 - 2:00 p.m.";
+                    break;
+                case 13:
+                    roomTimetable[i]["time"] = "TTH 2:00 - 3:30 p.m.";
+                    break;
+                case 14:
+                    roomTimetable[i]["time"] = "TTH 3:30 - 5:00 p.m.";
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     function calculateSections(courseResult){

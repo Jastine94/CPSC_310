@@ -126,12 +126,14 @@ export default class InsightFacade implements IInsightFacade {
                             let result: any = cont.query(query);
                             if (JSON.stringify(result) !== JSON.stringify({render: 'TABLE', result: []}))
                             {
-                                // Log.trace(JSON.stringify(result));
-                                fulfill({code: 200, body: result});
+                                Log.trace(JSON.stringify(result));
+                                // Log.trace("OK SHOULD BE FULFILL HERE")
+                                return fulfill({code: 200, body: result});
                             }
                         }
                         /*The next piece of code will cause d2 to fail with apply not working, but all d1,d3 will pass*/
                         // fulfill({code: 200, body: {render: 'TABLE', result: []}});
+                        // Log.trace("QUERYING ONTHE LATEST DS ADDED")
                         let result: any = controller.query(query);
                         // Log.trace(JSON.stringify(result));
                         fulfill({code: 200, body: result});
@@ -204,4 +206,138 @@ export default class InsightFacade implements IInsightFacade {
             }
         }
     }
+
+    // TODO DELETE WHEN DONE WITH TESTING - FRANCES
+    // public scheduleCourses(coursesSet: any, roomsSet: any): any{
+    //     var courses = coursesSet;
+    //     var rooms = roomsSet;
+    //     var unscheduledCourses: any = [];
+    //
+    //     // Log.trace("COUR LEN: " + courses.length)
+    //     // make another key mapping so that you can use it to schdule
+    //     for (var c = 0; c < courses.length; c++)
+    //     {
+    //         // Log.trace("WE ARE IN THE COURSE RN: " + JSON.stringify(courses[c]));
+    //         var numSections = courses[c]['numSections'];
+    //         var coursesize = courses[c]['courses_size'];
+    //         for (var ns = 0; ns < numSections; ns++)
+    //         {
+    //             var filled = false;
+    //             for (var r = 0; r < rooms.length; r ++)
+    //             {
+    //                 if (filled){
+    //                     break;
+    //                 }
+    //                 var roomsize = rooms[r]['rooms_seats'];
+    //                 // Log.trace("WER ARE IN ROOM : " + JSON.stringify(rooms[r]))
+    //                 if (coursesize <= roomsize &&
+    //                     (typeof ( rooms[r]['timetable']) == 'undefined' || rooms[r]['timetable'].length < 16))
+    //                 {
+    //                     // Log.trace("YES IT IS HERE")
+    //                     filled = this.putCourseIntoRoom(courses[c],rooms[r]);
+    //                 }
+    //             }
+    //
+    //             // Log.trace("Course was filled?" + JSON.stringify(courses[c]["courses_id"]) + " : " + filled);
+    //             if (filled == false)
+    //             {
+    //                 // set it so that it was not able to be scheduled
+    //                 unscheduledCourses.push({"course": courses[c]["courses_dept"] + courses[c]["courses_id"],
+    //                                         "course_size": courses[c]["courses_size"],
+    //                                         "room": "Unable to fit class into selected rooms",
+    //                                         "room seats": "N/A",
+    //                                         "time": "N/A"});
+    //             }
+    //         }
+    //     }
+    //     // Log.trace("Unable to schedule courses due to large course size: " + JSON.stringify(unscheduledCourses))
+    //     var renderTimetable: any = [];
+    //     for (var ro in rooms)
+    //     {
+    //         // Log.trace("this is the current room that were in: " + JSON.stringify(rooms[ro]["rooms_name"]));
+    //         if (typeof (rooms[ro]["timetable"]) != 'undefined')
+    //         {
+    //             this.mapArrayToTime(rooms[ro]["timetable"]);
+    //             renderTimetable = renderTimetable.concat(rooms[ro]["timetable"]);
+    //         }
+    //     }
+    //
+    //     renderTimetable = renderTimetable.concat(unscheduledCourses);
+    //     // Log.trace("++++" + JSON.stringify(rooms));
+    //     // Log.trace(JSON.stringify(renderTimetable));
+    // }
+    //
+    // private putCourseIntoRoom(course: any, room: any): any{
+    //     // Log.trace("this is the course we have: " + JSON.stringify(course))
+    //     // Log.trace("this is the room we have: " + JSON.stringify(room))
+    //     if (typeof (room["timetable"]) == 'undefined')
+    //     {
+    //         room["timetable"] = [];
+    //     }
+    //     room["timetable"].push({"course": course["courses_dept"] + course["courses_id"],
+    //                             "course_size": course["courses_size"],
+    //                             "room": room["rooms_name"],
+    //                             "room seats": room["rooms_seats"]});
+    //     // Log.trace("!!! " + JSON.stringify(room["rooms_name"]) + " : " + JSON.stringify(room["timetable"]));
+    //     return true;
+    // }
+    //
+    // private mapArrayToTime(roomTimetable: any){
+    //
+    //     for (var i = 0; i < roomTimetable.length; i ++)
+    //     {
+    //         switch(i)
+    //         {
+    //             case 0:
+    //                 roomTimetable[i]["time"] = "MWF 8:00 - 9:00 a.m.";
+    //                 break;
+    //             case 1:
+    //                 roomTimetable[i]["time"] = "MWF 9:00 - 10:00 a.m.";
+    //                 break;
+    //             case 2:
+    //                 roomTimetable[i]["time"] = "MWF 10:00 -11:00 a.m.";
+    //                 break;
+    //             case 3:
+    //                 roomTimetable[i]["time"] = "MWF 11:00 a.m. - 12:00 p.m.";
+    //                 break;
+    //             case 4:
+    //                 roomTimetable[i]["time"] = "MWF 12:00 - 1:00 p.m. ";
+    //                 break;
+    //             case 5:
+    //                 roomTimetable[i]["time"] = "MWF 1:00 - 2:00 p.m.";
+    //                 break;
+    //             case 6:
+    //                 roomTimetable[i]["time"] = "MWF 2:00 - 3:00 p.m.";
+    //                 break;
+    //             case 7:
+    //                 roomTimetable[i]["time"] = "MWF 3:00 - 4:00 p.m.";
+    //                 break;
+    //             case 8:
+    //                 roomTimetable[i]["time"] = "MWF 4:00 - 5:00 p.m.";
+    //                 break;
+    //             case 9:
+    //                 roomTimetable[i]["time"] = "TTH 8:00 - 9:30 a.m.";
+    //                 break;
+    //             case 10:
+    //                 roomTimetable[i]["time"] = "TTH 9:30 - 11:00 a.m.";
+    //                 break;
+    //             case 11:
+    //                 roomTimetable[i]["time"] = "TTH 11:00 a.m. - 12:30 p.m.";
+    //                 break;
+    //             case 12:
+    //                 roomTimetable[i]["time"] = "TTH 12:30 - 2:00 p.m.";
+    //                 break;
+    //             case 13:
+    //                 roomTimetable[i]["time"] = "TTH 2:00 - 3:30 p.m.";
+    //                 break;
+    //             case 14:
+    //                 roomTimetable[i]["time"] = "TTH 3:30 - 5:00 p.m.";
+    //                 break;
+    //             default:
+    //                 break;
+    //         }
+    //     }
+    //     // console.log("THE FINAL TABLE IS: " + JSON.stringify(roomTimetable));
+    // }
+
 }
