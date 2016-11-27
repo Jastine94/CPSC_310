@@ -65,7 +65,7 @@ export default class DatasetController {
      * Returns all dataset files inside the ./data folder from disk if this.datasets is empty
      */
     public getDatasets(): Datasets {
-        //Log.trace('DatasetController :: getDatasets is being called');
+        // Log.trace('DatasetController :: getDatasets is being called');
         let that = this;
         if (Object.keys(that.datasets).length === 0)
         {
@@ -77,14 +77,16 @@ export default class DatasetController {
                 files.forEach(function (file, index)
                 {
                     let id = file.replace('.json', '');
-                    //Log.trace("Dataset with id: " + id + " - will be added to the dataset");
-                    that.datasets[id] = fs.readFileSync(data_dir + file);
+                    // Log.trace("Dataset with id: " + id + ":" + data_dir + file + " - will be added to the dataset");
+                    let fileContents: any = fs.readFileSync(data_dir+file, "utf8");
+                    fileContents = JSON.parse(fileContents);
+                    that.datasets[id] = fileContents;
                 })
                 //Log.trace("DatasetController :: getDatasets - completed");
                 return that.datasets;
             }
         }
-        return that.datasets;
+        return this.datasets;
     } //getDatasets
 
     /**

@@ -46,15 +46,15 @@ $(function () {
 
         var listofrooms = $("#buildings").val();
         var roomsFilt = filterByRooms(listofrooms);
-        var roomsquery ='{"GET": ["rooms_shortname","rooms_seats"],' +
+        var roomsquery ='{"GET": ["rooms_name","rooms_seats"],' +
             '"WHERE": ' + roomsFilt + ',' +
-            '"GROUP": [ "rooms_shortname", "rooms_seats"], "APPLY": [], "ORDER": { "dir": "UP", "keys": ["rooms_seats"]}, "AS": "TABLE"}';
+            '"GROUP": [ "rooms_name", "rooms_seats"], "APPLY": [], "ORDER": { "dir": "UP", "keys": ["rooms_seats"]}, "AS": "TABLE"}';
 
         try {
             $.ajax("/query", {type:"POST", data: roomsquery, contentType: "application/json", dataType: "json", success: function(data) {
                 if (data["render"] === "TABLE") {
-                    // generateTable(data["result"]);
-                    roomsSet = data["result"];
+                    generateTable(data["result"]);
+                    // roomsSet = data["result"];
                 }
             }}).fail(function (e) {
                 spawnHttpErrorModal(e)
@@ -62,14 +62,15 @@ $(function () {
         } catch (err) {
             spawnErrorModal("Query Error", err);
         }
-
-        // now scheulde room
-        scheduleCourses(coursesSet, roomsSet);
+        //
+        // // now scheulde room
+        // scheduleCourses(coursesSet, roomsSet);
     });
 
     function scheduleCourses(coursesSet, roomsSet){
         var courses = coursesSet, rooms = roomsSet;
 
+        // make another key mapping so that you can use it to schdule
         for (var c = 0; c < courses.length; c++)
         {
             var numSections = courses[c]['numSections'];
@@ -78,14 +79,24 @@ $(function () {
             {
                 for (var r = 0; r < rooms.length; r ++)
                 {
-                    var roomsize = rooms[i]['rooms_seats'];
-                    if (coursesize <= roomsize)
+                    var roomsize = rooms[r]['rooms_seats'];
+                    if (coursesize <= roomsize && rooms[r]['timetable'].length < 15)
                     {
+                        putCourseIntoRoom(courses[c],rooms[r]);
+                        // need to map that the room has a table for some time slot [15 slots]
+                        // put the course into the room as long as constraints are held
                         // then allocate the slot for that section but check if it occurs at the same time as well
                     }
                 }
             }
         }
+    }
+
+    function putCourseIntoRoom(course, room){
+        // this will be the course into the room and map it there
+        // need to render a schedule
+        room["timetable"].push({"course": course["courses_dept"] + course["courses_id"], "course_size": course["course_size"]});
+
     }
 
     function calculateSections(courseResult){

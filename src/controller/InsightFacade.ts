@@ -119,6 +119,17 @@ export default class InsightFacade implements IInsightFacade {
                     }
                     else
                     {
+                        for (var ds in datasets)
+                        {
+                            let dataset: any = {[ds]: datasets[ds]};
+                            let cont = new QueryController(dataset);
+                            let result: any = cont.query(query);
+                            if (JSON.stringify(result) !== JSON.stringify({render: 'TABLE', result: []}))
+                            {
+                                // Log.trace(JSON.stringify(result));
+                                fulfill({code: 200, body: result});
+                            }
+                        }
                         let result: any = controller.query(query);
                         // Log.trace(JSON.stringify(result));
                         fulfill({code: 200, body: result});
