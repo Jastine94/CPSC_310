@@ -35,8 +35,7 @@ $(function () {
         try {
             $.ajax("/query", {type:"POST", data: coursesquery, contentType: "application/json", dataType: "json", success: function(data) {
                 if (data["render"] === "TABLE") {
-                    // generateTable(data["result"]);
-                    console.log("COURSES DATA: ", JSON.stringify(data));
+                    // console.log("COURSES DATA: ", JSON.stringify(data));
                     coursesSet = calculateSections(data["result"]);
                 }
             }}).fail(function (e) {
@@ -46,22 +45,86 @@ $(function () {
             spawnErrorModal("Query Error", err);
         }
 
+
+        var startBuilding = $("#startbuilding").val();
+        var distance = $("#distance").val();
         var listofrooms = $("#buildings").val();
-        var roomsFilt = filterByRooms(listofrooms);
-        var roomsquery ='{"GET": ["rooms_name","rooms_seats"],' +
-            '"WHERE": ' + roomsFilt + ',' +
-            '"GROUP": [ "rooms_name", "rooms_seats"], "APPLY": [], "ORDER": { "dir": "UP", "keys": ["rooms_seats"]}, "AS": "TABLE"}';
+        console.log(startBuilding,distance,listofrooms)
 
+        if (startBuilding != "" && distance !="") {
+            var boundingBox = [], lat = 0, lon = 0;
+            distance = distance / 1000; //convert into kilometers
+
+            var buildinglatlonquery = '{' +
+                '"GET": ["rooms_shortname", "rooms_lat", "rooms_lon"],' +
+                '"WHERE": {"IS": {"rooms_shortname": "' + startBuilding + '"}},' +
+                '"GROUP": ["rooms_shortname", "rooms_lat", "rooms_lon"], "APPLY": [], "AS": "TABLE"}';
+
+            try {
+                $.ajax("/query", {
+                    type: "POST",
+                    data: buildinglatlonquery,
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        // console.log("WER ARE NO IN THE QUERYING OF THE BUILDING")
+                        if (data["render"] === "TABLE") {
+                            lat = data["result"][0]["rooms_lat"];
+                            lon = data["result"][0]["rooms_lon"];
+                            boundingBox = calculateBoundingBox(lat, lon, distance);
+                            queryBoundingBox(boundingBox, coursesSet); //queries and sets it as a table
+                        }
+                    }
+                }).fail(function (e) {
+                    spawnHttpErrorModal(e)
+                });
+            } catch (err) {
+                spawnErrorModal("Query Error", err);
+            }
+
+        }
+
+        else if (listofrooms != "")
+        {
+            var roomsFilt = filterByRooms(listofrooms);
+            var roomsquery ='{"GET": ["rooms_name","rooms_seats"],' + '"WHERE": ' + roomsFilt + ',' +
+                '"GROUP": [ "rooms_name", "rooms_seats"], "APPLY": [], "ORDER": { "dir": "UP", "keys": ["rooms_seats"]}, "AS": "TABLE"}';
+
+            try {
+                $.ajax("/query", {type:"POST", data: roomsquery, contentType: "application/json", dataType: "json", success: function(data) {
+                    if (data["render"] === "TABLE") {
+                        roomsSet = data["result"];
+                        var table = scheduleCourses(coursesSet, roomsSet);
+                        // console.log(JSON.stringify(table));
+                        generateTable(table);
+                    }
+                }}).fail(function (e) {
+                    spawnHttpErrorModal(e)
+                });
+            } catch (err) {
+                spawnErrorModal("Query Error", err);
+            }
+        }
+
+    });
+
+
+    function queryBoundingBox(boundingBox, coursesSet) {
+        var latMin = boundingBox[0];
+        var latMax = boundingBox[1];
+        var lonMin = boundingBox[2];
+        var lonMax = boundingBox[3];
+
+        var boundingBoxQuery = '{"GET": ["rooms_name","rooms_seats"],' + '"WHERE": {"AND": [' +
+            '{"GT": {"rooms_lat": ' + latMin + '}},' + '{"LT": {"rooms_lat": ' + latMax + '}},' +
+            '{"GT": {"rooms_lon": ' + lonMin + '}},' + '{"LT": {"rooms_lon": ' + lonMax + '}}]},' +
+            '"GROUP": [ "rooms_name", "rooms_seats"],"APPLY": [],"ORDER": { "dir": "UP", "keys": ["rooms_seats"]},"AS": "TABLE"}';
         try {
-            $.ajax("/query", {type:"POST", data: roomsquery, contentType: "application/json", dataType: "json", success: function(data) {
+            $.ajax("/query", {type:"POST", data: boundingBoxQuery, contentType: "application/json", dataType: "json", success: function(data) {
                 if (data["render"] === "TABLE") {
-                    // generateTable(data["result"]);
-                    console.log("ROOMS DATA: ", JSON.stringify(data));
-                    roomsSet = data["result"];
-
+                    var roomsSet = data["result"];
                     var table = scheduleCourses(coursesSet, roomsSet);
-                    console.log(JSON.stringify(table));
-                    generateTable(table);
+                    generateTable(table)
                 }
             }}).fail(function (e) {
                 spawnHttpErrorModal(e)
@@ -69,11 +132,11 @@ $(function () {
         } catch (err) {
             spawnErrorModal("Query Error", err);
         }
-
-    });
+    }
 
     function scheduleCourses(coursesSet, roomsSet){
-        console.log("TIME TO SCHEDULE COURSES NOW")
+        // console.log("TIME TO SCHEDULE COURSES NOW")
+        // console.log("ROOMS SET: ", JSON.stringify(roomsSet))
         var courses = coursesSet, rooms = roomsSet;
         var unscheduledCourses = [];
         for (var c = 0; c < courses.length; c++)
@@ -214,10 +277,10 @@ $(function () {
         // TODO, make this call after you get the lat lon of the building that you're interested in
         //http://zurb.com/forrst/posts/Finding_if_a_Lat_Lng_point_is_inside_a_Bounding-OCs
         var half = (((dist / 2)*1.2) * 1000); // added 1.2 for error
-        var latrad = this.deg2rad(lat);
-        var lonrad = this.deg2rad(lon);
+        var latrad = deg2rad(lat);
+        var lonrad = deg2rad(lon);
 
-        var radius = this.devineRadius(lat);
+        var radius = devineRadius(lat);
         var radius_p = (radius * Math.cos(lat));
 
         var latMin = (latrad - (half / radius));
@@ -228,7 +291,7 @@ $(function () {
         var box = [latMin, latMax, lonMin, lonMax];
         for (var coord in box)
         {
-            box[coord] = this.rad2deg(box[coord]);
+            box[coord] = rad2deg(box[coord]);
         }
         return box;
     }
