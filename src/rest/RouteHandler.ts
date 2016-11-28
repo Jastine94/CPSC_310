@@ -14,10 +14,58 @@ export default class RouteHandler {
     public static getHomepage(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace('RoutHandler::getHomepage(..)');
 
-        fs.readFile('./src/rest/views/index.html', 'utf8', function (err: Error, file: Buffer) {
+        fs.readFile('./src/rest/views/index_main.html', 'utf8', function (err: Error, file: Buffer) {
             if (err) {
                 res.send(500);
-                //Log.error(JSON.stringify(err));
+                return next();
+            }
+            res.write(file);
+            res.end();
+            return next();
+        });
+    }
+
+
+    public static getHomepageCourses(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace('RoutHandler::getHomepage(..)');
+
+        Log.trace('RouteHandler::getHomepage(..) - params: ' + JSON.stringify(req.params));
+
+        fs.readFile('./src/rest/views/index_courses.html', 'utf8', function (err: Error, file: Buffer) {
+            if (err) {
+                res.send(500);
+                return next();
+            }
+            res.write(file);
+            res.end();
+            return next();
+        });
+    }
+
+    public static getHomepageRooms(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace('RoutHandler::getHomepage(..)');
+
+        Log.trace('RouteHandler::getHomepage(..) - params: ' + JSON.stringify(req.params));
+
+        fs.readFile('./src/rest/views/index_rooms.html', 'utf8', function (err: Error, file: Buffer) {
+            if (err) {
+                res.send(500);
+                return next();
+            }
+            res.write(file);
+            res.end();
+            return next();
+        });
+    }
+
+    public static getHomepageScheduler(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace('RoutHandler::getHomepage(..)');
+
+        Log.trace('RouteHandler::getHomepage(..) - params: ' + JSON.stringify(req.params));
+
+        fs.readFile('./src/rest/views/index_roomsSchedule.html', 'utf8', function (err: Error, file: Buffer) {
+            if (err) {
+                res.send(500);
                 return next();
             }
             res.write(file);
