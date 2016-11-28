@@ -156,7 +156,7 @@ $(function () {
                     {
                         filled = putCourseIntoRoom(courses[c],rooms[r]);
                     }
-                    else if (coursesize <= roomsize && rooms[r]['timetable'].length < 41)
+                    else if (coursesize <= roomsize && rooms[r]['timetable'].length < 40)
                     {
                         var nextr = r + 1;
                         if (typeof (rooms[nextr]) != 'undefined' &&
@@ -170,6 +170,10 @@ $(function () {
                             notfrom8to5 += 1;
                         }
                     }
+                    // else if (coursesize <= roomsize && rooms[r]['timetable'].length >= 40)
+                    // {
+                    //     filled = false;
+                    // }
                 }
                 if (filled == false)
                 {
