@@ -24,6 +24,44 @@ $(function () {
     $("#roomSchedulingForm").submit(function (e) {
         e.preventDefault();
         var listofcourses = $("#courses").val();
+        var listofrooms = $("#buildings").val();
+        var startBuilding = $("#startbuilding").val();
+        var distance = $("#distance").val();
+
+
+        if (listofcourses === '')
+        {
+            alert("Must courses to schedule");
+            return;
+        }
+
+        if (distance !== '')
+        {
+            if (isNaN(distance))
+            {
+                alert("Distance must be a number");
+                return;
+            }
+        }
+        if (listofcourses !== '')
+        {
+            // check that only rooms or (startBuilding and distance) can be filled
+            var lorHasVal = listofrooms !== '';
+            var sbHasVal = startBuilding !== '';
+            var distHasVal = distance !== '';
+            if (lorHasVal && (sbHasVal || distHasVal))
+            {
+                alert("Only filter with either List of Buildings or building with distance");
+                return;
+            }
+            if (sbHasVal === false ||distHasVal === false)
+            {
+                alert("Missing distance from a building, or missing building");
+                return;
+            }
+        }
+
+
         var coursesSet = [], roomsSet =[];
         var coursesFilt = filterByCourses(listofcourses);
         var coursesquery = '{"GET": ["courses_dept", "courses_id", "numSections", "courses_size"], ' +
@@ -45,12 +83,7 @@ $(function () {
             spawnErrorModal("Query Error", err);
         }
 
-
-        var startBuilding = $("#startbuilding").val();
-        var distance = $("#distance").val();
-        var listofrooms = $("#buildings").val();
         console.log(startBuilding,distance,listofrooms)
-
         if (startBuilding != "" && distance !="") {
             var boundingBox = [], lat = 0, lon = 0;
             distance = distance / 1000; //convert into kilometers
@@ -198,7 +231,7 @@ $(function () {
         console.log("rednered tt length: ", renderTimetable.length, unscheduledCourses.length);
         console.log("not from 8 to 5: ", notfrom8to5);
         var quality = ((1-(unscheduledCourses.length/renderTimetable.length))*100).toFixed(2);
-        // todo save this quality somewhere
+         // todo save this quality somewhere
 
         return renderTimetable;
     }
