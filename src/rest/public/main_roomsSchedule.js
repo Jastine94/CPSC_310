@@ -136,9 +136,8 @@ $(function () {
 
     function scheduleCourses(coursesSet, roomsSet){
         // console.log("TIME TO SCHEDULE COURSES NOW")
-        // console.log("ROOMS SET: ", JSON.stringify(roomsSet))
         var courses = coursesSet, rooms = roomsSet;
-        var unscheduledCourses = [];
+        var unscheduledCourses = [], notfrom8to5 = 0;
         for (var c = 0; c < courses.length; c++)
         {
             var numSections = courses[c]['numSections'];
@@ -153,12 +152,23 @@ $(function () {
                         break;
                     }
                     if (coursesize <= roomsize &&
-                        (typeof ( rooms[r]['timetable']) == 'undefined' || rooms[r]['timetable'].length < 16))
+                        (typeof ( rooms[r]['timetable']) == 'undefined' || rooms[r]['timetable'].length < 15))
                     {
-
                         filled = putCourseIntoRoom(courses[c],rooms[r]);
-                        // need to add it so that if it's all full, can still add more
-                        // todo calculate the number of schedule
+                    }
+                    else if (coursesize <= roomsize && rooms[r]['timetable'].length < 41)
+                    {
+                        var nextr = r + 1;
+                        if (typeof (rooms[nextr]) != 'undefined' &&
+                            (typeof (rooms[nextr]['timetable']) == 'undefined' || rooms[nextr]['timetable'].length < 15))
+                        {
+                           filled = putCourseIntoRoom(courses[c], rooms[nextr]);
+                        }
+                        else
+                        {
+                            filled = putCourseIntoRoom(courses[c], rooms[r]);
+                            notfrom8to5 += 1;
+                        }
                     }
                 }
                 if (filled == false)
@@ -182,6 +192,7 @@ $(function () {
         }
         renderTimetable = renderTimetable.concat(unscheduledCourses);
         console.log("rednered tt length: ", renderTimetable.length, unscheduledCourses.length);
+        console.log("not from 8 to 5: ", notfrom8to5);
         var quality = ((1-(unscheduledCourses.length/renderTimetable.length))*100).toFixed(2);
         // todo save this quality somewhere
 
@@ -250,6 +261,81 @@ $(function () {
                     break;
                 case 14:
                     roomTimetable[i]["time"] = "TTH 3:30 - 5:00 p.m.";
+                    break;
+                case 15:
+                    roomTimetable[i]["time"] = "MWF 5:00 - 6:00 p.m.";
+                    break;
+                case 16:
+                    roomTimetable[i]["time"] = "MWF 6:00 - 7:00 p.m.";
+                    break;
+                case 17:
+                    roomTimetable[i]["time"] = "MWF 7:00 - 8:00 p.m.";
+                    break;
+                case 18:
+                    roomTimetable[i]["time"] = "MWF 8:00 - 9:00 p.m.";
+                    break;
+                case 19:
+                    roomTimetable[i]["time"] = "MWF 9:00 - 10:00 p.m.";
+                    break;
+                case 20:
+                    roomTimetable[i]["time"] = "MWF 10:00 - 11:00 p.m.";
+                    break;
+                case 21:
+                    roomTimetable[i]["time"] = "MWF 11:00 p.m. - 12:00 a.m.";
+                    break;
+                case 22:
+                    roomTimetable[i]["time"] = "MWF 12:00 - 1:00 a.m.";
+                    break;
+                case 23:
+                    roomTimetable[i]["time"] = "MWF 1:00 - 2:00 a.m.";
+                    break;
+                case 24:
+                    roomTimetable[i]["time"] = "MWF 2:00 - 3:00 a.m.";
+                    break;
+                case 25:
+                    roomTimetable[i]["time"] = "MWF 3:00 - 4:00 a.m.";
+                    break;
+                case 26:
+                    roomTimetable[i]["time"] = "MWF 4:00 - 5:00 a.m.";
+                    break;
+                case 27:
+                    roomTimetable[i]["time"] = "MWF 5:00 - 6:00 a.m.";
+                    break;
+                case 28:
+                    roomTimetable[i]["time"] = "MWF 6:00 - 7:00 a.m.";
+                    break;
+                case 29:
+                    roomTimetable[i]["time"] = "MWF 7:00 - 8:00 a.m.";
+                    break;
+                case 30:
+                    roomTimetable[i]["time"] = "TTH 5:00 - 6:30 p.m.";
+                    break;
+                case 31:
+                    roomTimetable[i]["time"] = "TTH 6:30 - 8:00 p.m.";
+                    break;
+                case 32:
+                    roomTimetable[i]["time"] = "TTH 8:00 - 9:30 p.m.";
+                    break;
+                case 33:
+                    roomTimetable[i]["time"] = "TTH 9:30 - 11:00 p.m.";
+                    break;
+                case 34:
+                    roomTimetable[i]["time"] = "TTH 11:00 p.m. - 12:30 a.m.";
+                    break;
+                case 35:
+                    roomTimetable[i]["time"] = "TTH 12:30 - 2:00 a.m.";
+                    break;
+                case 36:
+                    roomTimetable[i]["time"] = "TTH 2:00 - 3:30 a.m.";
+                    break;
+                case 37:
+                    roomTimetable[i]["time"] = "TTH 3:30 - 5:00 a.m.";
+                    break;
+                case 38:
+                    roomTimetable[i]["time"] = "TTH 5:00 - 6:30 a.m.";
+                    break;
+                case 39:
+                    roomTimetable[i]["time"] = "TTH 6:30 - 8:00 a.m.";
                     break;
                 default:
                     break;
