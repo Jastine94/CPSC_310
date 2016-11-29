@@ -1,0 +1,21 @@
+#quality {
+    width:80%;
+    margin:auto;
+    margin-top:10px;
+    border-style:solid;
+    padding:10px;
+}
+p {
+    text-align: left;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}

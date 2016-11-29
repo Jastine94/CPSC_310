@@ -46,19 +46,32 @@ $(function () {
         if (listofcourses !== '')
         {
             // check that only rooms or (startBuilding and distance) can be filled
-            var lorHasVal = listofrooms !== '';
-            var sbHasVal = startBuilding !== '';
-            var distHasVal = distance !== '';
-            if (lorHasVal && (sbHasVal || distHasVal))
+            var lorHasEmptyVal = listofrooms === '';
+            var sbHasEmptyVal = startBuilding === '';
+            var distHasEmptyVal = distance === '';
+            if (lorHasEmptyVal)
+            {
+                if (sbHasEmptyVal && distHasEmptyVal)
+                {
+                    alert("Only filter with either List of Buildings or building with distance");
+                    return;
+                }
+                if (sbHasEmptyVal == false && distHasEmptyVal)
+                {
+                    alert("Missing distance input");
+                    return;
+                }
+                if (sbHasEmptyVal && distHasEmptyVal == false)
+                {
+                    alert("Missing start building");
+                    return;
+                }
+            }
+            if (lorHasEmptyVal == false && (sbHasEmptyVal == false || distHasEmptyVal == false))
             {
                 alert("Only filter with either List of Buildings or building with distance");
                 return;
             }
-            // if (lorHasVal === '' && ((startBuilding !== '' && distance ==='') ||(startBuilding === '' && distance !== '')))
-            // {
-            //     alert("Missing distance from a building, or missing building");
-            //     return;
-            // }
         }
 
 
@@ -230,9 +243,9 @@ $(function () {
         renderTimetable = renderTimetable.concat(unscheduledCourses);
         console.log("rednered tt length: ", renderTimetable.length, unscheduledCourses.length);
         console.log("not from 8 to 5: ", notfrom8to5);
-        var quality = ((1-(unscheduledCourses.length/renderTimetable.length))*100).toFixed(2);
-         // todo save this quality somewhere
-
+        var quality = ((1-((unscheduledCourses.length+notfrom8to5)/renderTimetable.length))*100).toFixed(2);
+        $("#qualityVal").val(quality);
+        document.getElementById("qualityVal").textContent = quality + '%';
         return renderTimetable;
     }
 
