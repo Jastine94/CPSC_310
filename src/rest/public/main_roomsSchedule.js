@@ -54,11 +54,11 @@ $(function () {
                 alert("Only filter with either List of Buildings or building with distance");
                 return;
             }
-            if (sbHasVal === false ||distHasVal === false)
-            {
-                alert("Missing distance from a building, or missing building");
-                return;
-            }
+            // if (lorHasVal === '' && ((startBuilding !== '' && distance ==='') ||(startBuilding === '' && distance !== '')))
+            // {
+            //     alert("Missing distance from a building, or missing building");
+            //     return;
+            // }
         }
 
 

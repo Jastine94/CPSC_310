@@ -71,3 +71,15 @@ Provide a usbale interface for scheduling specific courses into specific rooms
 		- basing on the previous year should be a 'good enough' heuristic value
 	Show that the quality measure is being displayed for your schedule
 		- this will be required by taking the number of courses that are not from 8-5 and divide that by the total number of courses
+
+
+
+Use Yelp API to
+1. get current location
+2. use location to find places to eat within 10 minutes of radius
+3. be able to filter the the places to eat
+4. suggestions of places to eat
+
+https://github.com/Yelp/yelp-api
+https://www.npmjs.com/package/node-yelp-api
+https://www.yelp.com/developers/documentation/v2/search_api
