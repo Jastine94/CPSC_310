@@ -43,4 +43,6 @@ export interface IInsightFacade {
      * fulfill should be for 2XX codes and reject for everything else.
      */
     performQuery(query: QueryRequest): Promise<InsightResponse>;
+
+    queryYelpAPI(food: any, location:any, yelp: any): Promise<any>;
 }

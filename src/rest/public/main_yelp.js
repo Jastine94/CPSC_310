@@ -77,8 +77,10 @@ $(function () {
             $.ajax("/queryYelp", {type:"POST", data: query, contentType: "application/json", dataType: "json", success: function(data) {
 
                 console.log(data);
-
                 console.log("Done");
+                $("#render").val(data);
+                // document.getElementById("render").textContent = data;
+                document.getElementById("render").textContent = JSON.stringify(data);
 
             }}).fail(function (e) {
                 spawnHttpErrorModal(e)
