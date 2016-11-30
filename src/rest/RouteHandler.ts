@@ -25,11 +25,8 @@ export default class RouteHandler {
         });
     }
 
-
     public static getHomepageCourses(req: restify.Request, res: restify.Response, next: restify.Next) {
-        Log.trace('RoutHandler::getHomepage(..)');
-
-        Log.trace('RouteHandler::getHomepage(..) - params: ' + JSON.stringify(req.params));
+        Log.trace('RoutHandler::getHomepageCourses(..)');
 
         fs.readFile('./src/rest/views/index_courses.html', 'utf8', function (err: Error, file: Buffer) {
             if (err) {
@@ -43,9 +40,7 @@ export default class RouteHandler {
     }
 
     public static getHomepageRooms(req: restify.Request, res: restify.Response, next: restify.Next) {
-        Log.trace('RoutHandler::getHomepage(..)');
-
-        Log.trace('RouteHandler::getHomepage(..) - params: ' + JSON.stringify(req.params));
+        Log.trace('RoutHandler::getHomepageRooms(..)');
 
         fs.readFile('./src/rest/views/index_rooms.html', 'utf8', function (err: Error, file: Buffer) {
             if (err) {
@@ -59,11 +54,24 @@ export default class RouteHandler {
     }
 
     public static getHomepageScheduler(req: restify.Request, res: restify.Response, next: restify.Next) {
-        Log.trace('RoutHandler::getHomepage(..)');
-
-        Log.trace('RouteHandler::getHomepage(..) - params: ' + JSON.stringify(req.params));
+        Log.trace('RoutHandler::getHomepageScheduler(..)');
 
         fs.readFile('./src/rest/views/index_roomsSchedule.html', 'utf8', function (err: Error, file: Buffer) {
+            if (err) {
+                res.send(500);
+                return next();
+            }
+            res.write(file);
+            res.end();
+            return next();
+        });
+    }
+
+
+    public static getHomepageYelp(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace('RoutHandler::getHomepageYelp(..)');
+
+        fs.readFile('./src/rest/views/index_yelp.html', 'utf8', function (err: Error, file: Buffer) {
             if (err) {
                 res.send(500);
                 return next();
@@ -130,6 +138,39 @@ export default class RouteHandler {
         catch (error)
         {
             //Log.error('RouteHandler::postQuery(..) - ERROR: '  + error);
+            res.send(400);
+        }
+        return next();
+    }
+
+    public static postYelpQuery(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace('RouteHandler::postYelpQuery(..) - params: ' + JSON.stringify(req.params));
+        try
+        {
+            var Yelp = require('yelp');
+
+            var yelp = new Yelp({
+                consumer_key : "Pw7sip730OyT18b",
+                consumer_secret : "2vrIqHQadJkXujSIVjp7_dgQQ_4",
+                token : "M4UX3_3aAPZLAfUq2xPoMbWH67qHxoUm",
+                token_secret : "BHOovNwQn5HwSJ1iPkhQGuSzAYg",
+            });
+            Log.trace("Search");
+            // See http://www.yelp.com/developers/documentation/v2/search_api
+
+            yelp.search({ term:'food', location:'Vancouver'}).then(function (result : any)
+            {
+                Log.trace("Got data");
+                res.json(result.code, result.body);
+                Log.trace(JSON.stringify(result.body));
+            }).catch(function (error : any) {
+                res.json(error.code, error.body);
+            });
+
+        }
+        catch (error)
+        {
+            Log.error('RouteHandler::postYelpQuery(..) - ERROR: '  + error);
             res.send(400);
         }
         return next();

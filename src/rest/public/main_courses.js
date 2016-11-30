@@ -2,7 +2,7 @@ $(function () {
     $("#datasetAddCourses").click(function () {
         var id = "courses";
         var zip = $("#datasetZip").prop('files')[0];
-        console.log(String(zip));
+        console.log(String($("#datasetZip").val()));
         var data = new FormData();
         data.append("zip", zip);
         $.ajax("/dataset/" + id,

@@ -64,6 +64,7 @@ export default class Server {
                 that.rest.get('/courses', RouteHandler.getHomepageCourses);
                 that.rest.get('/rooms', RouteHandler.getHomepageRooms);
                 that.rest.get('/scheduler', RouteHandler.getHomepageScheduler);
+                that.rest.get('/yelpExplorer', RouteHandler.getHomepageYelp);
 
 
                 // Sends a dataset. Is idempotent and can create or update a dataset id.
@@ -74,6 +75,7 @@ export default class Server {
                 // they are formed by sending JSON bodies, which is not standard for normal GET requests.
                 // curl -is -X POST -d '{ "key": "value" }' http://localhost:4321/query
                 that.rest.post('/query', restify.bodyParser(), RouteHandler.postQuery);
+                that.rest.post('/queryYelp', restify.bodyParser(), RouteHandler.postYelpQuery);
 
                 that.rest.del('/dataset/:id', RouteHandler.deleteDataset);
 
