@@ -79,8 +79,12 @@ $(function () {
                 console.log("Done");
 
                 console.log(data);
-
                 console.log("Done");
+                $("#render").val(data);
+                // document.getElementById("render").textContent = data;
+                var d = parseRestaurant(data);
+                generateTable(d);
+                // document.getElementById("render").textContent = JSON.stringify(d);
 
             }}).fail(function (e) {
                 spawnHttpErrorModal(e)
@@ -88,6 +92,77 @@ $(function () {
         } catch (err) {
             spawnErrorModal("Query Error", err);
         }});
+
+    function parseRestaurant(data){
+        var allRest = [];
+        var businesses = data.businesses;
+        if (typeof businesses != 'undefined')
+        {
+            for (var res = 0; res < businesses.length; res++) {
+                var restaurant = {};
+                var address = businesses[res].location.address[0] + ', ' + businesses[res].location.city;
+                restaurant["Restaurant Name"] = businesses[res].name;
+                restaurant["Phone Number"] = businesses[res].display_phone;
+                restaurant["Address"] = address;
+                restaurant["Yelp Rating"] = businesses[res].rating + '/5';
+                restaurant["Yelp URL"] = '<a href='+businesses[res].url+'>'+restaurant["Restaurant Name"] + ' Yelp Review</a>';
+                allRest.push(restaurant);
+            }
+        }
+        return allRest;
+    }
+
+
+    function generateTable(data) {
+        var columns = [];
+        Object.keys(data[0]).forEach(function (title) {
+            columns.push({
+                head: title,
+                cl: "title",
+                html: function (d) {
+                    return d[title]
+                }
+            });
+        });
+        var container = d3.select("#render");
+        container.html("");
+        container.selectAll("*").remove();
+        var table = container.append("table").style("margin", "auto");
+
+        table.append("thead").append("tr")
+            .selectAll("th")
+            .data(columns).enter()
+            .append("th")
+            .attr("class", function (d) {
+                return d["cl"]
+            })
+            .text(function (d) {
+                return d["head"]
+            });
+
+        table.append("tbody")
+            .selectAll("tr")
+            .data(data).enter()
+            .append("tr")
+            .selectAll("td")
+            .data(function (row, i) {
+                return columns.map(function (c) {
+                    // compute cell values for this specific row
+                    var cell = {};
+                    d3.keys(c).forEach(function (k) {
+                        cell[k] = typeof c[k] == "function" ? c[k](row, i) : c[k];
+                    });
+                    return cell;
+                });
+            }).enter()
+            .append("td")
+            .html(function (d) {
+                return d["html"]
+            })
+            .attr("class", function (d) {
+                return d["cl"]
+            });
+    }
 
     function spawnHttpErrorModal(e) {
         $("#errorModal .modal-title").html(e.status);

@@ -149,25 +149,36 @@ export default class RouteHandler {
         {
             var Yelp = require('yelp');
 
+            // var yelp = new Yelp({
+            //     consumer_key : "Pw7sip730OyT18b",
+            //     consumer_secret : "2vrIqHQadJkXujSIVjp7_dgQQ_4",
+            //     token : "M4UX3_3aAPZLAfUq2xPoMbWH67qHxoUm",
+            //     token_secret : "BHOovNwQn5HwSJ1iPkhQGuSzAYg",
+            // });
+
             var yelp = new Yelp({
-                consumer_key : "Pw7sip730OyT18b",
-                consumer_secret : "2vrIqHQadJkXujSIVjp7_dgQQ_4",
-                token : "M4UX3_3aAPZLAfUq2xPoMbWH67qHxoUm",
-                token_secret : "BHOovNwQn5HwSJ1iPkhQGuSzAYg",
+                consumer_key : "RHQ7BcnvEbH9ODZIyz5k1g",
+                consumer_secret : "Yqf73KL3CqStWn5KSGDRWWYUTng",
+                token : "kugl83UsS2yeAkGBWsR2bvJCdXgS3ykV",
+                token_secret : "K9HZrJgo__kw3TH2Rjjp2urND4Y",
             });
             Log.trace("Search");
-            // See http://www.yelp.com/developers/documentation/v2/search_api
-
-            yelp.search({ term:'food', location:'Vancouver'}).then(function (result : any)
+            let insightFacade: IInsightFacade = new InsightFacade;
+            insightFacade.queryYelpAPI('food', 'Vancouver', yelp).then(function (result: any)
             {
-                Log.trace("Got data");
-                res.json(result.code, result.body);
-                Log.trace(JSON.stringify(result.body));
-            }).catch(function (error : any) {
-                res.json(error.code, error.body);
+                Log.trace("WE GOT IT!!!!!!");
+                res.json(result)
             });
-
-        }
+            // yelp.search({ term:'food', location:'Vancouver'}).then(function (result : any)
+            // {
+            //     Log.trace("Got data");
+            //     Log.trace("DATD IS " + JSON.stringify(result));
+            //     res.json(result.code, result.body);
+            //     Log.trace(JSON.stringify(result.body));
+            // }).catch(function (error : any) {
+            //     res.json(error.code, error.body);
+            // });
+                    }
         catch (error)
         {
             Log.error('RouteHandler::postYelpQuery(..) - ERROR: '  + error);
