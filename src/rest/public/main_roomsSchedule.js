@@ -491,11 +491,11 @@ $(function () {
             }
             else if (JSON.stringify(loc[i].match(courseIdKey)) != 'null')
             {
-                coursesComponent = coursesComponent + '{"IS":{"courses_id": "'+loc[i].match(courseIdKey)[0].trim()+'"}}' + comma;
+                coursesComponent = coursesComponent + '{"IS":{"courses_id": "' + loc[i].trim() + '"}}' + comma;
             }
             else if (JSON.stringify(loc[i].match(deptKey)) != 'null')
             {
-                coursesComponent = coursesComponent + '{"IS":{"courses_dept": "' + loc[i].match(deptKey)[0].trim() +'"}}' + comma;
+                coursesComponent = coursesComponent + '{"IS":{"courses_dept": "' + loc[i].trim() +'"}}' + comma;
             }
         }
         coursesComponent = coursesComponent + ']}';
