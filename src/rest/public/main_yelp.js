@@ -72,26 +72,79 @@ $(function () {
 
          console.log("Done");
          */
-        var query = "";
-        try {
-            $.ajax("/queryYelp", {type:"POST", data: query, contentType: "application/json", dataType: "json", success: function(data) {
 
+        // var building = $("#postalCode").val();
+        var postalCode = $("#postalCode").val();
+        var food = $("#category").val();
+        var radius = $("#radius").val();
+        /*
+        var lat = 0, lon = 0, latlon = "";
+        var buildinglatlonquery = '{' +
+            '"GET": ["rooms_shortname", "rooms_lat", "rooms_lon"],' +
+            '"WHERE": {"IS": {"rooms_shortname": "' + building + '"}},' +
+            '"GROUP": ["rooms_shortname", "rooms_lat", "rooms_lon"], "APPLY": [], "AS": "TABLE"}';
+
+        try {
+            $.ajax("/query", {
+                type: "POST",
+                data: buildinglatlonquery,
+                contentType: "application/json",
+                dataType: "json",
+                success: function (data) {
+                    if (data["render"] === "TABLE") {
+                        lat = data["result"][0]["rooms_lat"];
+                        lon = data["result"][0]["rooms_lon"];
+                        console.log("THIS LAT LON IS ", lat, lon)
+                        latlon = '"'+lat+','+lon+'"';
+
+                        var query = '{"term": "'+ food +'", "ll":' + latlon +', "radius": ' + radius+ '}';
+                        // var query = '{"term": "sushi", "ll": "40.748068,-73.985056"}';
+                        try {
+                            $.ajax("/queryYelp", {type:"POST", data: query, contentType: "application/json", dataType: "json", success: function(data) {
+                                console.log(data);
+                                console.log("Done");
+                                $("#render").val(data);
+                                var d = parseRestaurant(data);
+                                generateTable(d);
+
+                            }}).fail(function (e) {
+                                spawnHttpErrorModal(e)
+                            });
+                        } catch (err) {
+                            spawnErrorModal("Query Error", err);
+                        }
+                    }
+                }
+            }).fail(function (e) {
+                spawnHttpErrorModal(e)
+            });
+        } catch (err) {
+            spawnErrorModal("Query Error", err);
+        }
+        */
+
+<<<<<<< HEAD
                 console.log("Done");
 
+=======
+        var query = '{"term": "'+ food +'", "location":"' + postalCode + '"}';
+        try {
+            $.ajax("/queryYelp", {type:"POST", data: query, contentType: "application/json", dataType: "json", success: function(data) {
+>>>>>>> 548153908413eab7b6e030b99a18b4d2bcb64a77
                 console.log(data);
                 console.log("Done");
                 $("#render").val(data);
-                // document.getElementById("render").textContent = data;
                 var d = parseRestaurant(data);
                 generateTable(d);
-                // document.getElementById("render").textContent = JSON.stringify(d);
 
             }}).fail(function (e) {
                 spawnHttpErrorModal(e)
             });
         } catch (err) {
             spawnErrorModal("Query Error", err);
-        }});
+        }
+
+    });
 
     function parseRestaurant(data){
         var allRest = [];
