@@ -3,80 +3,7 @@ $(function () {
     $("#queryForm").submit(function (e) {
         e.preventDefault();
         console.log("Submitting query");
-        /*
-         var auth = {
-         //
-         // Update with your auth tokens.
-         //
-         // TODO: remove this before commit
-         consumerKey : "Pw7sip730OyT18b",
-         consumerSecret : "2vrIqHQadJkXujSIVjp7_dgQQ_4",
-         accessToken : "M4UX3_3aAPZLAfUq2xPoMbWH67qHxoUm",
-         accessTokenSecret : "BHOovNwQn5HwSJ1iPkhQGuSzAYg",
-         serviceProvider : {
-         signatureMethod : "HMAC-SHA1"
-         }
-         };
 
-         var terms = 'food';
-         var near = 'Vancouver';
-         //var cc = 'CA';
-
-         var accessor = {
-         consumerSecret : auth.consumerSecret,
-         tokenSecret : auth.accessTokenSecret
-         };
-
-         var parameters = [];
-         parameters.push(['term', terms]);
-         parameters.push(['location', near]);
-         //parameters.push(['cc', cc]);
-         //parameters.push(['callback', 'callback']);
-         parameters.push(['oauth_consumer_key', auth.consumerKey]);
-         parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
-         parameters.push(['oauth_token', auth.accessToken]);
-         //parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
-
-         var message = {
-         'action' : 'http://api.yelp.com/v2/search',
-         'method' : 'GET',
-         'parameters' : parameters
-         };
-
-         OAuth.setTimestampAndNonce(message);
-         OAuth.SignatureMethod.sign(message, accessor);
-         var parameterMap = OAuth.getParameterMap(message.parameters);
-         console.log(parameterMap);
-
-         parameterMap.oauth_signature = OAuth.percentEncode(parameterMap.oauth_signature)
-
-         var url = OAuth.addToURL(message.action,parameterMap);
-         console.log(String(url));
-         var response = UrlFetchApp.fetch(url).getContentText();
-         var responseObject = Utilities.jsonParse(response);
-
-         console.log(JSON.stringify(responseObject));
-
-         $.ajax({
-         'url': 'https://api.yelp.com/v2/search',
-         'data': parameterMap,
-         'dataType': 'jsonp',
-         'jsonpCallback' : 'callback',
-         }).done(function(data, textStatus, jqXHR) {
-         console.log('success[' + data + '], status[' + textStatus + '], jqXHR[' + JSON.stringify(jqXHR) + ']');
-         }
-         ).fail(function(jqXHR, textStatus, errorThrown) {
-         console.log('error[' + errorThrown + '], status[' + textStatus + '], jqXHR[' + JSON.stringify(jqXHR) + ']');
-         }
-         );
-
-         console.log("Done");
-         */
-
-        // var building = $("#postalCode").val();
-        var postalCode = $("#postalCode").val();
-        var food = $("#category").val();
-        var radius = $("#radius").val();
         /*
         var lat = 0, lon = 0, latlon = "";
         var buildinglatlonquery = '{' +
@@ -123,14 +50,31 @@ $(function () {
         }
         */
 
-<<<<<<< HEAD
-                console.log("Done");
+        var parameters = {};
+        parameters['term']= 'food';
+        parameters['location'] = 'Vancouver, CA';
+        parameters['cc'] = 'CA';
+        var address = $("#address").val();
+        var distance = $("#radius").val();
+        var category = $("#category").val().toLowerCase();
 
-=======
-        var query = '{"term": "'+ food +'", "location":"' + postalCode + '"}';
+        if (distance !== '')
+        {
+            parameters['radius_filter'] = distance;
+        }
+
+        if (address !== '')
+        {
+            parameters['location'] = address + ' Vancouver, CA';
+        }
+
+        if (category !== '')
+        {
+            parameters['category_filter'] = category;
+        }
+
         try {
-            $.ajax("/queryYelp", {type:"POST", data: query, contentType: "application/json", dataType: "json", success: function(data) {
->>>>>>> 548153908413eab7b6e030b99a18b4d2bcb64a77
+            $.ajax("/queryYelp", {type:"POST", data: JSON.stringify(parameters), contentType: "application/json", dataType: "json", success: function(data) {
                 console.log(data);
                 console.log("Done");
                 $("#render").val(data);

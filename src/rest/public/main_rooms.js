@@ -177,10 +177,6 @@ $(function () {
 								console.log("Add this room to result");
 							}
 						}
-						console.log("Done");
-						console.log(String(resultA.length));
-
-						//data["result"] = resultArray;
 
 						if (data["render"] === "TABLE") {
 							generateTable(resultA);

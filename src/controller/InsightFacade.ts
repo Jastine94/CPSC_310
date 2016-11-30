@@ -152,13 +152,12 @@ export default class InsightFacade implements IInsightFacade {
     } // performQuery
 
 
-    public queryYelpAPI(food: any, location:any, /*latlon:any, radius:any,*/  yelp: any): Promise<any>{
+    public queryYelpAPI(param: any, /*latlon:any, radius:any,*/  yelp: any): Promise<any>{
         return new Promise(function (fulfill, reject) {
             try {
-                yelp.search({term: food, location:location}).then(function (result:any)
+                yelp.search(param).then(function (result:any)
                 // yelp.search({term: food, ll: latlon, radius: radius}).then(function (result:any)
                 {
-                    Log.trace("received data: " + JSON.stringify(result));
                     return fulfill(result);
                 }). catch(function (error: any) {
                     reject(error);
