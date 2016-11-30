@@ -76,6 +76,8 @@ $(function () {
         try {
             $.ajax("/queryYelp", {type:"POST", data: query, contentType: "application/json", dataType: "json", success: function(data) {
 
+                console.log("Done");
+
                 console.log(data);
 
                 console.log("Done");
