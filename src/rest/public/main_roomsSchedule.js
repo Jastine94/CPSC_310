@@ -408,9 +408,7 @@ $(function () {
         return cResultTable;
     }
 
-
     function calculateBoundingBox(lat, lon, dist) {
-        // TODO, make this call after you get the lat lon of the building that you're interested in
         //http://zurb.com/forrst/posts/Finding_if_a_Lat_Lng_point_is_inside_a_Bounding-OCs
         var half = (((dist / 2)*1.2) * 1000); // added 1.2 for error
         var latrad = deg2rad(lat);
@@ -503,8 +501,6 @@ $(function () {
         coursesComponent = coursesComponent + ']}';
         return coursesComponent;
     };
-
-
 
     function generateTable(data) {
         var columns = [];
