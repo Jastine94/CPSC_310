@@ -5,14 +5,34 @@
     <script src="./public/jquery.min.js"></script>
     <script src="./public/bootstrap.min.js"></script>
     <script src="./public/d3.min.js"></script>
+    <script src="./public/main_yelp.js"></script>
 </head>
 <html>
 <body>
 <div id="dataset">
-    <a href="/courses"><button type="button" class="btn btn-primary" id="courseExplorer">Course Explorer</button></a>
-    <a href="/rooms"><button type="button" class="btn btn-primary" id="roomExplorer">Room Explorer</button></a>
-    <a href="/scheduler"><button type="button" class="btn btn-primary" id="roomScheduler">Room Scheduler</button></a>
-    <a href="/yelpExplorer"><button type="button" class="btn btn-primary" id="yelpExplorer">Yelp</button></a>
+    <div class="form-group">
+        <h3>Yelp Explorer</h3>
+    </div>
+</div>
+<div id="container">
+    <h3>Query</h3>
+    <form id="queryForm">
+        <div class="form-group">
+            <label for="query"></label>
+            <label for="postalCode">Postal Code</label>
+            <input type="text" class="form-group" id="postalCode">
+            <label for="category">Category i.e. Sushi, Pizza, etc..</label>
+            <input type="text" class="form-group" id="category">
+            <label for="radius">Radius (meters)</label>
+            <input type="text" class="form-group" id="radius"><br>
+            <label for="query">Query:</label>
+            <textarea class="form-control" rows="10" id="query"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<div id="render">
+    <h3>Result</h3>
 </div>
 <div class="modal fade" id="errorModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -31,4 +51,5 @@
     </div>
 </div>
 </body>
+
 </html>
