@@ -159,12 +159,14 @@ export default class RouteHandler {
             var yelp = new Yelp({
                 consumer_key : "RHQ7BcnvEbH9ODZIyz5k1g",
                 consumer_secret : "Yqf73KL3CqStWn5KSGDRWWYUTng",
-                token : "kugl83UsS2yeAkGBWsR2bvJCdXgS3ykV",
-                token_secret : "K9HZrJgo__kw3TH2Rjjp2urND4Y",
+                token : "BqX5RqSec2JmpKU5XOLZQrv4rzQzS7Iv",
+                token_secret : "ss0g6B1yFwBq2vWzcML0FOQ_C1c",
             });
             Log.trace("Search");
             let insightFacade: IInsightFacade = new InsightFacade;
-            insightFacade.queryYelpAPI('food', 'Vancouver', yelp).then(function (result: any)
+            // insightFacade.queryYelpAPI('food', 'Vancouver', yelp).then(function (result: any)
+            insightFacade.queryYelpAPI(req.params.term, req.params.location, /*req.params.radius,*/ yelp).then(function (result: any)
+            // insightFacade.queryYelpAPI(req.params.term, req.params.ll, req.params.radius, yelp).then(function (result: any)
             {
                 Log.trace("WE GOT IT!!!!!!");
                 res.json(result)

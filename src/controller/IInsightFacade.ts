@@ -44,5 +44,5 @@ export interface IInsightFacade {
      */
     performQuery(query: QueryRequest): Promise<InsightResponse>;
 
-    queryYelpAPI(food: any, location:any, yelp: any): Promise<any>;
+    queryYelpAPI(food: any, location:any, /*latlon:any, radius: any,*/ yelp: any): Promise<any>;
 }
