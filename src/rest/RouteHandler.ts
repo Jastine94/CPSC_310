@@ -163,7 +163,6 @@ export default class RouteHandler {
             insightFacade.queryYelpAPI(params, /*req.params.radius,*/ yelp).then(function (result: any)
             // insightFacade.queryYelpAPI(req.params.term, req.params.ll, req.params.radius, yelp).then(function (result: any)
             {
-                Log.trace("WE GOT IT!!!!!!");
                 res.json(result)
             });
         }

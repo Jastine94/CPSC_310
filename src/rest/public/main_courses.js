@@ -103,7 +103,7 @@ $(function () {
             courseTitle === '' &&
             courseSize === '')
         {
-            querySkeleton = "{\"GET\": [\"courses_dept\", \"courses_id\",\"courses_size\", \"courses_pass\",\"courses_fail\",\"courses_avg\"],\
+            querySkeleton = "{\"GET\": [\"courses_dept\", \"courses_id\",\"courses_instructor\",\"courses_size\", \"courses_pass\",\"courses_fail\",\"courses_avg\"],\
                     \"WHERE\": {},\
                     "+ order+"\"AS\": \"TABLE\"}";
         }
@@ -159,7 +159,7 @@ $(function () {
 
             where = where + "]},";
             console.log(where);
-            querySkeleton = "{\"GET\": [\"courses_dept\", \"courses_id\", \"courses_size\", \"courses_pass\",\"courses_fail\",\"courses_avg\"],\
+            querySkeleton = "{\"GET\": [\"courses_dept\", \"courses_id\",\"courses_instructor\", \"courses_size\", \"courses_pass\",\"courses_fail\",\"courses_avg\"],\
                             "+ where + order+"\"AS\": \"TABLE\"}";
         }
 
