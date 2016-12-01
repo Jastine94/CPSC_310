@@ -3,6 +3,8 @@ To start the UI, run the command: npm run start (make sure you build before you 
 To use the courses explorer: 
 - Click the Courses Explore tab once the server has started
 - Add the courses dataset into the server
+- To sort by more than one filter, hold ctrl + click on the filters you want to sort
+	- i.e. ctrl+click on most passing and ctrl+click on courses average to filter by both most passing and courses average
 
 
 To use the rooms explorer: 

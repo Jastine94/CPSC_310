@@ -24,11 +24,11 @@ $(function () {
     $("#roomSchedulingForm").submit(function (e) {
         e.preventDefault();
         var listofcourses = $("#courses").val();
-        var listofrooms = $("#buildings").val();
+        var listofrooms = "";
+        listofrooms = $("#buildings").val();
         var startBuilding = $("#startbuilding").val();
         var distance = $("#distance").val();
-
-
+        
         if (listofcourses === '')
         {
             alert("Must courses to schedule");
@@ -49,31 +49,23 @@ $(function () {
             var lorHasEmptyVal = listofrooms === '';
             var sbHasEmptyVal = startBuilding === '';
             var distHasEmptyVal = distance === '';
-            if (lorHasEmptyVal)
+
+            if (sbHasEmptyVal && distHasEmptyVal && lorHasEmptyVal)
+                {
+                    alert("Need to input building to filter by and/or distance from building");
+                    return;
+                }
+            if (sbHasEmptyVal == false && distHasEmptyVal)
             {
-                if (sbHasEmptyVal && distHasEmptyVal)
-                {
-                    alert("Only filter with either List of Buildings or building with distance");
-                    return;
-                }
-                if (sbHasEmptyVal == false && distHasEmptyVal)
-                {
-                    alert("Missing distance input");
-                    return;
-                }
-                if (sbHasEmptyVal && distHasEmptyVal == false)
-                {
-                    alert("Missing start building");
-                    return;
-                }
+                alert("Missing distance input");
+                return;
             }
-            if (lorHasEmptyVal == false && (sbHasEmptyVal == false || distHasEmptyVal == false))
+            if (sbHasEmptyVal && distHasEmptyVal == false)
             {
-                alert("Only filter with either List of Buildings or building with distance");
+                alert("Missing start building");
                 return;
             }
         }
-
 
         var coursesSet = [], roomsSet =[];
         var coursesFilt = filterByCourses(listofcourses);
@@ -96,8 +88,11 @@ $(function () {
             spawnErrorModal("Query Error", err);
         }
 
-        console.log(startBuilding,distance,listofrooms)
-        if (startBuilding != "" && distance !="") {
+        console.log(startBuilding,distance,listofrooms.trim().length)
+
+        if (startBuilding != "" && distance !="" && listofrooms.trim().length == 0)
+        {
+            // console.log("ONLY HAVE START BUIDL AND IDS")
             var boundingBox = [], lat = 0, lon = 0;
             distance = distance / 1000; //convert into kilometers
 
@@ -127,7 +122,39 @@ $(function () {
             } catch (err) {
                 spawnErrorModal("Query Error", err);
             }
+        }
+        else if (startBuilding != "" && distance !="" && listofrooms != "")
+        {
+            // console.log("HAVE EVERYTHING")
+            var boundingBox = [], lat = 0, lon = 0;
+            distance = distance / 1000; //convert into kilometers
 
+            var buildinglatlonquery = '{' +
+                '"GET": ["rooms_shortname", "rooms_lat", "rooms_lon"],' +
+                '"WHERE": {"IS": {"rooms_shortname": "' + startBuilding + '"}},' +
+                '"GROUP": ["rooms_shortname", "rooms_lat", "rooms_lon"], "APPLY": [], "AS": "TABLE"}';
+
+            try {
+                $.ajax("/query", {
+                    type: "POST",
+                    data: buildinglatlonquery,
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data["render"] === "TABLE") {
+                            lat = data["result"][0]["rooms_lat"];
+                            lon = data["result"][0]["rooms_lon"];
+                            boundingBox = calculateBoundingBox(lat, lon, distance);
+                            var roomsFiltered = filterByRooms(listofrooms);
+                            queryBoxAndListOfRooms(boundingBox, roomsFiltered, coursesSet)
+                        }
+                    }
+                }).fail(function (e) {
+                    spawnHttpErrorModal(e)
+                });
+            } catch (err) {
+                spawnErrorModal("Query Error", err);
+            }
         }
 
         else if (listofrooms != "")
@@ -164,6 +191,34 @@ $(function () {
         var boundingBoxQuery = '{"GET": ["rooms_name","rooms_seats"],' + '"WHERE": {"AND": [' +
             '{"GT": {"rooms_lat": ' + latMin + '}},' + '{"LT": {"rooms_lat": ' + latMax + '}},' +
             '{"GT": {"rooms_lon": ' + lonMin + '}},' + '{"LT": {"rooms_lon": ' + lonMax + '}}]},' +
+            '"GROUP": [ "rooms_name", "rooms_seats"],"APPLY": [],"ORDER": { "dir": "UP", "keys": ["rooms_seats"]},"AS": "TABLE"}';
+        try {
+            $.ajax("/query", {type:"POST", data: boundingBoxQuery, contentType: "application/json", dataType: "json", success: function(data) {
+                if (data["render"] === "TABLE") {
+                    var roomsSet = data["result"];
+                    var table = scheduleCourses(coursesSet, roomsSet);
+                    generateTable(table)
+                }
+            }}).fail(function (e) {
+                spawnHttpErrorModal(e)
+            });
+        } catch (err) {
+            spawnErrorModal("Query Error", err);
+        }
+    }
+
+
+    function queryBoxAndListOfRooms(boundingBox, filteredrooms, coursesSet) {
+        var latMin = boundingBox[0];
+        var latMax = boundingBox[1];
+        var lonMin = boundingBox[2];
+        var lonMax = boundingBox[3];
+
+        var boundingBoxQuery = '{"GET": ["rooms_name","rooms_seats"],' + '"WHERE": {"OR": [' +
+            '{"AND": [' +
+                '{"GT": {"rooms_lat": ' + latMin + '}},' + '{"LT": {"rooms_lat": ' + latMax + '}},' +
+                '{"GT": {"rooms_lon": ' + lonMin + '}},' + '{"LT": {"rooms_lon": ' + lonMax + '}}]},' +
+                filteredrooms +  ']},' +
             '"GROUP": [ "rooms_name", "rooms_seats"],"APPLY": [],"ORDER": { "dir": "UP", "keys": ["rooms_seats"]},"AS": "TABLE"}';
         try {
             $.ajax("/query", {type:"POST", data: boundingBoxQuery, contentType: "application/json", dataType: "json", success: function(data) {
