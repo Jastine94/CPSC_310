@@ -17,7 +17,8 @@ To use the rooms scheduler:
 - If the server was already started, then click the dataset tab
 - If both rooms and courses dataset have already been added, then 
 you can start scheduling rooms, otherwise add both courses and rooms 
-dataset 
+dataset
+- Important note: Must input courses then rooms due to our implementation of the querying
 - You must input: 
         - course(s) to filter by
             - course can be in the format cpsc221, 221, cpsc
