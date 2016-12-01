@@ -47,6 +47,15 @@ $(function () {
 		var roomType = $("#roomType").val();
 		var querySkeleton;
 
+		if (roomSize !== '')
+		{
+			if (isNaN(roomSize))
+			{
+				alert("Room Size must be number");
+				return;
+			}
+		}
+
 		if (distance !== '')
 		{
 			if (isNaN(distance))
@@ -66,11 +75,22 @@ $(function () {
 			roomSize === '' &&
 			distance === '' &&
 			roomFurniture === '' &&
-			roomType === '')
+			roomType === 'None')
 		{
 			querySkeleton = "{\"GET\": [\"rooms_fullname\", \"rooms_name\", \"rooms_type\", \"rooms_furniture\",\"rooms_seats\"],\
 					\"WHERE\": {},\
 					\"ORDER\": null,\"AS\": \"TABLE\"}";
+			try {
+				$.ajax("/query", {type:"POST", data: querySkeleton, contentType: "application/json", dataType: "json", success: function(data) {
+					if (data["render"] === "TABLE") {
+						generateTable(data["result"]);
+					}
+				}}).fail(function (e) {
+					spawnHttpErrorModal(e)
+				});
+			} catch (err) {
+				spawnErrorModal("Query Error", err);
+			}
 		}
 		else
 		{
@@ -189,25 +209,28 @@ $(function () {
 					spawnErrorModal("Query Error", err);
 				}
 			}
+			else
+			{
 
-			where = where + "]},";
-			querySkeleton = "{\"GET\": [\"rooms_fullname\", \"rooms_name\", \"rooms_type\", \"rooms_furniture\",\"rooms_seats\"],\
+				where = where + "]},";
+				querySkeleton = "{\"GET\": [\"rooms_fullname\", \"rooms_name\", \"rooms_type\", \"rooms_furniture\",\"rooms_seats\"],\
 					"+ where +
 					"\"ORDER\": null,\"AS\": \"TABLE\"}";
-		}
 
-		var query = querySkeleton;
+				var query = querySkeleton;
 
-		try {
-			$.ajax("/query", {type:"POST", data: query, contentType: "application/json", dataType: "json", success: function(data) {
-				if (data["render"] === "TABLE") {
-					generateTable(data["result"]);
+				try {
+					$.ajax("/query", {type:"POST", data: query, contentType: "application/json", dataType: "json", success: function(data) {
+						if (data["render"] === "TABLE") {
+							generateTable(data["result"]);
+						}
+					}}).fail(function (e) {
+						spawnHttpErrorModal(e)
+					});
+				} catch (err) {
+					spawnErrorModal("Query Error", err);
 				}
-			}}).fail(function (e) {
-				spawnHttpErrorModal(e)
-			});
-		} catch (err) {
-			spawnErrorModal("Query Error", err);
+			}
 		}
 	});
 
